@@ -7,6 +7,7 @@ import { buildCoord, parseCoord } from "../datatypes/Coord.ts";
 
 type Step = [ x: number, y: number ];
 
+
 // Pre-compiled lists of moves, since most moves are similar:
 const BISHOP_DIRS: Step[] = [ [1, 1], [1, -1], [-1, 1], [-1, -1] ];
 const ROOK_DIRS: Step[] = [ [1, 0], [-1, 0], [0, 1], [0, -1] ];

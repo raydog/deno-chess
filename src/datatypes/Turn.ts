@@ -1,8 +1,11 @@
 import { Move } from "./Move.ts";
 
 export class Turn {
-  white: Move | null = null;
+  
+  white: Move;
   black: Move | null = null;
 
-  constructor (readonly num: number) {}
+  constructor (readonly num: number, white: Move) {
+    this.white = white;
+  }
 }

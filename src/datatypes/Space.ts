@@ -18,18 +18,18 @@ const UNICODE_MAP = [
 /**
  * Information on a space. Packed into a number for perf reasons.
  * 
- * Format: 00HL CTTT (LSB)
+ * Format: 00DL CTTT (LSB)
  * 
  * - T = type (0-empty, 1-pawn, 2-bishop, ...)
  * - C = color (0-white, 1-black)
- * - L = last move? (boolean, 1 if this piece moved during the last half-move)
+ * - D = double open? (boolean, 1 if this pawn did a double-open during the last half-move)
  * - H = has moved? (boolean, 1 if this piece has moved during this game)
  * 
  * @private
  */
 export type Space = number;
 
-export const spaceIsEmpty = (sp: Space): boolean => (sp & 0x7) === 0;
+export const spaceIsEmpty = (sp: Space): boolean => sp === 0;
 
 export const spaceGetType = (sp: Space): PieceType => sp & 0x7;
 
@@ -37,12 +37,12 @@ export const spaceGetColor = (sp: Space): Color => (sp & 0x8) >>> 3;
 
 export const spaceIsColor = (sp: Space, c: Color): boolean => sp !== 0 && ((sp & 0x8) >>> 3) === c;
 
-export const spaceJustMoved = (sp: Space): boolean => Boolean(sp & 0x10);
+export const spaceJustDoubleOpened = (sp: Space): boolean => Boolean(sp & 0x10);
 
 export const spaceHasMoved = (sp: Space): boolean => Boolean(sp & 0x20);
 
-export const encodePieceSpace = (t: PieceType, c: Color, l: boolean, h: boolean): Space => {
-  return t | (c << 3) | (Number(l) << 4) | (Number(h) << 5);
+export const encodePieceSpace = (t: PieceType, c: Color, d: boolean, h: boolean): Space => {
+  return t | (c << 3) | (Number(d) << 4) | (Number(h) << 5);
 };
 
 export function spaceGetFENString(sp: Space): string {
