@@ -1,86 +1,109 @@
 import { Coord } from "./Coord.ts";
 import { PieceType } from "./PieceType.ts";
+import { Space } from "./Space.ts";
 
+export type Move = {
+  // These exist for all move types:
+  what: Space;
+  from: Coord;
+  dest: Coord;
 
-/**
- * Info on a capture.
- */
-type CaptureData = {
-  /**
-   * The piece type (P, R, B, ...) that was captured.
-   */
-  what: PieceType;
+  // These exist for captures. (Capture coord may differ from dest with en passant)
+  capture: Space;
+  captureCoord: Coord;
 
-  /**
-   * Where the piece was captured. This may differ from `move.to` with en passants.
-   */
-  where: Coord;
+  // These exist for castles.
+  castleRook: Space;
+  castleRookFrom: Coord;
+  castleRookDest: Coord;
+
+  // This exists when a pawn promotes to something:
+  promote: PieceType;
+
+  // Mark this pawn as being available for En Passants:
+  canEnPassant: boolean;
 };
 
-/**
- * Information on a castle.
- */
-type CastleData = {
-  /**
-   * Where the rook that was involved in this castle started.
-   */
-  rookFrom: Coord;
+export function createSimpleMove(what: Space, from: Coord, dest: Coord): Move {
+  return {
+    what,
+    from,
+    dest,
+    capture: 0,
+    captureCoord: 0,
+    castleRook: 0,
+    castleRookFrom: 0,
+    castleRookDest: 0,
+    promote: 0,
+    canEnPassant: false,
+  };
+}
 
-  /**
-   * Where the rook that was involved in this castle ended.
-   */
-  rookTo: Coord;
-};
+export function createSimpleCapture(
+  what: Space,
+  from: Coord,
+  dest: Coord,
+  capture: Space,
+  captureCoord: Coord,
+): Move {
+  return {
+    what,
+    from,
+    dest,
+    capture,
+    captureCoord,
+    castleRook: 0,
+    castleRookFrom: 0,
+    castleRookDest: 0,
+    promote: 0,
+    canEnPassant: false,
+  };
+}
 
-/**
- * Documents a move during this game. Was validated prior to creation.
- */
-export class Move {
+export function createCastle(
+  what: Space,
+  from: Coord,
+  dest: Coord,
+  castleRook: Space,
+  castleRookFrom: Coord,
+  castleRookDest: Coord,
+): Move {
+  return {
+    what,
+    from,
+    dest,
+    capture: 0,
+    captureCoord: 0,
+    castleRook,
+    castleRookFrom,
+    castleRookDest,
+    promote: 0,
+    canEnPassant: false,
+  };
+}
 
-  /**
-   * The piece type (Pawn, Rook, ...) that moved.
-   */
-  readonly what: PieceType;
-
-  /**
-   * The starting square for the piece.
-   */
-  readonly from: Coord;
-
-  /**
-   * The ending squre for the piece.
-   */
-  readonly to: Coord;
-
-  /**
-   * If this was a capture, documents WHAT was captured.
-   */
-  readonly capture: CaptureData | null;
-
-  /**
-   * The piece type (Q, K, ...) that a pawn promoted to, if this is a promotion.
-   */
-  readonly promotion: PieceType | null;
-
-  /**
-   * If this was a castle, information on that castle.
-   */
-  readonly castle: CastleData | null;
-
-  // Internal constructor:
-  constructor(
-    what: PieceType,
-    from: Coord,
-    to: Coord,
-    capture: CaptureData | null,
-    promotion: PieceType | null,
-    castle: CastleData | null,
-  ) {
-    this.what = what;
-    this.from = from;
-    this.to = to;
-    this.capture = capture;
-    this.promotion = promotion;
-    this.castle = castle;
-  }
+export function createFullMove(
+  what: Space,
+  from: Coord,
+  dest: Coord,
+  capture: Space,
+  captureCoord: Coord,
+  castleRook: Space,
+  castleRookFrom: Coord,
+  castleRookDest: Coord,
+  promote: PieceType,
+  canEnPassant: boolean,
+) {
+  return {
+    what,
+    from,
+    dest,
+    capture,
+    captureCoord,
+    castleRook,
+    castleRookFrom,
+    castleRookDest,
+    promote,
+    canEnPassant,
+  };
 }

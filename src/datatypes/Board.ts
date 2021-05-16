@@ -1,30 +1,26 @@
-import { Space } from "./Space.ts";
+import { Space, SPACE_EMPTY, SPACE_NULL } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
 import { Turn } from "./Turn.ts";
-
-type StringFormat =
-  | "FEN";
 
 /**
  * Internal representation of a Board. Basically 64 integers, with a few extra bells-n-whistles.
  * This will be translated into a more public-friendly representation in the future.
  */
 export class Board {
+  #spaces: Uint8Array = new Uint8Array(8 * 8).fill(SPACE_EMPTY);
 
-  // TODO: int8 array.
+  // TODO: Cache layers, to reduce allocations:
+  #overlays: Uint8Array[] = [];
 
-  #spaces: Space[] = Array(8 * 8).fill(0);
-
-  #overlays: Space[][] = [];
-
+  // TODO: Maybe in game?
   #turns: Turn[] = [];
 
   set(idx: Coord, space: Space) {
     assert(idx >= 0 && idx < 64, "Invalid set() coord");
     if (this.#overlays.length) {
-      this.#overlays[this.#overlays.length-1][idx] = space;
+      this.#overlays[this.#overlays.length - 1][idx] = space;
     } else {
       this.#spaces[idx] = space;
     }
@@ -32,9 +28,9 @@ export class Board {
 
   get(idx: Coord): Space {
     assert(idx >= 0 && idx < 64, "Invalid get() coord");
-    for (let overlay=this.#overlays.length-1; overlay>=0; overlay--) {
+    for (let overlay = this.#overlays.length - 1; overlay >= 0; overlay--) {
       const spot = this.#overlays[overlay][idx];
-      if (spot >= 0) { return spot; }
+      if (spot >= 0) return spot;
     }
     return this.#spaces[idx];
   }
@@ -44,7 +40,7 @@ export class Board {
    * undo actions.
    */
   pushOverlay() {
-    this.#overlays.push(Array(8 * 8).fill(-1));
+    this.#overlays.push(new Uint8Array(8 * 8).fill(SPACE_NULL));
   }
 
   /**
@@ -54,10 +50,9 @@ export class Board {
     this.#overlays.pop();
   }
 
-
   getTurnColor(): Color {
-    if (!this.#turns.length) { return Color.White; }
-    const cur = this.#turns[this.#turns.length-1];
+    if (!this.#turns.length) return Color.White;
+    const cur = this.#turns[this.#turns.length - 1];
     return cur.black ? Color.White : Color.Black;
   }
 
@@ -66,8 +61,8 @@ export class Board {
   }
 
   getFullmoveClock(): number {
-    if (!this.#turns.length) { return 1; }
-    const cur = this.#turns[this.#turns.length-1];
+    if (!this.#turns.length) return 1;
+    const cur = this.#turns[this.#turns.length - 1];
     return cur.black ? this.#turns.length + 1 : this.#turns.length;
   }
 

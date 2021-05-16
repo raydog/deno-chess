@@ -5,8 +5,8 @@ import { spaceGetFENString, spaceIsEmpty } from "../../datatypes/Space.ts";
 
 /**
  * Render a chess board into FEN format.
- * 
- * @param board 
+ *
+ * @param board
  */
 export function forsythEdwardsNotation(board: Board): string {
   let out = "";

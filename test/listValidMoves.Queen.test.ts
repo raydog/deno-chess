@@ -9,7 +9,7 @@ import { assertMoves } from "./testUtils/assertMoves.ts";
 Deno.test("List Valid Moves > Queen > Center movements", function () {
   const b = new Board();
   const idx = coordFromAN("d5");
-  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White));
   assertMoves(b, listValidMoves(b, idx), [
     "a2",
     "a5",
@@ -44,18 +44,18 @@ Deno.test("List Valid Moves > Queen > Center movements", function () {
 Deno.test("List Valid Moves > Queen > Handles blocks", function () {
   const b = new Board();
   const idx = coordFromAN("h7");
-  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White));
   b.set(
     coordFromAN("e7"),
-    encodePieceSpace(PieceType.King, Color.White, false, false),
+    encodePieceSpace(PieceType.King, Color.White),
   );
   b.set(
     coordFromAN("h4"),
-    encodePieceSpace(PieceType.Knight, Color.White, false, false),
+    encodePieceSpace(PieceType.Knight, Color.White),
   );
   b.set(
     coordFromAN("d3"),
-    encodePieceSpace(PieceType.Pawn, Color.White, false, false),
+    encodePieceSpace(PieceType.Pawn, Color.White),
   );
   assertMoves(b, listValidMoves(b, idx), [
     "h8",
@@ -73,18 +73,18 @@ Deno.test("List Valid Moves > Queen > Handles blocks", function () {
 Deno.test("List Valid Moves > Queen > Handles captures", function () {
   const b = new Board();
   const idx = coordFromAN("d7");
-  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White));
   b.set(
     coordFromAN("d5"),
-    encodePieceSpace(PieceType.Pawn, Color.Black, false, false),
+    encodePieceSpace(PieceType.Pawn, Color.Black),
   );
   b.set(
     coordFromAN("b7"),
-    encodePieceSpace(PieceType.Rook, Color.Black, false, false),
+    encodePieceSpace(PieceType.Rook, Color.Black),
   );
   b.set(
     coordFromAN("e7"),
-    encodePieceSpace(PieceType.Queen, Color.Black, false, false),
+    encodePieceSpace(PieceType.Queen, Color.Black),
   );
   assertMoves(b, listValidMoves(b, idx), [
     "a4",

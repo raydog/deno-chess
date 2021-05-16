@@ -7,11 +7,11 @@ const HORIZ = "   +" + "---+".repeat(8) + "\n";
 
 /**
  * Barfs out the current board state, annotated with a move list.
- * 
+ *
  * Returns as a string, so it can be integrated into error messages.
- * 
- * @param b 
- * @param list 
+ *
+ * @param b
+ * @param list
  */
 export function debugBoard(b: Board, list: Coord[]): string {
   let out = FILES + HORIZ;

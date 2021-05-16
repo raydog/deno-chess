@@ -1,89 +1,118 @@
 import { Color } from "./Color.ts";
 import { PieceType } from "./PieceType.ts";
 
-
 const _hashPiece = (c: Color, t: PieceType): number => c * 6 + t - 1;
 
 const FEN_MAP = [
-  "P", "B", "N", "R", "Q", "K",
-  "p", "b", "n", "r", "q", "k",
+  "P",
+  "B",
+  "N",
+  "R",
+  "Q",
+  "K",
+  "p",
+  "b",
+  "n",
+  "r",
+  "q",
+  "k",
 ];
 
 const UNICODE_MAP = [
-  "♙", "♗", "♘", "♖", "♕", "♔",
-  "♟", "♝", "♞", "♜", "♛", "♚",
+  "♙",
+  "♗",
+  "♘",
+  "♖",
+  "♕",
+  "♔",
+  "♟",
+  "♝",
+  "♞",
+  "♜",
+  "♛",
+  "♚",
 ];
-
 
 /**
  * Information on a space. Packed into a number for perf reasons.
- * 
- * Format: 00DL CTTT (LSB)
- * 
- * - T = type (0-empty, 1-pawn, 2-bishop, ...)
+ *
+ * Format: (MSB) 0PMC TTTD (LSB)
+ *
+ * - D = data? (0 = null, 1 = this space has data)
+ * - T = type (0-empty, 1-pawn, 2-bishop, ... same as enum)
  * - C = color (0-white, 1-black)
- * - D = double open? (boolean, 1 if this pawn did a double-open during the last half-move)
- * - H = has moved? (boolean, 1 if this piece has moved during this game)
- * 
+ * - M = moved? (1 if this piece has moved during this game)
+ * - P = en passant? (1 if this is a pawn that *just* double-stepped)
+ *
  * @private
  */
 export type Space = number;
 
-export const spaceIsEmpty = (sp: Space): boolean => sp === 0;
+export const SPACE_NULL = 0;
+export const SPACE_EMPTY = 1;
 
-export const spaceGetType = (sp: Space): PieceType => sp & 0x7;
+export function spaceHasData(sp: Space): boolean {
+  return sp !== SPACE_NULL;
+}
 
-export const spaceGetColor = (sp: Space): Color => (sp & 0x8) >>> 3;
+export function spaceIsEmpty(sp: Space): boolean {
+  return sp === SPACE_EMPTY;
+}
 
-export const spaceIsColor = (sp: Space, c: Color): boolean => sp !== 0 && ((sp & 0x8) >>> 3) === c;
+export function spaceGetType(sp: Space): PieceType {
+  return (sp >>> 1) & 0x7;
+}
 
-export const spaceJustDoubleOpened = (sp: Space): boolean => Boolean(sp & 0x10);
+export function spaceGetColor(sp: Space): Color {
+  return (sp >>> 4) & 0x1;
+}
 
-export const spaceHasMoved = (sp: Space): boolean => Boolean(sp & 0x20);
+export function spaceHasMoved(sp: Space): boolean {
+  return Boolean(sp & 0x20);
+}
 
-export const encodePieceSpace = (t: PieceType, c: Color, d: boolean, h: boolean): Space => {
-  return t | (c << 3) | (Number(d) << 4) | (Number(h) << 5);
+export function spaceEnPassant(sp: Space): boolean {
+  return Boolean(sp & 0x40);
+}
+
+export function spaceMarkMoved(sp: Space): Space {
+  return (sp === SPACE_NULL || sp === SPACE_EMPTY) ? sp : sp | 0x20;
+}
+
+export function spaceSetEnPassant(sp: Space, passant: boolean): Space {
+  return (sp === SPACE_NULL || sp === SPACE_EMPTY)
+    ? sp
+    : (sp & 0xbf) | (passant ? 0x40 : 0);
+}
+
+export function spacePromote(sp: Space, t: PieceType): Space {
+  return (sp === SPACE_NULL || sp === SPACE_EMPTY)
+    ? sp
+    : (sp & 0xf1) | (t << 1);
+}
+
+// Assumes the space has data. Just set to 0 if it's null:
+export const encodePieceSpace = (
+  t: PieceType,
+  c: Color,
+  moved = false,
+  passant = false,
+): Space => {
+  return 1 | (t << 1) | (c << 4) | (Number(moved) << 5) |
+    (Number(passant) << 6);
 };
 
 export function spaceGetFENString(sp: Space): string {
   // Technically not valid, as FEN collapses these, but w/e
-  if (spaceIsEmpty(sp)) { return " "; }
+  if (!spaceHasData(sp) || spaceIsEmpty(sp)) return " ";
 
   const hash = _hashPiece(spaceGetColor(sp), spaceGetType(sp));
   return FEN_MAP[hash];
 }
 
+export function spaceGetUnicodeString(sp: Space): string {
+  if (!spaceHasData(sp) || spaceIsEmpty(sp)) return " ";
 
-
-// /**
-//  * Information on a single piece.
-//  */
-// export class Piece {
-  
-//   /**
-//    * True if this piece was moved within the last move.
-//    * 
-//    * Used to detect when en passant is allowed.
-//    */
-//   justMoved = false;
-
-//   /**
-//    * The number of times this piece has bee moved.
-//    * 
-//    * Castling is only allowed if both the kind AND a rook have this number equal to 0.
-//    */
-//   moveNum = 0;
-
-//   constructor(readonly type: PieceType, readonly color: Color) {}
-
-//   toString(format: StringFormat = "FEN") {
-//     switch (format) {
-//       case "fen":
-//       case "FEN":
-//         return FEN_MAP[_HASH(this.color, this.type)];
-      
-//       case "unicode":
-//         return UNICODE_MAP[_HASH(this.color, this.type)];
-//     }
-//   }
-// }
+  const hash = _hashPiece(spaceGetColor(sp), spaceGetType(sp));
+  return UNICODE_MAP[hash];
+}

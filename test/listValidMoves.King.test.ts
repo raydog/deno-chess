@@ -9,7 +9,7 @@ import { assertMoves } from "./testUtils/assertMoves.ts";
 Deno.test("List Valid Moves > King > Center movements", function () {
   const b = new Board();
   const idx = coordFromAN("d5");
-  b.set(idx, encodePieceSpace(PieceType.King, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.King, Color.White));
   assertMoves(b, listValidMoves(b, idx), [
     "c4",
     "c5",
@@ -25,18 +25,18 @@ Deno.test("List Valid Moves > King > Center movements", function () {
 Deno.test("List Valid Moves > King > Handles blocks", function () {
   const b = new Board();
   const idx = coordFromAN("h7");
-  b.set(idx, encodePieceSpace(PieceType.King, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.King, Color.White));
   b.set(
     coordFromAN("g8"),
-    encodePieceSpace(PieceType.Bishop, Color.White, false, false),
+    encodePieceSpace(PieceType.Bishop, Color.White),
   );
   b.set(
     coordFromAN("f7"),
-    encodePieceSpace(PieceType.Knight, Color.White, false, false),
+    encodePieceSpace(PieceType.Knight, Color.White),
   );
   b.set(
     coordFromAN("h6"),
-    encodePieceSpace(PieceType.Pawn, Color.White, false, false),
+    encodePieceSpace(PieceType.Pawn, Color.White),
   );
   assertMoves(b, listValidMoves(b, idx), [
     "h8",
@@ -48,18 +48,18 @@ Deno.test("List Valid Moves > King > Handles blocks", function () {
 Deno.test("List Valid Moves > King > Handles captures", function () {
   const b = new Board();
   const idx = coordFromAN("d7");
-  b.set(idx, encodePieceSpace(PieceType.King, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.King, Color.White));
   b.set(
     coordFromAN("c7"),
-    encodePieceSpace(PieceType.Pawn, Color.Black, false, false),
+    encodePieceSpace(PieceType.Pawn, Color.Black),
   );
   b.set(
     coordFromAN("e8"),
-    encodePieceSpace(PieceType.Knight, Color.Black, false, false),
+    encodePieceSpace(PieceType.Knight, Color.Black),
   );
   b.set(
     coordFromAN("d6"),
-    encodePieceSpace(PieceType.Bishop, Color.Black, false, false),
+    encodePieceSpace(PieceType.Bishop, Color.Black),
   );
   // TODO: Some of these moves put the king in check... :X
   assertMoves(b, listValidMoves(b, idx), [

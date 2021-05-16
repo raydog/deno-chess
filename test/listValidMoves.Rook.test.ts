@@ -9,7 +9,7 @@ import { assertMoves } from "./testUtils/assertMoves.ts";
 Deno.test("List Valid Moves > Rook > Center movements", function () {
   const b = new Board();
   const idx = coordFromAN("d5");
-  b.set(idx, encodePieceSpace(PieceType.Rook, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Rook, Color.White));
   assertMoves(b, listValidMoves(b, idx), [
     "d8",
     "d7",
@@ -31,14 +31,14 @@ Deno.test("List Valid Moves > Rook > Center movements", function () {
 Deno.test("List Valid Moves > Rook > Handles blocks", function () {
   const b = new Board();
   const idx = coordFromAN("h7");
-  b.set(idx, encodePieceSpace(PieceType.Rook, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Rook, Color.White));
   b.set(
     coordFromAN("e7"),
-    encodePieceSpace(PieceType.King, Color.White, false, false),
+    encodePieceSpace(PieceType.King, Color.White),
   );
   b.set(
     coordFromAN("h4"),
-    encodePieceSpace(PieceType.Knight, Color.White, false, false),
+    encodePieceSpace(PieceType.Knight, Color.White),
   );
   assertMoves(b, listValidMoves(b, idx), [
     "h8",
@@ -52,10 +52,10 @@ Deno.test("List Valid Moves > Rook > Handles blocks", function () {
 Deno.test("List Valid Moves > Rook > Handles captures", function () {
   const b = new Board();
   const idx = coordFromAN("d7");
-  b.set(idx, encodePieceSpace(PieceType.Rook, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Rook, Color.White));
   b.set(
     coordFromAN("d5"),
-    encodePieceSpace(PieceType.Rook, Color.Black, false, false),
+    encodePieceSpace(PieceType.Rook, Color.Black),
   );
   assertMoves(b, listValidMoves(b, idx), [
     "a7",

@@ -9,7 +9,7 @@ import { assertMoves } from "./testUtils/assertMoves.ts";
 Deno.test("List Valid Moves > Bishop > Center movements", function () {
   const b = new Board();
   const idx = coordFromAN("d5");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
   assertMoves(b, listValidMoves(b, idx), [
     "c4",
     "b3",
@@ -30,14 +30,14 @@ Deno.test("List Valid Moves > Bishop > Center movements", function () {
 Deno.test("List Valid Moves > Bishop > Handles blocks", function () {
   const b = new Board();
   const idx = coordFromAN("h3");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
   b.set(
     coordFromAN("f1"),
-    encodePieceSpace(PieceType.King, Color.White, false, false),
+    encodePieceSpace(PieceType.King, Color.White),
   );
   b.set(
     coordFromAN("e6"),
-    encodePieceSpace(PieceType.Knight, Color.White, false, false),
+    encodePieceSpace(PieceType.Knight, Color.White),
   );
   assertMoves(b, listValidMoves(b, idx), [
     "g2",
@@ -49,10 +49,10 @@ Deno.test("List Valid Moves > Bishop > Handles blocks", function () {
 Deno.test("List Valid Moves > Bishop > Handles captures", function () {
   const b = new Board();
   const idx = coordFromAN("d7");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White, false, false));
+  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
   b.set(
     coordFromAN("f5"),
-    encodePieceSpace(PieceType.Rook, Color.Black, false, false),
+    encodePieceSpace(PieceType.Rook, Color.Black),
   );
   assertMoves(b, listValidMoves(b, idx), [
     "c8",
