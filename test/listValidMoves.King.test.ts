@@ -45,7 +45,86 @@ Deno.test("List Valid Moves > King > Handles blocks", function () {
   ]);
 });
 
-Deno.test("List Valid Moves > King > Handles captures", function () {
+Deno.test("List Valid Moves > King > Avoids check by pawn", function () {
+  const b = new Board();
+  const idx = coordFromAN("d7");
+  b.set(idx, encodePieceSpace(PieceType.King, Color.Black));
+  b.set(
+    coordFromAN("d5"),
+    encodePieceSpace(PieceType.Pawn, Color.White),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "c8", "d8", "e8", "c7", "e7", "d6",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Avoids check by bishop", function () {
+  const b = new Board();
+  const idx = coordFromAN("d7");
+  b.set(idx, encodePieceSpace(PieceType.King, Color.Black));
+  b.set(
+    coordFromAN("f7"),
+    encodePieceSpace(PieceType.Bishop, Color.White),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "c8", "d8", "c7", "e7", "c6", "d6",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Avoids check by knight", function () {
+  const b = new Board();
+  const idx = coordFromAN("d7");
+  b.set(idx, encodePieceSpace(PieceType.King, Color.Black));
+  b.set(
+    coordFromAN("f5"),
+    encodePieceSpace(PieceType.Knight, Color.White),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "c8", "d8", "e8", "c7", "c6", "e6"
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Avoids check by rook", function () {
+  const b = new Board();
+  const idx = coordFromAN("d7");
+  b.set(idx, encodePieceSpace(PieceType.King, Color.White));
+  b.set(
+    coordFromAN("e2"),
+    encodePieceSpace(PieceType.Rook, Color.Black),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "c8", "d8", "c7", "c6", "d6",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Avoids check by queen", function () {
+  const b = new Board();
+  const idx = coordFromAN("d7");
+  b.set(idx, encodePieceSpace(PieceType.King, Color.Black));
+  b.set(
+    coordFromAN("d5"),
+    encodePieceSpace(PieceType.Queen, Color.White),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "c8","e8", "c7", "e7",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Avoids check by king", function () {
+  const b = new Board();
+  const idx = coordFromAN("d7");
+  b.set(idx, encodePieceSpace(PieceType.King, Color.Black));
+  b.set(
+    coordFromAN("b7"),
+    encodePieceSpace(PieceType.King, Color.White),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "d8","e8", "e7", "d6", "e6"
+  ]);
+});
+
+
+Deno.test("List Valid Moves > King > Allows safe captures", function () {
   const b = new Board();
   const idx = coordFromAN("d7");
   b.set(idx, encodePieceSpace(PieceType.King, Color.White));
@@ -54,22 +133,18 @@ Deno.test("List Valid Moves > King > Handles captures", function () {
     encodePieceSpace(PieceType.Pawn, Color.Black),
   );
   b.set(
-    coordFromAN("e8"),
+    coordFromAN("e6"),
     encodePieceSpace(PieceType.Knight, Color.Black),
   );
   b.set(
     coordFromAN("d6"),
     encodePieceSpace(PieceType.Bishop, Color.Black),
   );
-  // TODO: Some of these moves put the king in check... :X
   assertMoves(b, listValidMoves(b, idx), [
     "c8",
-    "d8",
     "e8",
-    "c7",
-    "e7",
     "c6",
-    "d6",
     "e6",
   ]);
 });
+

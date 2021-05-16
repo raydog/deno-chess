@@ -16,6 +16,9 @@ import {
   createSimpleMove,
   Move,
 } from "../datatypes/Move.ts";
+import { performMove } from "./performMove.ts";
+import { kingInDanger } from "./kingInDanger.ts";
+import { debugBoard } from "../../test/testUtils/debugBoard.ts";
 
 type Step = [x: number, y: number];
 
@@ -96,13 +99,13 @@ function _findMoves(
 
       // If empty, we could either stop here or continue:
       if (spotEmpty) {
-        out.push(createSimpleMove(sp, idx, newIdx));
+        _tryPushMove(b, out, createSimpleMove(sp, idx, newIdx));
         continue;
       }
 
       // If an enemy, then we can capture. But no matter what, we can't keep going in this direction:
       if (spotColor === 1 - color) {
-        out.push(createSimpleCapture(sp, idx, newIdx, newSp, newIdx));
+        _tryPushMove(b, out, createSimpleCapture(sp, idx, newIdx, newSp, newIdx));
       }
 
       break;
@@ -132,7 +135,7 @@ function _pawnMoves(b: Board, sp: Space, idx: number): Move[] {
   // Try to move one up:
   if (oneUp >= 0 && oneUp < 64) {
     if (spaceIsEmpty(b.get(oneUp))) {
-      out.push(createSimpleMove(sp, idx, oneUp));
+      _tryPushMove(b, out, createSimpleMove(sp, idx, oneUp));
     }
   }
 
@@ -142,7 +145,7 @@ function _pawnMoves(b: Board, sp: Space, idx: number): Move[] {
       !spaceHasMoved(sp) && spaceIsEmpty(b.get(oneUp)) &&
       spaceIsEmpty(b.get(twoUp))
     ) {
-      out.push(createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, true));
+      _tryPushMove(b, out, createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, true));
     }
   }
 
@@ -151,7 +154,7 @@ function _pawnMoves(b: Board, sp: Space, idx: number): Move[] {
     const coord = buildCoord(file - 1, rank + dir);
     const spot = b.get(coord);
     if (!spaceIsEmpty(spot) && spaceGetColor(spot) === otherColor) {
-      out.push(createSimpleCapture(sp, idx, coord, spot, coord));
+      _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, spot, coord));
     }
   }
 
@@ -159,7 +162,7 @@ function _pawnMoves(b: Board, sp: Space, idx: number): Move[] {
     const coord = buildCoord(file + 1, rank + dir);
     const spot = b.get(coord);
     if (!spaceIsEmpty(spot) && spaceGetColor(spot) === otherColor) {
-      out.push(createSimpleCapture(sp, idx, coord, spot, coord));
+      _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, spot, coord));
     }
   }
 
@@ -168,5 +171,17 @@ function _pawnMoves(b: Board, sp: Space, idx: number): Move[] {
   return out;
 }
 
-function _tryPushMove(b: Board) {
+function _tryPushMove(b: Board, out: Move[], move: Move) {
+  const color = spaceGetColor(move.what);
+
+  b.pushOverlay();
+
+  performMove(b, move);
+  if (!kingInDanger(b, color)) {
+    out.push(move);
+  }
+
+  // console.log("\n\n%s\n%s", JSON.stringify(move), debugBoard(b, []));
+
+  b.popOverlay();
 }

@@ -1,4 +1,4 @@
-import { Space, SPACE_EMPTY, SPACE_NULL } from "./Space.ts";
+import { Space, spaceHasData, SPACE_EMPTY, SPACE_NULL } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
@@ -30,10 +30,13 @@ export class Board {
     assert(idx >= 0 && idx < 64, "Invalid get() coord");
     for (let overlay = this.#overlays.length - 1; overlay >= 0; overlay--) {
       const spot = this.#overlays[overlay][idx];
-      if (spot >= 0) return spot;
+      if (spaceHasData(spot)) return spot;
     }
     return this.#spaces[idx];
   }
+
+
+  // TODO: save() + restore() ? Also, instead of pass-through, maybe copy is ok? Need benchmark...
 
   /**
    * Add a new overlay. This overlay will absorb set()'s, and get()'s take them into account. This allows us to easily

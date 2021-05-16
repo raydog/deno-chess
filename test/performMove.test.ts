@@ -7,7 +7,7 @@ import { encodePieceSpace, spaceEnPassant, spaceGetType, spaceHasMoved, spaceIsE
 import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";
 import { performMove } from "../src/logic/performMove.ts";
 import { asserts } from "../testDeps.ts";
-import { debugBoard } from "./testUtils/debugBoard.ts";
+// import { debugBoard } from "./testUtils/debugBoard.ts";
 
 // Shorthand:
 const an = coordFromAN;
@@ -50,7 +50,7 @@ Deno.test("Perform Move > Réti Opening", function () {
   asserts.assertEquals(spaceHasMoved(b.get(an("c4"))), true);
   asserts.assertEquals(spaceEnPassant(b.get(an("c4"))), true);
 
-  console.log("\n\n" + debugBoard(b, []));
+  // console.log("\n\n" + debugBoard(b, []));
 });
 
 Deno.test("Perform Move > Sicilian defense", function () {
@@ -88,5 +88,5 @@ Deno.test("Perform Move > Sicilian defense", function () {
   asserts.assertEquals(spaceHasMoved(b.get(an("f3"))), true);
   asserts.assertEquals(spaceEnPassant(b.get(an("f3"))), false);
 
-  console.log("\n\n" + debugBoard(b, []));
+  // console.log("\n\n" + debugBoard(b, []));
 });

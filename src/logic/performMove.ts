@@ -43,7 +43,7 @@ export function performMove(
   b.set(move.from, SPACE_EMPTY);
 
   // If capture differs from the move, blank it too:
-  if (move.capture && move.captureCoord !== move.from) {
+  if (move.capture && move.captureCoord !== move.dest) {
     b.set(move.captureCoord, SPACE_EMPTY);
   }
 
