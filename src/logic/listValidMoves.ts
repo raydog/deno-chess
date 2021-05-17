@@ -2,6 +2,7 @@ import { Board } from "../datatypes/Board.ts";
 import { Color } from "../datatypes/Color.ts";
 import {
   Space,
+spaceEnPassant,
   spaceGetColor,
   spaceGetType,
   spaceHasMoved,
@@ -149,24 +150,38 @@ function _pawnMoves(b: Board, sp: Space, idx: number): Move[] {
     }
   }
 
-  // Captures to the left and right:
+  // Captures to the left and right. This includes en passants:
   if (file > 0) {
     const coord = buildCoord(file - 1, rank + dir);
     const spot = b.get(coord);
-    if (!spaceIsEmpty(spot) && spaceGetColor(spot) === otherColor) {
-      _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, spot, coord));
+    if (spaceIsEmpty(spot)) {
+      const adjCoord = buildCoord(file - 1, rank);
+      const adjSpot = b.get(adjCoord);
+      if (!spaceIsEmpty(adjSpot) && spaceEnPassant(adjSpot) && spaceGetColor(adjSpot) === otherColor) {
+        _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, adjSpot, adjCoord));
+      }
+    } else {
+      if (spaceGetColor(spot) === otherColor) {
+        _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, spot, coord));
+      }
     }
   }
 
   if (file < 7) {
     const coord = buildCoord(file + 1, rank + dir);
     const spot = b.get(coord);
-    if (!spaceIsEmpty(spot) && spaceGetColor(spot) === otherColor) {
-      _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, spot, coord));
+    if (spaceIsEmpty(spot)) {
+      const adjCoord = buildCoord(file + 1, rank);
+      const adjSpot = b.get(adjCoord);
+      if (!spaceIsEmpty(adjSpot) && spaceEnPassant(adjSpot) && spaceGetColor(adjSpot) === otherColor) {
+        _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, adjSpot, adjCoord));
+      }
+    } else {
+      if (spaceGetColor(spot) === otherColor) {
+        _tryPushMove(b, out, createSimpleCapture(sp, idx, coord, spot, coord));
+      }
     }
   }
-
-  // TODO: Check for en passant:
 
   return out;
 }
