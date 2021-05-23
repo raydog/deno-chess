@@ -1,10 +1,8 @@
 import { Board } from "../src/datatypes/Board.ts";
-import { Color } from "../src/datatypes/Color.ts";
-import { Coord, coordFromAN } from "../src/datatypes/Coord.ts";
+import { coordFromAN } from "../src/datatypes/Coord.ts";
 import { createFullMove, createSimpleMove } from "../src/datatypes/Move.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";
 import {
-  encodePieceSpace,
   spaceEnPassant,
   spaceGetType,
   spaceHasMoved,
@@ -13,7 +11,6 @@ import {
 import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";
 import { performMove } from "../src/logic/performMove.ts";
 import { asserts } from "../testDeps.ts";
-// import { debugBoard } from "./testUtils/debugBoard.ts";
 
 // Shorthand:
 const an = coordFromAN;

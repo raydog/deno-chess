@@ -1,4 +1,3 @@
-import { Board } from "../src/datatypes/Board.ts";
 import { Color } from "../src/datatypes/Color.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";

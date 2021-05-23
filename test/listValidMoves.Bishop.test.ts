@@ -1,115 +1,88 @@
-import { Board } from "../src/datatypes/Board.ts";
 import { Color } from "../src/datatypes/Color.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
 import { listValidMoves } from "../src/logic/listValidMoves.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";
+import { boardLayout } from "./testUtils/boardLayout.ts";
 
 Deno.test("List Valid Moves > Bishop > Center movements", function () {
-  const b = new Board();
-  const idx = coordFromAN("d5");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
-  assertMoves(b, listValidMoves(b, idx), [
-    "c4",
-    "b3",
-    "a2",
-    "c6",
-    "b7",
-    "a8",
-    "e6",
-    "f7",
-    "g8",
-    "e4",
-    "f3",
-    "g2",
-    "h1",
+  const b = boardLayout({
+    d5: encodePieceSpace(PieceType.Bishop, Color.White, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("d5")), [
+    "Bc4",
+    "Bb3",
+    "Ba2",
+    "Bc6",
+    "Bb7",
+    "Ba8",
+    "Be6",
+    "Bf7",
+    "Bg8",
+    "Be4",
+    "Bf3",
+    "Bg2",
+    "Bh1",
   ]);
 });
 
 Deno.test("List Valid Moves > Bishop > Handles blocks", function () {
-  const b = new Board();
-  const idx = coordFromAN("h3");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
-  b.set(
-    coordFromAN("f1"),
-    encodePieceSpace(PieceType.King, Color.White),
-  );
-  b.set(
-    coordFromAN("e6"),
-    encodePieceSpace(PieceType.Knight, Color.White),
-  );
-  assertMoves(b, listValidMoves(b, idx), [
-    "g2",
-    "g4",
-    "f5",
+  const b = boardLayout({
+    h3: encodePieceSpace(PieceType.Bishop, Color.White, true),
+    f1: encodePieceSpace(PieceType.King, Color.White, true),
+    e6: encodePieceSpace(PieceType.Knight, Color.White, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("h3")), [
+    "Bg2",
+    "Bg4",
+    "Bf5",
   ]);
 });
 
 Deno.test("List Valid Moves > Bishop > Handles captures", function () {
-  const b = new Board();
-  const idx = coordFromAN("d7");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
-  b.set(
-    coordFromAN("f5"),
-    encodePieceSpace(PieceType.Rook, Color.Black),
-  );
-  assertMoves(b, listValidMoves(b, idx), [
-    "c8",
-    "e8",
-    "c6",
-    "b5",
-    "a4",
-    "e6",
-    "f5",
+  const b = boardLayout({
+    d7: encodePieceSpace(PieceType.Bishop, Color.White, true),
+    f5: encodePieceSpace(PieceType.Rook, Color.Black, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("d7")), [
+    "Bc8",
+    "Be8",
+    "Bc6",
+    "Bb5",
+    "Ba4",
+    "Be6",
+    "Bxf5",
   ]);
 });
 
 Deno.test("List Valid Moves > Bishop > Blocks check", function () {
-  const b = new Board();
-  const idx = coordFromAN("e3");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
-  b.set(
-    coordFromAN("b2"),
-    encodePieceSpace(PieceType.King, Color.White),
-  );
-  b.set(
-    coordFromAN("e5"),
-    encodePieceSpace(PieceType.Queen, Color.Black),
-  );
-  assertMoves(b, listValidMoves(b, idx), [
-    "d4",
+  const b = boardLayout({
+    e3: encodePieceSpace(PieceType.Bishop, Color.White, true),
+    b2: encodePieceSpace(PieceType.King, Color.White, true),
+    e5: encodePieceSpace(PieceType.Queen, Color.Black, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("e3")), [
+    "Bd4",
   ]);
 });
 
 Deno.test("List Valid Moves > Bishop > Ends check by capture", function () {
-  const b = new Board();
-  const idx = coordFromAN("h2");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
-  b.set(
-    coordFromAN("b2"),
-    encodePieceSpace(PieceType.King, Color.White),
-  );
-  b.set(
-    coordFromAN("e5"),
-    encodePieceSpace(PieceType.Queen, Color.Black),
-  );
-  assertMoves(b, listValidMoves(b, idx), [
-    "e5",
+  const b = boardLayout({
+    h2: encodePieceSpace(PieceType.Bishop, Color.White, true),
+    b2: encodePieceSpace(PieceType.King, Color.White, true),
+    e5: encodePieceSpace(PieceType.Queen, Color.Black, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("h2")), [
+    "Bxe5",
   ]);
 });
 
 Deno.test("List Valid Moves > Bishop > Pinned", function () {
-  const b = new Board();
-  const idx = coordFromAN("c4");
-  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
-  b.set(
-    coordFromAN("c1"),
-    encodePieceSpace(PieceType.King, Color.White),
-  );
-  b.set(
-    coordFromAN("c7"),
-    encodePieceSpace(PieceType.Queen, Color.Black),
-  );
-  assertMoves(b, listValidMoves(b, idx), []);
+  const b = boardLayout({
+    c4: encodePieceSpace(PieceType.Bishop, Color.White, true),
+    c1: encodePieceSpace(PieceType.King, Color.White, true),
+    c7: encodePieceSpace(PieceType.Queen, Color.Black, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("c4")), []);
 });
