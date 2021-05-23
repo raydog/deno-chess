@@ -1,4 +1,4 @@
-import { Space, spaceHasData, SPACE_EMPTY, SPACE_NULL } from "./Space.ts";
+import { Space, SPACE_EMPTY, SPACE_NULL, spaceHasData } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
@@ -34,7 +34,6 @@ export class Board {
     }
     return this.#spaces[idx];
   }
-
 
   // TODO: save() + restore() ? Also, instead of pass-through, maybe copy is ok? Need benchmark...
 

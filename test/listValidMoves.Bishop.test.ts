@@ -64,3 +64,52 @@ Deno.test("List Valid Moves > Bishop > Handles captures", function () {
     "f5",
   ]);
 });
+
+Deno.test("List Valid Moves > Bishop > Blocks check", function () {
+  const b = new Board();
+  const idx = coordFromAN("e3");
+  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
+  b.set(
+    coordFromAN("b2"),
+    encodePieceSpace(PieceType.King, Color.White),
+  );
+  b.set(
+    coordFromAN("e5"),
+    encodePieceSpace(PieceType.Queen, Color.Black),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "d4",
+  ]);
+});
+
+Deno.test("List Valid Moves > Bishop > Ends check by capture", function () {
+  const b = new Board();
+  const idx = coordFromAN("h2");
+  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
+  b.set(
+    coordFromAN("b2"),
+    encodePieceSpace(PieceType.King, Color.White),
+  );
+  b.set(
+    coordFromAN("e5"),
+    encodePieceSpace(PieceType.Queen, Color.Black),
+  );
+  assertMoves(b, listValidMoves(b, idx), [
+    "e5",
+  ]);
+});
+
+Deno.test("List Valid Moves > Bishop > Pinned", function () {
+  const b = new Board();
+  const idx = coordFromAN("c4");
+  b.set(idx, encodePieceSpace(PieceType.Bishop, Color.White));
+  b.set(
+    coordFromAN("c1"),
+    encodePieceSpace(PieceType.King, Color.White),
+  );
+  b.set(
+    coordFromAN("c7"),
+    encodePieceSpace(PieceType.Queen, Color.Black),
+  );
+  assertMoves(b, listValidMoves(b, idx), []);
+});

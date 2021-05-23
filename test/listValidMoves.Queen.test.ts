@@ -1,106 +1,88 @@
-import { Board } from "../src/datatypes/Board.ts";
 import { Color } from "../src/datatypes/Color.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
 import { listValidMoves } from "../src/logic/listValidMoves.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";
+import { boardLayout } from "./testUtils/boardLayout.ts";
 
 Deno.test("List Valid Moves > Queen > Center movements", function () {
-  const b = new Board();
-  const idx = coordFromAN("d5");
-  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White));
-  assertMoves(b, listValidMoves(b, idx), [
-    "a2",
-    "a5",
-    "a8",
-    "b3",
-    "b5",
-    "b7",
-    "c4",
-    "c5",
-    "c6",
-    "d1",
-    "d2",
-    "d3",
-    "d4",
-    "d6",
-    "d7",
-    "d8",
-    "e4",
-    "e5",
-    "e6",
-    "f3",
-    "f5",
-    "f7",
-    "g2",
-    "g5",
-    "g8",
-    "h1",
-    "h5",
+  const b = boardLayout({
+    d5: encodePieceSpace(PieceType.Queen, Color.White),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("d5")), [
+    "Qa2",
+    "Qa5",
+    "Qa8",
+    "Qb3",
+    "Qb5",
+    "Qb7",
+    "Qc4",
+    "Qc5",
+    "Qc6",
+    "Qd1",
+    "Qd2",
+    "Qd3",
+    "Qd4",
+    "Qd6",
+    "Qd7",
+    "Qd8",
+    "Qe4",
+    "Qe5",
+    "Qe6",
+    "Qf3",
+    "Qf5",
+    "Qf7",
+    "Qg2",
+    "Qg5",
+    "Qg8",
+    "Qh1",
+    "Qh5",
   ]);
 });
 
 Deno.test("List Valid Moves > Queen > Handles blocks", function () {
-  const b = new Board();
-  const idx = coordFromAN("h7");
-  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White));
-  b.set(
-    coordFromAN("e7"),
-    encodePieceSpace(PieceType.King, Color.White),
-  );
-  b.set(
-    coordFromAN("h4"),
-    encodePieceSpace(PieceType.Knight, Color.White),
-  );
-  b.set(
-    coordFromAN("d3"),
-    encodePieceSpace(PieceType.Pawn, Color.White),
-  );
-  assertMoves(b, listValidMoves(b, idx), [
-    "h8",
-    "h6",
-    "h5",
-    "f7",
-    "g7",
-    "g8",
-    "g6",
-    "f5",
-    "e4",
+  const b = boardLayout({
+    h7: encodePieceSpace(PieceType.Queen, Color.White),
+    e7: encodePieceSpace(PieceType.King, Color.White),
+    h4: encodePieceSpace(PieceType.Knight, Color.White),
+    d3: encodePieceSpace(PieceType.Pawn, Color.White),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("h7")), [
+    "Qh8",
+    "Qh6",
+    "Qh5",
+    "Qf7",
+    "Qg7",
+    "Qg8",
+    "Qg6",
+    "Qf5",
+    "Qe4",
   ]);
 });
 
 Deno.test("List Valid Moves > Queen > Handles captures", function () {
-  const b = new Board();
-  const idx = coordFromAN("d7");
-  b.set(idx, encodePieceSpace(PieceType.Queen, Color.White));
-  b.set(
-    coordFromAN("d5"),
-    encodePieceSpace(PieceType.Pawn, Color.Black),
-  );
-  b.set(
-    coordFromAN("b7"),
-    encodePieceSpace(PieceType.Rook, Color.Black),
-  );
-  b.set(
-    coordFromAN("e7"),
-    encodePieceSpace(PieceType.Queen, Color.Black),
-  );
-  assertMoves(b, listValidMoves(b, idx), [
-    "a4",
-    "b5",
-    "b7",
-    "c6",
-    "c7",
-    "c8",
-    "d5",
-    "d6",
-    "d8",
-    "e6",
-    "e7",
-    "e8",
-    "f5",
-    "g4",
-    "h3",
+  const b = boardLayout({
+    d7: encodePieceSpace(PieceType.Queen, Color.White),
+    d5: encodePieceSpace(PieceType.Pawn, Color.Black),
+    b7: encodePieceSpace(PieceType.Rook, Color.Black),
+    e7: encodePieceSpace(PieceType.Queen, Color.Black),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("d7")), [
+    "Qa4",
+    "Qb5",
+    "Qxb7",
+    "Qc6",
+    "Qc7",
+    "Qc8",
+    "Qxd5",
+    "Qd6",
+    "Qd8",
+    "Qe6",
+    "Qxe7",
+    "Qe8",
+    "Qf5",
+    "Qg4",
+    "Qh3",
   ]);
 });
