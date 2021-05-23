@@ -2,9 +2,7 @@ import { Color } from "../src/datatypes/Color.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
 import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";
-import {
-  listAllValidMoves,
-} from "../src/logic/listValidMoves.ts";
+import { listAllValidMoves } from "../src/logic/listValidMoves.ts";
 import { asserts } from "../testDeps.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";
 import { boardLayout } from "./testUtils/boardLayout.ts";
@@ -14,7 +12,7 @@ Deno.test("List All Valid Moves > Standard opening", function () {
   const m = listAllValidMoves(b, Color.White, true);
   // 20 moves: 8 pawns * 2 moves (1 or 2 steps) + 2 knights * 2 directions (left and right)
   asserts.assertEquals(m.length, 20);
-  assertMoves(b, m, [ 
+  assertMoves(b, m, [
     "Na3",
     "Nc3",
     "Nf3",
