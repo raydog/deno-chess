@@ -2,6 +2,7 @@ import { Board } from "../datatypes/Board.ts";
 import { Color } from "../datatypes/Color.ts";
 import {
   Space,
+  SPACE_EMPTY,
   spaceEnPassant,
   spaceGetColor,
   spaceGetType,
@@ -13,6 +14,7 @@ import { assert } from "./assert.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
 import { buildCoord, Coord, parseCoord } from "../datatypes/Coord.ts";
 import {
+  createCastle,
   createFullMove,
   createSimpleCapture,
   createSimpleMove,
@@ -147,6 +149,31 @@ function _findMoves(
     }
   }
 
+  // Special-case, if King, and king hasn't moved yet, check the same rank for Rooks that haven't moved, and then maybe
+  // try castling:
+  if (spaceGetType(sp) === PieceType.King && !spaceHasMoved(sp)) {
+    // Possible castle situation! Find the rooks:
+    for (let newFile = 0; newFile < 8; newFile++) {
+      const newIdx = buildCoord(newFile, rank);
+      const newSpot = b.get(newIdx);
+      if (
+        spaceGetType(newSpot) === PieceType.Rook &&
+        spaceGetColor(newSpot) === color && !spaceHasMoved(newSpot)
+      ) {
+        // Candidate castle! Build the final positions for validation:
+        const queenSide = newIdx < idx;
+        const kingDest = queenSide ? buildCoord(2, rank) : buildCoord(6, rank);
+        const rookDest = queenSide ? buildCoord(3, rank) : buildCoord(5, rank);
+        _tryCastle(
+          b,
+          out,
+          createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest),
+          fullMoves,
+        );
+      }
+    }
+  }
+
   return out;
 }
 
@@ -256,6 +283,8 @@ function _pawnMoves(
   return out;
 }
 
+// Will push the candidate move to the output array IF it doesn't expose your king to check. Also will populate
+// a few extra details if asked. (Since we've already done the move...)
 function _tryPushMove(b: Board, out: Move[], move: Move, fullMoves: boolean) {
   const color = spaceGetColor(move.what);
 
@@ -267,13 +296,50 @@ function _tryPushMove(b: Board, out: Move[], move: Move, fullMoves: boolean) {
     if (fullMoves) {
       const enemy: Color = 1 - color;
       move.check = kingInDanger(b, enemy);
-      // TODO: Fork this into a version that DOESN'T allocate an array of objects, and can short-circuit a bool:
+      // TODO: Fork this into a version that DOESN'T allocate an array of objects, and instead short-circuits a bool:
       move.enemyHasMove = listAllValidMoves(b, enemy, false).length > 0;
     }
     out.push(move);
   }
 
-  // console.log("\n\n%s\n%s", JSON.stringify(move), debugBoard(b, []));
-
   b.popOverlay();
+}
+
+// Will attempt a castle maneuver. Will do the normal checks: Nothing in the way, and nothing checking king en route:
+function _tryCastle(b: Board, out: Move[], move: Move, fullMoves: boolean) {
+  const color = spaceGetColor(move.what);
+
+  // Every spot in the rook's travel must be empty, apart from the King (which can happen in Chess960)
+  const rookMin = Math.min(move.castleRookFrom, move.castleRookDest);
+  const rookMax = Math.max(move.castleRookFrom, move.castleRookDest);
+  for (let idx = rookMin; idx <= rookMax; idx++) {
+    if (idx === move.from || idx === move.castleRookFrom) {
+      continue;
+    }
+    const sp = b.get(idx);
+    if (!spaceIsEmpty(sp)) {
+      return;
+    }
+  }
+
+  // No spot in the King's travel can be under attack.
+  b.pushOverlay();
+
+  // Blank both the rook and king:
+  b.set(move.from, SPACE_EMPTY);
+  b.set(move.castleRookFrom, SPACE_EMPTY);
+
+  // Note: kingInDanger actually supports duplicate kings, so create Kings wherever we want to check:
+  const kingLow = Math.min(move.from, move.dest);
+  const kingHigh = Math.max(move.from, move.dest);
+  for (let idx = kingLow; idx <= kingHigh; idx++) {
+    b.set(idx, move.what);
+  }
+
+  const hasDanger = kingInDanger(b, color);
+  b.popOverlay();
+
+  if (hasDanger) return;
+
+  _tryPushMove(b, out, move, fullMoves);
 }

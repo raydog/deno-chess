@@ -45,7 +45,6 @@ Deno.test("List All Valid Moves > Sparse endgame", function () {
     h1: encodePieceSpace(PieceType.Queen, Color.White, true),
   });
   const m = listAllValidMoves(b, Color.White, true);
-  // White: 17 (4 King dirs + 12 queen moves + 1 queen captures pawn)
   assertMoves(b, m, [
     "Kf1",
     "Kg2",
@@ -79,7 +78,6 @@ Deno.test("List All Valid Moves > Detects a checkmate", function () {
     a8: encodePieceSpace(PieceType.King, Color.Black, true),
   });
   const m = listAllValidMoves(b, Color.Black, true);
-  // White: 17 (4 King dirs + 12 queen moves + 1 queen captures pawn)
   assertMoves(b, m, [
     "Kb7",
     "Kb8",
@@ -115,7 +113,6 @@ Deno.test("List All Valid Moves > Detects a stalemate", function () {
     e7: encodePieceSpace(PieceType.Queen, Color.White, true),
   });
   const m = listAllValidMoves(b, Color.White, true);
-  // White: 17 (4 King dirs + 12 queen moves + 1 queen captures pawn)
   assertMoves(b, m, [
     "Kd1",
     "Kd2",
@@ -138,11 +135,77 @@ Deno.test("List All Valid Moves > Detects a stalemate", function () {
     "Qe6",
     "Qe8+",
     "Qf6+",
-    "Qf7 0-0",
+    "Qf7 ½-½",
     "Qf8+",
     "Qg5",
     "Qg7+",
     "Qh4+",
     "Qh7+",
+  ]);
+});
+
+Deno.test("List All Valid Moves > Kingside castle that delivers check", function () {
+  const b = boardLayout({
+    a8: encodePieceSpace(PieceType.Rook, Color.Black),
+    h8: encodePieceSpace(PieceType.Rook, Color.Black),
+    e8: encodePieceSpace(PieceType.King, Color.Black),
+    a7: encodePieceSpace(PieceType.Pawn, Color.Black),
+    h7: encodePieceSpace(PieceType.Pawn, Color.Black),
+
+    f1: encodePieceSpace(PieceType.King, Color.White, true),
+  });
+  const m = listAllValidMoves(b, Color.Black, true);
+  assertMoves(b, m, [
+    "Kd7",
+    "Kd8",
+    "Ke7",
+    "Kf7",
+    "Kf8",
+    "O-O+",
+    "O-O-O",
+    "Rb8",
+    "Rc8",
+    "Rd8",
+    "Rf8+",
+    "Rg8",
+    "a5",
+    "a6",
+    "h5",
+    "h6",
+  ]);
+});
+
+Deno.test("List All Valid Moves > Queenside castle that delivers checkmate", function () {
+  const b = boardLayout({
+    a8: encodePieceSpace(PieceType.Rook, Color.Black),
+    h8: encodePieceSpace(PieceType.Rook, Color.Black),
+    e8: encodePieceSpace(PieceType.King, Color.Black),
+    a7: encodePieceSpace(PieceType.Pawn, Color.Black),
+    h7: encodePieceSpace(PieceType.Pawn, Color.Black),
+
+    d1: encodePieceSpace(PieceType.King, Color.White, true),
+    c2: encodePieceSpace(PieceType.Pawn, Color.White, true),
+    e2: encodePieceSpace(PieceType.Pawn, Color.White, true),
+    c1: encodePieceSpace(PieceType.Rook, Color.White, true),
+    e1: encodePieceSpace(PieceType.Rook, Color.White, true),
+  });
+  const m = listAllValidMoves(b, Color.Black, true);
+  assertMoves(b, m, [
+    "Kd7",
+    "Kd8",
+    "Ke7",
+    "Kf7",
+    "Kf8",
+    "O-O",
+    "O-O-O# 0-1",
+    "Rb8",
+    "Rc8",
+    "Rd8# 0-1",
+    "Rf8",
+    "Rg8",
+    "a5",
+    "a6",
+    "h5",
+    "h6",
   ]);
 });

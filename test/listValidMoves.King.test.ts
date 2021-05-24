@@ -136,3 +136,62 @@ Deno.test("List Valid Moves > King > Allows safe captures", function () {
     "Kxe6",
   ]);
 });
+
+Deno.test("List Valid Moves > King > Simple queenside castle", function () {
+  const b = boardLayout({
+    e1: encodePieceSpace(PieceType.King, Color.White),
+    a1: encodePieceSpace(PieceType.Rook, Color.White),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("e1")), [
+    "Kd1",
+    "Kd2",
+    "Ke2",
+    "Kf1",
+    "Kf2",
+    "O-O-O",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Simple kingside castle", function () {
+  const b = boardLayout({
+    e1: encodePieceSpace(PieceType.King, Color.White),
+    h1: encodePieceSpace(PieceType.Rook, Color.White),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("e1")), [
+    "Kd1",
+    "Kd2",
+    "Ke2",
+    "Kf1",
+    "Kf2",
+    "O-O",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Blocked queenside castle", function () {
+  const b = boardLayout({
+    e1: encodePieceSpace(PieceType.King, Color.White),
+    b1: encodePieceSpace(PieceType.Knight, Color.White),
+    a1: encodePieceSpace(PieceType.Rook, Color.White),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("e1")), [
+    "Kd1",
+    "Kd2",
+    "Ke2",
+    "Kf1",
+    "Kf2",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Blocked kingside castle", function () {
+  const b = boardLayout({
+    e1: encodePieceSpace(PieceType.King, Color.White),
+    f1: encodePieceSpace(PieceType.Bishop, Color.White),
+    h1: encodePieceSpace(PieceType.Rook, Color.White),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("e1")), [
+    "Kd1",
+    "Kd2",
+    "Ke2",
+    "Kf2",
+  ]);
+});

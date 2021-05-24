@@ -14,21 +14,23 @@ import { spaceGetColor, spaceGetType } from "../../datatypes/Space.ts";
 export function moveToAN(move: Move): string {
   // Special case: Castles get their own notation. Note: FIDE uses zeros here, but we use upper-case O's to be
   // compatible with PGN
+  let mainStr;
+
   if (move.castleRook) {
-    // Note: This works for now, but is probably not compatible with chess960...
-    return (move.castleRookFrom < move.castleRookDest)
+    mainStr = (move.castleRookFrom < move.from)
       ? "O-O-O" // Queenside
       : "O-O"; // Kingside;
+  } else {
+    const depart = ""; // TODO
+    const who = _anPieceType(spaceGetType(move.what));
+    const capture = move.capture ? "x" : "";
+    const dest = coordToAN(move.dest);
+    const promote = move.promote ? "=" + _anPieceType(move.promote) : "";
+    mainStr = `${depart}${who}${capture}${dest}${promote}`;
   }
 
-  const depart = ""; // TODO
-  const who = _anPieceType(spaceGetType(move.what));
-  const capture = move.capture ? "x" : "";
-  const dest = coordToAN(move.dest);
-  const promote = move.promote ? "=" + _anPieceType(move.promote) : "";
   const gamestate = _checksAndMates(move);
-
-  return `${depart}${who}${capture}${dest}${promote}${gamestate}`;
+  return `${mainStr}${gamestate}`;
 }
 
 // Annotate the piece type:
@@ -55,7 +57,7 @@ function _checksAndMates(move: Move): string {
     // End of game has happened. Either checkmate or stalemate:
     return move.check
       ? "# " + (spaceGetColor(move.what) === Color.White ? "1-0" : "0-1")
-      : " 0-0";
+      : " ½-½";
   }
   return move.check ? "+" : "";
 }

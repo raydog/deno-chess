@@ -8,8 +8,7 @@ import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
 import { Color } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { Move } from "./Move.ts";
-import { spaceGetColor, spaceIsEmpty, spaceHasData } from "./Space.ts";
-
+import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
 
 const MOVE_RE = /^([a-h][1-8])-?([a-h][1-8])$/i;
 
@@ -17,7 +16,6 @@ const MOVE_RE = /^([a-h][1-8])-?([a-h][1-8])$/i;
  * A single chess game.
  */
 export class ChessGame {
-
   #state: GameState = GameState.active;
   #turn: Side = Side.white;
   #board: Board;
@@ -57,7 +55,7 @@ export class ChessGame {
     }
 
     const m = move.match(MOVE_RE);
-    if (!m) { throw new ChessBadMove(`Unknown move format: ${move}`); }
+    if (!m) throw new ChessBadMove(`Unknown move format: ${move}`);
 
     const from = coordFromAN(m[1]), dest = coordFromAN(m[2]);
 
@@ -72,7 +70,7 @@ export class ChessGame {
 
     // Get the full list of moves for the piece at this spot:
     const moves = listValidMoves(this.#board, from, true);
-    const picked = moves.find(move => move.dest === dest);
+    const picked = moves.find((move) => move.dest === dest);
     if (!picked) {
       throw new ChessBadMove("Invalid move");
     }
@@ -85,8 +83,10 @@ export class ChessGame {
 
 function sideToColor(s: Side): Color {
   switch (s) {
-    case Side.white: return Color.White;
-    case Side.black: return Color.Black;
+    case Side.white:
+      return Color.White;
+    case Side.black:
+      return Color.Black;
   }
 }
 
