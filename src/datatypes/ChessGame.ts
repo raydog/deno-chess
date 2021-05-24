@@ -5,7 +5,7 @@ import { listValidMoves } from "../logic/listValidMoves.ts";
 import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
 import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
-import { Color } from "./Color.ts";
+import { Color, colorToString } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { Move } from "./Move.ts";
 import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
@@ -17,7 +17,7 @@ const MOVE_RE = /^([a-h][1-8])-?([a-h][1-8])$/i;
  */
 export class ChessGame {
   #state: GameState = GameState.active;
-  #turn: Side = Side.white;
+  #turn: Color = Color.White;
   #board: Board;
   #moves: Move[] = [];
 
@@ -26,11 +26,19 @@ export class ChessGame {
   }
 
   /**
+   * Used in benchmarks
+   * @private
+   */
+  private _getBoard(): Board {
+    return this.#board;
+  }
+
+  /**
    * Start a brand new chess game. The board is set up in the standard way, and it is White's turn to play.
    *
    * @returns The new ChessGame.
    */
-  public NewStandardGame(): ChessGame {
+  public static NewStandardGame(): ChessGame {
     return new ChessGame(buildStandardBoard());
   }
 
@@ -49,7 +57,7 @@ export class ChessGame {
    * @param move A string like "b1c3", "d1-h5", etc.
    * @param promote
    */
-  public move(move: string, promote: Piece = Piece.Q) {
+  public move(move: string, promote: Piece = Piece.Q): ChessGame {
     if (this.#state !== "active") {
       throw new ChessGameOver();
     }
@@ -62,31 +70,25 @@ export class ChessGame {
     // Sanity checks:
     const sp = this.#board.get(from);
     if (!spaceHasData(sp) || spaceIsEmpty(sp)) {
-      throw new ChessBadMove(`Departing square (${coordToAN(from)}) is empty`);
+      throw new ChessBadMove(`${move}: Departing square (${coordToAN(from)}) is empty`);
     }
-    if (spaceGetColor(sp) !== sideToColor(this.#turn)) {
-      throw new ChessBadMove(`It's ${this.#turn}'s turn`);
+    if (spaceGetColor(sp) !== this.#turn) {
+      throw new ChessBadMove(`${move}: It's ${colorToString(this.#turn)}'s turn`);
     }
 
     // Get the full list of moves for the piece at this spot:
     const moves = listValidMoves(this.#board, from, true);
     const picked = moves.find((move) => move.dest === dest);
     if (!picked) {
-      throw new ChessBadMove("Invalid move");
+      throw new ChessBadMove(`${move}: Invalid move`);
     }
 
     // Else, we have the correct move! Apply to to our own board:
     performMove(this.#board, picked);
     this.#moves.push(picked);
-  }
-}
+    this.#turn = 1 - this.#turn;
 
-function sideToColor(s: Side): Color {
-  switch (s) {
-    case Side.white:
-      return Color.White;
-    case Side.black:
-      return Color.Black;
+    return this;
   }
 }
 

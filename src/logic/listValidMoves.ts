@@ -81,6 +81,7 @@ export function listValidMoves(
 
   switch (spaceGetType(sp)) {
     // Slidey pieces:
+
     case PieceType.Bishop:
       return _findMoves(b, sp, idx, BISHOP_DIRS, 8, fullMoves);
     case PieceType.Rook:
