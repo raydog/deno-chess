@@ -1,15 +1,27 @@
 // Note: the class in this file serves as the external API.
 
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
+import { listValidMoves } from "../logic/listValidMoves.ts";
+import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
+import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
+import { Color } from "./Color.ts";
+import { coordFromAN, coordToAN } from "./Coord.ts";
+import { Move } from "./Move.ts";
+import { spaceGetColor, spaceIsEmpty, spaceHasData } from "./Space.ts";
+
+
+const MOVE_RE = /^([a-h][1-8])-?([a-h][1-8])$/i;
 
 /**
  * A single chess game.
  */
 export class ChessGame {
-  #state: GameState = "active";
+
+  #state: GameState = GameState.active;
   #turn: Side = Side.white;
   #board: Board;
+  #moves: Move[] = [];
 
   private constructor(b: Board) {
     this.#board = b;
@@ -34,13 +46,47 @@ export class ChessGame {
    *
    * If this move was a pawn reaching its final rank (and so it's promoting) you can add the additional `promote`
    * parameter to indicate what piece type this should promote to. If omitted, Queen is assumed. If this parameter is
-   * included when this ISN'T a promotion, it'll just be ignored. Also, trying to promote to Pawn will error.
+   * included when this ISN'T a promotion, it'll just be ignored. Trying to promote to Pawn will error.
    *
    * @param move A string like "b1c3", "d1-h5", etc.
    * @param promote
    */
   public move(move: string, promote: Piece = Piece.Q) {
-    console.log(move, promote);
+    if (this.#state !== "active") {
+      throw new ChessGameOver();
+    }
+
+    const m = move.match(MOVE_RE);
+    if (!m) { throw new ChessBadMove(`Unknown move format: ${move}`); }
+
+    const from = coordFromAN(m[1]), dest = coordFromAN(m[2]);
+
+    // Sanity checks:
+    const sp = this.#board.get(from);
+    if (!spaceHasData(sp) || spaceIsEmpty(sp)) {
+      throw new ChessBadMove(`Departing square (${coordToAN(from)}) is empty`);
+    }
+    if (spaceGetColor(sp) !== sideToColor(this.#turn)) {
+      throw new ChessBadMove(`It's ${this.#turn}'s turn`);
+    }
+
+    // Get the full list of moves for the piece at this spot:
+    const moves = listValidMoves(this.#board, from, true);
+    const picked = moves.find(move => move.dest === dest);
+    if (!picked) {
+      throw new ChessBadMove("Invalid move");
+    }
+
+    // Else, we have the correct move! Apply to to our own board:
+    performMove(this.#board, picked);
+    this.#moves.push(picked);
+  }
+}
+
+function sideToColor(s: Side): Color {
+  switch (s) {
+    case Side.white: return Color.White;
+    case Side.black: return Color.Black;
   }
 }
 

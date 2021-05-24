@@ -20,7 +20,6 @@ import {
 } from "../datatypes/Move.ts";
 import { performMove } from "./performMove.ts";
 import { kingInDanger } from "./kingInDanger.ts";
-import { debugBoard } from "../../test/testUtils/debugBoard.ts";
 
 type Step = [x: number, y: number];
 
