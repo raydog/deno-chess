@@ -289,7 +289,7 @@ function _pawnMoves(
 function _tryPushMove(b: Board, out: Move[], move: Move, fullMoves: boolean) {
   const color = spaceGetColor(move.what);
 
-  b.pushOverlay();
+  b.save();
 
   performMove(b, move);
   if (!kingInDanger(b, color)) {
@@ -303,7 +303,7 @@ function _tryPushMove(b: Board, out: Move[], move: Move, fullMoves: boolean) {
     out.push(move);
   }
 
-  b.popOverlay();
+  b.restore();
 }
 
 // Will attempt a castle maneuver. Will do the normal checks: Nothing in the way, and nothing checking king en route:
@@ -324,7 +324,7 @@ function _tryCastle(b: Board, out: Move[], move: Move, fullMoves: boolean) {
   }
 
   // No spot in the King's travel can be under attack.
-  b.pushOverlay();
+  b.save();
 
   // Blank both the rook and king:
   b.set(move.from, SPACE_EMPTY);
@@ -338,7 +338,7 @@ function _tryCastle(b: Board, out: Move[], move: Move, fullMoves: boolean) {
   }
 
   const hasDanger = kingInDanger(b, color);
-  b.popOverlay();
+  b.restore();
 
   if (hasDanger) return;
 

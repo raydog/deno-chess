@@ -28,7 +28,7 @@ Deno.test("Board > Can add overlays", function () {
   );
   _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, Color.White);
 
-  b.pushOverlay();
+  b.save();
   b.set(
     buildCoord(2, 2),
     encodePieceSpace(PieceType.Queen, Color.Black, false, false),
@@ -45,11 +45,11 @@ Deno.test("Board > Can remove overlays", function () {
   );
   _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, Color.White);
 
-  b.pushOverlay();
+  b.save();
   b.set(buildCoord(2, 2), 0);
   asserts.equal(b.get(buildCoord(2, 2)), 0);
 
-  b.popOverlay();
+  b.restore();
   _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, Color.White);
 });
 

@@ -11,7 +11,7 @@ import { Turn } from "./Turn.ts";
 export class Board {
 
   #layerIdx = 0;
-  #layers: Uint8Array[] = [new Uint8Array(8 * 8).fill(SPACE_EMPTY)];
+  #layers: Uint32Array[] = [new Uint32Array(8 * 8).fill(SPACE_EMPTY)];
 
   // TODO: Maybe in game?
   #turns: Turn[] = [];
@@ -26,16 +26,14 @@ export class Board {
     return this.#layers[this.#layerIdx][idx];
   }
 
-  // TODO: save() + restore() ? Also, instead of pass-through, maybe copy is ok? Need benchmark...
-
   /**
    * Add a new overlay. This overlay will absorb set()'s, and get()'s take them into account. This allows us to easily
    * undo actions.
    */
-  pushOverlay() {
+  save() {
     this.#layerIdx++;
     if (this.#layerIdx === this.#layers.length) {
-      this.#layers.push(new Uint8Array(8 * 8));
+      this.#layers.push(new Uint32Array(8 * 8));
     }
     this.#layers[this.#layerIdx].set(this.#layers[this.#layerIdx - 1]);
   }
@@ -43,7 +41,7 @@ export class Board {
   /**
    * Remove the top-most overlay. This has the effect of reverting all changes since that overlay was pushed.
    */
-  popOverlay() {
+  restore() {
     if (this.#layerIdx > 0) {
       this.#layerIdx--;
     }
