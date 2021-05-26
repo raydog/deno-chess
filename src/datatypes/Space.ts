@@ -5,14 +5,14 @@ const _hashPiece = (c: Color, t: PieceType): number => c * 6 + t - 1;
 
 const FEN_MAP = [
   "P",
-  "B",
   "N",
+  "B",
   "R",
   "Q",
   "K",
   "p",
-  "b",
   "n",
+  "b",
   "r",
   "q",
   "k",
@@ -20,14 +20,14 @@ const FEN_MAP = [
 
 const UNICODE_MAP = [
   "♙",
-  "♗",
   "♘",
+  "♗",
   "♖",
   "♕",
   "♔",
   "♟",
-  "♝",
   "♞",
+  "♝",
   "♜",
   "♛",
   "♚",
@@ -35,6 +35,11 @@ const UNICODE_MAP = [
 
 /**
  * Information on a space. Packed into a number for perf reasons.
+ * 
+ * The board will store up to 32 bits per space for us. It's split up like:
+ * 
+ * (MSB) 4444 4444 3333 3333 2222 2222 1111 1111 (LSB)
+ *                                     PIECE DATA
  *
  * Format: (MSB) 0PMC TTTD (LSB)
  *

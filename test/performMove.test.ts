@@ -1,6 +1,6 @@
 import { Board } from "../src/datatypes/Board.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
-import { createFullMove, createSimpleMove } from "../src/datatypes/Move.ts";
+import { encodePawnLongOpen, encodeSimpleMove } from "../src/datatypes/Move.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";
 import {
   spaceEnPassant,
@@ -17,8 +17,9 @@ const an = coordFromAN;
 
 const move = (b: Board, from: string, to: string, ep = false) =>
   ep
-    ? createFullMove(b.get(an(from)), an(from), an(to), 0, 0, 0, 0, 0, 0, true)
-    : createSimpleMove(b.get(an(from)), an(from), an(to));
+    ? encodePawnLongOpen(b.get(an(from)), an(from), an(to))
+    : encodeSimpleMove(b.get(an(from)), an(from), an(to));
+
 
 Deno.test("Perform Move > Réti Opening", function () {
   const b = buildStandardBoard();

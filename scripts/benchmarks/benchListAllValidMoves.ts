@@ -1,5 +1,6 @@
 import { ChessGame } from "../../src/datatypes/ChessGame.ts";
 import { Color } from "../../src/datatypes/Color.ts";
+import { boardToASCII } from "../../src/logic/boardFormats/ascii.ts";
 import { listAllValidMoves } from "../../src/logic/listValidMoves.ts";
 // import { moveToAN } from "../../src/logic/moveFormats/algebraicNotation.ts";
 import { runBenchmarks, bench } from "../../testDeps.ts";
@@ -15,9 +16,12 @@ const giuocoPianoBoard = (ChessGame.NewStandardGame()
   ._getBoard();
 
 
+console.log(boardToASCII(giuocoPianoBoard));
+
+
 bench({
   name: "Giuoco Piano Opening",
-  runs: 500,
+  runs: 1000,
   func(b) {
     b.start();
     const moves = listAllValidMoves(giuocoPianoBoard, Color.White, true);

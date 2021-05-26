@@ -1,5 +1,6 @@
 // Note: the class in this file serves as the external API.
 
+import { boardToASCII } from "../logic/boardFormats/ascii.ts";
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
 import { listValidMoves } from "../logic/listValidMoves.ts";
 import { performMove } from "../logic/performMove.ts";
@@ -7,7 +8,7 @@ import { Board } from "./Board.ts";
 import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
 import { Color, colorToString } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
-import { Move } from "./Move.ts";
+import { Move, moveGetDest } from "./Move.ts";
 import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
 
 const MOVE_RE = /^([a-h][1-8])-?([a-h][1-8])$/i;
@@ -78,7 +79,7 @@ export class ChessGame {
 
     // Get the full list of moves for the piece at this spot:
     const moves = listValidMoves(this.#board, from, true);
-    const picked = moves.find((move) => move.dest === dest);
+    const picked = moves.find((move) => moveGetDest(move) === dest);
     if (!picked) {
       throw new ChessBadMove(`${move}: Invalid move`);
     }
@@ -89,6 +90,10 @@ export class ChessGame {
     this.#turn = 1 - this.#turn;
 
     return this;
+  }
+
+  toString(): string {
+    return boardToASCII(this.#board);
   }
 }
 

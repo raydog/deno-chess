@@ -1,6 +1,6 @@
 import { Color } from "../../datatypes/Color.ts";
 import { coordToAN } from "../../datatypes/Coord.ts";
-import { Move } from "../../datatypes/Move.ts";
+import { Move, moveGetCapture, moveGetCastle, moveGetColor, moveGetDest, moveGetEnemyHasMoves, moveGetEnemyInCheck, moveGetPromotion, moveGetType } from "../../datatypes/Move.ts";
 import { PieceType } from "../../datatypes/PieceType.ts";
 import { spaceGetColor, spaceGetType } from "../../datatypes/Space.ts";
 
@@ -16,17 +16,19 @@ export function moveToAN(move: Move): string {
   // compatible with PGN
   let mainStr;
 
-  if (move.castleRook) {
-    mainStr = (move.castleRookFrom < move.from)
+  const castle = moveGetCastle(move);
+  if (castle) {
+    mainStr = (castle === 2)
       ? "O-O-O" // Queenside
       : "O-O"; // Kingside;
   } else {
     const depart = ""; // TODO
-    const who = _anPieceType(spaceGetType(move.what));
-    const capture = move.capture ? "x" : "";
-    const dest = coordToAN(move.dest);
-    const promote = move.promote ? "=" + _anPieceType(move.promote) : "";
-    mainStr = `${depart}${who}${capture}${dest}${promote}`;
+    const who = _anPieceType(moveGetType(move));
+    const capture = moveGetCapture(move) ? "x" : "";
+    const dest = coordToAN(moveGetDest(move));
+    const promote = moveGetPromotion(move);
+    const promoteStr = promote ? "=" + _anPieceType(promote) : "";
+    mainStr = `${depart}${who}${capture}${dest}${promoteStr}`;
   }
 
   const gamestate = _checksAndMates(move);
@@ -53,11 +55,13 @@ function _anPieceType(t: PieceType): string {
 
 // Annotate check (+), checkmate (#), and end-of-game in general:
 function _checksAndMates(move: Move): string {
-  if (move.enemyHasMove === false) {
+  const enemyInCheck = moveGetEnemyInCheck(move)
+  const enemyCanMove = moveGetEnemyHasMoves(move);
+  if (enemyCanMove === false) {
     // End of game has happened. Either checkmate or stalemate:
-    return move.check
-      ? "# " + (spaceGetColor(move.what) === Color.White ? "1-0" : "0-1")
+    return enemyInCheck
+      ? "# " + (moveGetColor(move) === Color.White ? "1-0" : "0-1")
       : " ½-½";
   }
-  return move.check ? "+" : "";
+  return enemyInCheck ? "+" : "";
 }

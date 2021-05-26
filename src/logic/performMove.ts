@@ -1,5 +1,5 @@
 import { Board } from "../datatypes/Board.ts";
-import { Move } from "../datatypes/Move.ts";
+import { Move, moveGetCastle, moveGetDest, moveGetEPCapture, moveGetFrom, moveGetMarkEnPassant, moveGetPromotion } from "../datatypes/Move.ts";
 import {
   SPACE_EMPTY,
   spaceEnPassant,
@@ -26,30 +26,38 @@ export function performMove(
   }
 
   // This piece just moved:
-  let space = spaceMarkMoved(move.what);
+  const from = moveGetFrom(move);
+  const dest = moveGetDest(move);
+  let space = spaceMarkMoved(b.get(from));
 
   // Mark as being vulnerable to En Passant if requested:
-  if (move.canEnPassant) {
+  if (moveGetMarkEnPassant(move)) {
     space = spaceSetEnPassant(space, true);
   }
 
   // If this pawn promoted, update the type before copying into the board:
-  if (move.promote) {
-    space = spacePromote(space, move.promote);
+  const promote = moveGetPromotion(move);
+  if (promote) {
+    space = spacePromote(space, promote);
   }
 
   // Basic move:
-  b.set(move.dest, space);
-  b.set(move.from, SPACE_EMPTY);
+  b.set(dest, space);
+  b.set(from, SPACE_EMPTY);
+
+  
 
   // If capture differs from the move, blank it too:
-  if (move.capture && move.captureCoord !== move.dest) {
-    b.set(move.captureCoord, SPACE_EMPTY);
+  if (moveGetEPCapture(move)) {
+    // TODO: Clear the EP spot...
+    // b.set(move.captureCoord, SPACE_EMPTY);
   }
 
   // If castle, we also have a rook to move:
-  if (move.castleRook) {
-    b.set(move.castleRookDest, spaceMarkMoved(move.castleRook));
-    b.set(move.castleRookFrom, SPACE_EMPTY);
+  const castle = moveGetCastle(move);
+  if (castle) {
+    // 1 king, 2 queen
+    // b.set(move.castleRookDest, spaceMarkMoved(move.castleRook));
+    // b.set(move.castleRookFrom, SPACE_EMPTY);
   }
 }

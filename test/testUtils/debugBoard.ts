@@ -1,6 +1,6 @@
 import { Board } from "../../src/datatypes/Board.ts";
 import { buildCoord } from "../../src/datatypes/Coord.ts";
-import { Move } from "../../src/datatypes/Move.ts";
+import { Move, moveGetDest, moveGetEnemyHasMoves, moveGetEnemyInCheck } from "../../src/datatypes/Move.ts";
 import { spaceGetFENString } from "../../src/datatypes/Space.ts";
 
 const FILES = "     A   B   C   D   E   F   G   H  \n";
@@ -25,7 +25,7 @@ export function debugBoard(b: Board, moves: Move[]): string {
       const idx = buildCoord(file, rank);
       const sp = b.get(idx);
       const mid = spaceGetFENString(sp);
-      const here = moves.filter((move) => move.dest === idx);
+      const here = moves.filter((move) => moveGetDest(move) === idx);
       const temp = _moveTemplate(here);
       row += temp.replace("@", mid) + "|";
     }
@@ -39,17 +39,17 @@ function _moveTemplate(moves: Move[]): string {
   if (!moves.length) return " @ ";
 
   // Any checkmates?
-  if (moves.some((move) => move.enemyHasMove === false && move.check)) {
+  if (moves.some((move) => moveGetEnemyHasMoves(move) === false && moveGetEnemyInCheck(move))) {
     return "#@#";
   }
 
   // Any checks at least?
-  if (moves.some((move) => move.check)) {
+  if (moves.some((move) => moveGetEnemyInCheck(move))) {
     return "+@+";
   }
 
   // Uh oh! Any stalemates?
-  if (moves.some((move) => move.enemyHasMove === false && !move.check)) {
+  if (moves.some((move) => moveGetEnemyHasMoves(move) === false && !moveGetEnemyInCheck(move))) {
     return "%@%";
   }
 
