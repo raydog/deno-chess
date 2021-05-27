@@ -18,10 +18,13 @@ export function performMove(
   move: Move,
 ) {
   // Clear all En Passant-marked pawns from this board:
-  for (let i = 0; i < 64; i++) {
-    const sp = b.get(i);
-    if (spaceEnPassant(sp)) {
-      b.set(i, spaceSetEnPassant(sp, false));
+  for (let rank=0; rank<80; rank+=10) {
+    for (let file=0; file<8; file++) {
+      const idx = rank + file;
+      const sp = b.get(idx);
+      if (spaceEnPassant(sp)) {
+        b.set(idx, spaceSetEnPassant(sp, false));
+      }
     }
   }
 

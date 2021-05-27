@@ -54,10 +54,13 @@ export function listAllValidMoves(
   fullMoves = false,
 ): Move[] {
   const out: Move[] = [];
-  for (let idx = 0; idx < 64; idx++) {
-    const sp = b.get(idx);
-    if (spaceHasData(sp) && !spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
-      out.push(...listValidMoves(b, idx, fullMoves));
+  for (let rank=0; rank<80; rank+=10) {
+    for (let file=0; file<8; file++) {
+      const idx = rank + file;
+      const sp = b.get(idx);
+      if (spaceHasData(sp) && !spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
+        out.push(...listValidMoves(b, idx, fullMoves));
+      }
     }
   }
   return out;
@@ -197,18 +200,18 @@ function _pawnMoves(
   // ranks, we do so anyways because enh.
   if (rank >= 7 || rank <= 0) return out;
 
-  const oneUp = idx + dir * 8;
-  const twoUp = idx + dir * 16;
+  const oneUp = idx + dir * 10;
+  const twoUp = idx + dir * 20;
 
   // Try to move one up:
-  if (oneUp >= 0 && oneUp < 64) {
+  if (oneUp >= 0 && oneUp < 80) {
     if (spaceIsEmpty(b.get(oneUp))) {
       _tryPushMove(b, out, createSimpleMove(sp, idx, oneUp), fullMoves);
     }
   }
 
   // If we haven't moved before, we can attempt 2 up:
-  if (twoUp >= 0 && twoUp < 64) {
+  if (twoUp >= 0 && twoUp < 80) {
     if (
       !spaceHasMoved(sp) && spaceIsEmpty(b.get(oneUp)) &&
       spaceIsEmpty(b.get(twoUp))

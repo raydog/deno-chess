@@ -18,7 +18,7 @@ export type Coord = number;
  */
 export const parseCoord = (
   idx: Coord,
-): [file: number, rank: number] => [idx & 0x7, idx >>> 3];
+): [file: number, rank: number] => [idx % 10, (idx / 10)|0];
 
 /**
  * Pack file and rank numbers into a coord.
@@ -28,7 +28,11 @@ export const parseCoord = (
  * @returns
  */
 export const buildCoord = (file: number, rank: number): number =>
-  rank * 8 + file;
+  rank * 10 + file;
+
+export function validCoord(idx: Coord) {
+  return (idx >= 0 && idx < 80 && idx % 10 < 8);
+}
 
 /**
  * Helper: Produce a packed coord from a chess coordinate in Algebraic Notation.

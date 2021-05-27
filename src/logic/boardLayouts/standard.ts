@@ -25,10 +25,10 @@ export function buildStandardBoard(): Board {
   const out = new Board();
 
   _setRow(out, Color.White, 0, BACK_ROW);
-  _setRow(out, Color.White, 8, PAWN_ROW);
+  _setRow(out, Color.White, 10, PAWN_ROW);
 
-  _setRow(out, Color.Black, 48, PAWN_ROW);
-  _setRow(out, Color.Black, 56, BACK_ROW);
+  _setRow(out, Color.Black, 60, PAWN_ROW);
+  _setRow(out, Color.Black, 70, BACK_ROW);
 
   return out;
 }

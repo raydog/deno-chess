@@ -1,28 +1,41 @@
 import { Space, SPACE_EMPTY, } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
-import { Coord } from "./Coord.ts";
+import { Coord, validCoord } from "./Coord.ts";
 import { Color } from "./Color.ts";
 import { Turn } from "./Turn.ts";
 
+
+const BOARD_SIZE = 10 * 8;
+
+
 /**
- * Internal representation of a Board. Basically 64 integers, with a few extra bells-n-whistles.
- * This will be translated into a more public-friendly representation in the future.
+ * Internal representation of a Board. Maintains the board in layers, so the board's current state can be snapshotted,
+ * and later reverted to, easing some of the move validation work.
+ * 
+ * The underlying format is a cell-centric 10 x 8 Uint8Array. The left 8 x 8 cells are the real data-bearing cells, and
+ * the right 2 x 8 are leftover cells made to make out-of-bounds detection easier.
+ * 
+ * Valid coordinates are always base-10 integers, with the tens place being the rank (0-indexed), and the ones place
+ * being the file (also 0-indexed.) If any coord is < 0, >= 80, or the ones place is an 8 or 9, the coord is out of
+ * bounds.
  */
 export class Board {
 
   #layerIdx = 0;
-  #layers: Uint32Array[] = [new Uint32Array(8 * 8).fill(SPACE_EMPTY)];
+  #layers: Uint8Array[] = [new Uint8Array(BOARD_SIZE).fill(SPACE_EMPTY)];
 
-  // TODO: Maybe in game?
-  #turns: Turn[] = [];
-
+  /**
+   * Set a coordinate
+   * @param idx 
+   * @param space 
+   */
   set(idx: Coord, space: Space) {
-    assert(idx >= 0 && idx < 64, "Invalid set() coord");
+    assert(validCoord(idx), "Invalid set() coord");
     this.#layers[this.#layerIdx][idx] = space;
   }
 
   get(idx: Coord): Space {
-    assert(idx >= 0 && idx < 64, "Invalid get() coord");
+    assert(validCoord(idx), "Invalid get() coord");
     return this.#layers[this.#layerIdx][idx];
   }
 
@@ -33,7 +46,7 @@ export class Board {
   save() {
     this.#layerIdx++;
     if (this.#layerIdx === this.#layers.length) {
-      this.#layers.push(new Uint32Array(8 * 8));
+      this.#layers.push(new Uint8Array(BOARD_SIZE));
     }
     this.#layers[this.#layerIdx].set(this.#layers[this.#layerIdx - 1]);
   }
@@ -46,24 +59,4 @@ export class Board {
       this.#layerIdx--;
     }
   }
-
-  getTurnColor(): Color {
-    if (!this.#turns.length) return Color.White;
-    const cur = this.#turns[this.#turns.length - 1];
-    return cur.black ? Color.White : Color.Black;
-  }
-
-  getHalfmoveClock(): number {
-    return 0; // TODO.
-  }
-
-  getFullmoveClock(): number {
-    if (!this.#turns.length) return 1;
-    const cur = this.#turns[this.#turns.length - 1];
-    return cur.black ? this.#turns.length + 1 : this.#turns.length;
-  }
-
-  // toString(): string {
-
-  // }
 }
