@@ -1,0 +1,3 @@
+[submodule "data/eco"]
+	path = data/eco
+	url = git@github.com:niklasf/eco.git
