@@ -12,7 +12,7 @@ import {
 } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
-import { buildCoord, Coord, parseCoord } from "../datatypes/Coord.ts";
+import { buildCoord, Coord, parseCoord, validCoord } from "../datatypes/Coord.ts";
 import {
   createCastle,
   createFullMove,
@@ -23,23 +23,18 @@ import {
 import { performMove } from "./performMove.ts";
 import { kingInDanger } from "./kingInDanger.ts";
 
-type Step = [x: number, y: number];
 
 // Pre-compiled lists of moves, since most moves are similar:
-const BISHOP_DIRS: Step[] = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
-const ROOK_DIRS: Step[] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-const QUEEN_DIRS: Step[] = [...ROOK_DIRS, ...BISHOP_DIRS];
-const KING_DIRS: Step[] = [...QUEEN_DIRS];
-const KNIGHT_DIRS: Step[] = [
-  [2, 1],
-  [2, -1],
-  [-2, 1],
-  [-2, -1],
-  [1, 2],
-  [-1, 2],
-  [1, -2],
-  [-1, -2],
-];
+const DIRS = {
+  [PieceType.Bishop]: [11, 9, -11, -9],
+  [PieceType.Rook]: [10, -10, 1, -1],
+  [PieceType.Queen]: [9, 10, 11, -1, 1, -9, -10, -11],
+  [PieceType.King]: [9, 10, 11, -1, 1, -9, -10, -11],
+  [PieceType.Knight]: [21, 19, -21, -19, 12, -12, 8, -8],
+}
+
+const PAWN_CAPTURES = [11, 9];
+
 
 /**
  * Will extract all valid moves for the given player.
@@ -82,22 +77,20 @@ export function listValidMoves(
   assert(spaceHasData(sp), "Listing moves of null space");
   assert(!spaceIsEmpty(sp), "Listing moves of empty space");
 
-  switch (spaceGetType(sp)) {
+  const type = spaceGetType(sp);
+  switch (type) {
     // Slidey pieces:
 
     case PieceType.Bishop:
-      return _findMoves(b, sp, idx, BISHOP_DIRS, 8, fullMoves);
     case PieceType.Rook:
-      return _findMoves(b, sp, idx, ROOK_DIRS, 8, fullMoves);
     case PieceType.Queen:
-      return _findMoves(b, sp, idx, QUEEN_DIRS, 8, fullMoves);
+      return _findMoves(b, sp, idx, DIRS[type], 8, fullMoves);
 
     // Steppy pieces:
 
     case PieceType.Knight:
-      return _findMoves(b, sp, idx, KNIGHT_DIRS, 1, fullMoves);
     case PieceType.King:
-      return _findMoves(b, sp, idx, KING_DIRS, 1, fullMoves);
+      return _findMoves(b, sp, idx, DIRS[type], 1, fullMoves);
 
     // Other:
 
@@ -111,23 +104,20 @@ function _findMoves(
   b: Board,
   sp: Space,
   idx: number,
-  dirs: Step[],
+  dirs: number[],
   maxDist: number,
   fullMoves: boolean,
 ): Move[] {
+  
   const out: Move[] = [];
-
-  const [file, rank] = parseCoord(idx);
   const color = spaceGetColor(sp);
 
-  for (const [dx, dy] of dirs) {
+  for (const offset of dirs) {
     for (let dist = 1; dist <= maxDist; dist++) {
       // Offset the correct amount, and reject early if out of bounds:
-      const x = file + dx * dist, y = rank + dy * dist;
-      if (x < 0 || x >= 8 || y < 0 || y >= 8) break;
+      const newIdx = idx + offset * dist;
+      if (!validCoord(newIdx)) { break; }
 
-      // Reconvert to index, both for both board access and for possible output:
-      const newIdx = buildCoord(x, y);
       const newSp = b.get(newIdx);
 
       const spotEmpty = spaceIsEmpty(newSp);
@@ -157,6 +147,9 @@ function _findMoves(
   // try castling:
   if (spaceGetType(sp) === PieceType.King && !spaceHasMoved(sp)) {
     // Possible castle situation! Find the rooks:
+    
+    const [, rank] = parseCoord(idx);
+
     for (let newFile = 0; newFile < 8; newFile++) {
       const newIdx = buildCoord(newFile, rank);
       const newSpot = b.get(newIdx);
@@ -194,28 +187,17 @@ function _pawnMoves(
   const dir = ourColor === Color.White ? 1 : -1;
   const out: Move[] = [];
 
-  const [file, rank] = parseCoord(idx);
-
-  // Note: While reaching our boundary would mean promotion, and so pawns don't normally need bound-checking on the
-  // ranks, we do so anyways because enh.
-  if (rank >= 7 || rank <= 0) return out;
-
   const oneUp = idx + dir * 10;
   const twoUp = idx + dir * 20;
 
   // Try to move one up:
-  if (oneUp >= 0 && oneUp < 80) {
+  if (validCoord(oneUp)) {
     if (spaceIsEmpty(b.get(oneUp))) {
       _tryPushMove(b, out, createSimpleMove(sp, idx, oneUp), fullMoves);
     }
-  }
 
-  // If we haven't moved before, we can attempt 2 up:
-  if (twoUp >= 0 && twoUp < 80) {
-    if (
-      !spaceHasMoved(sp) && spaceIsEmpty(b.get(oneUp)) &&
-      spaceIsEmpty(b.get(twoUp))
-    ) {
+    // If we haven't moved before, we also try 2 up:
+    if (!spaceHasMoved(sp) && spaceIsEmpty(b.get(twoUp)) && validCoord(twoUp)) {
       _tryPushMove(
         b,
         out,
@@ -226,40 +208,15 @@ function _pawnMoves(
   }
 
   // Captures to the left and right. This includes en passants:
-  if (file > 0) {
-    const coord = buildCoord(file - 1, rank + dir);
-    const spot = b.get(coord);
-    if (spaceIsEmpty(spot)) {
-      const adjCoord = buildCoord(file - 1, rank);
-      const adjSpot = b.get(adjCoord);
-      if (
-        !spaceIsEmpty(adjSpot) && spaceEnPassant(adjSpot) &&
-        spaceGetColor(adjSpot) === otherColor
-      ) {
-        _tryPushMove(
-          b,
-          out,
-          createSimpleCapture(sp, idx, coord, adjSpot, adjCoord),
-          fullMoves,
-        );
-      }
-    } else {
-      if (spaceGetColor(spot) === otherColor) {
-        _tryPushMove(
-          b,
-          out,
-          createSimpleCapture(sp, idx, coord, spot, coord),
-          fullMoves,
-        );
-      }
+  for (let offset = 9; offset <= 11; offset += 2) {
+    const coord = idx + dir * offset;
+    if (!validCoord(coord)) {
+      continue;
     }
-  }
 
-  if (file < 7) {
-    const coord = buildCoord(file + 1, rank + dir);
     const spot = b.get(coord);
     if (spaceIsEmpty(spot)) {
-      const adjCoord = buildCoord(file + 1, rank);
+      const adjCoord = coord - 10 * dir;
       const adjSpot = b.get(adjCoord);
       if (
         !spaceIsEmpty(adjSpot) && spaceEnPassant(adjSpot) &&
