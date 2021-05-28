@@ -129,31 +129,35 @@ Deno.test("List Valid Moves > Pawn > Black opening capture both", function () {
 Deno.test("List Valid Moves > Pawn > White captures en passant on the left", function () {
   const b = boardLayout({
     e5: encodePieceSpace(PieceType.Pawn, Color.White, true),
-    d5: encodePieceSpace(PieceType.Pawn, Color.Black, true, true),
+    d5: encodePieceSpace(PieceType.Pawn, Color.Black, true),
   });
+  b.setEnPassant(coordFromAN("d6"));
   assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["exd6", "e6"]);
 });
 
 Deno.test("List Valid Moves > Pawn > White captures en passant on the right", function () {
   const b = boardLayout({
     e5: encodePieceSpace(PieceType.Pawn, Color.White, true),
-    f5: encodePieceSpace(PieceType.Pawn, Color.Black, true, true),
+    f5: encodePieceSpace(PieceType.Pawn, Color.Black, true),
   });
+  b.setEnPassant(coordFromAN("f6"));
   assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["e6", "exf6"]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black captures en passant on the left", function () {
   const b = boardLayout({
     e4: encodePieceSpace(PieceType.Pawn, Color.Black, true),
-    d4: encodePieceSpace(PieceType.Pawn, Color.White, true, true),
+    d4: encodePieceSpace(PieceType.Pawn, Color.White, true),
   });
+  b.setEnPassant(coordFromAN("d3"));
   assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["exd3", "e3"]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black captures en passant on the right", function () {
   const b = boardLayout({
     e4: encodePieceSpace(PieceType.Pawn, Color.Black, true),
-    f4: encodePieceSpace(PieceType.Pawn, Color.White, true, true),
+    f4: encodePieceSpace(PieceType.Pawn, Color.White, true),
   });
+  b.setEnPassant(coordFromAN("f3"));
   assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["e3", "exf3"]);
 });

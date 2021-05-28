@@ -4,9 +4,10 @@ import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
 
 type Layer = {
-  board: Uint32Array,
-  clock: number,
-  moveNum: number,
+  board: Uint32Array;
+  clock: number;
+  moveNum: number;
+  ep: Coord;
 };
 
 /**
@@ -14,16 +15,15 @@ type Layer = {
  * This will be translated into a more public-friendly representation in the future.
  */
 export class Board {
-  
   #layerIdx = 0;
   #layers: Layer[] = [newLayer()];
   #current: Layer = this.#layers[0];
 
   /**
    * Set a single space in the board.
-   * 
-   * @param idx 
-   * @param space 
+   *
+   * @param idx
+   * @param space
    */
   set(idx: Coord, space: Space) {
     assert(idx >= 0 && idx < 64, "Invalid set() coord");
@@ -32,9 +32,9 @@ export class Board {
 
   /**
    * Get the value of a single space in the board.
-   * 
-   * @param idx 
-   * @returns 
+   *
+   * @param idx
+   * @returns
    */
   get(idx: Coord): Space {
     assert(idx >= 0 && idx < 64, "Invalid get() coord");
@@ -64,8 +64,8 @@ export class Board {
 
   /**
    * Return the half-move clock.
-   * 
-   * @returns 
+   *
+   * @returns
    */
   getClock(): number {
     return this.#current.clock;
@@ -73,11 +73,27 @@ export class Board {
 
   /**
    * Return the current move number.
-   * 
-   * @returns 
+   *
+   * @returns
    */
   getMoveNum(): number {
     return this.#current.moveNum;
+  }
+
+  /**
+   * Get the current En Passant square. -1 if none.
+   * @returns
+   */
+  getEnPassant(): Coord {
+    return this.#current.ep;
+  }
+
+  /**
+   * Set the current En Passant square.
+   * @param idx
+   */
+  setEnPassant(idx: Coord) {
+    return this.#current.ep = idx;
   }
 
   /**
@@ -90,7 +106,7 @@ export class Board {
       this.#layers.push(newLayer());
     }
     this.#current = this.#layers[idx];
-    copyLayer(this.#layers[idx-1], this.#current);
+    copyLayer(this.#layers[idx - 1], this.#current);
   }
 
   /**
@@ -109,6 +125,7 @@ function newLayer(): Layer {
     board: new Uint32Array(8 * 8).fill(SPACE_EMPTY),
     clock: 0,
     moveNum: 1,
+    ep: -1,
   };
 }
 
@@ -116,4 +133,5 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.board.set(src.board);
   dest.clock = src.clock;
   dest.moveNum = src.moveNum;
+  dest.ep = src.ep;
 }

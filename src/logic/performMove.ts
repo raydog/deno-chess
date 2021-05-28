@@ -4,11 +4,11 @@ import { PieceType } from "../datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceEnPassant,
+  spaceGetColor,
+  spaceGetType,
   spaceMarkMoved,
   spacePromote,
   spaceSetEnPassant,
-spaceGetColor,
-spaceGetType,
 } from "../datatypes/Space.ts";
 
 /**
@@ -21,19 +21,14 @@ export function performMove(
   move: Move,
 ) {
   // Clear all En Passant-marked pawns from this board:
-  for (let i = 0; i < 64; i++) {
-    const sp = b.get(i);
-    if (spaceEnPassant(sp)) {
-      b.set(i, spaceSetEnPassant(sp, false));
-    }
-  }
+  b.setEnPassant(0);
 
   // This piece just moved:
   let space = spaceMarkMoved(move.what);
 
   // Mark as being vulnerable to En Passant if requested:
-  if (move.canEnPassant) {
-    space = spaceSetEnPassant(space, true);
+  if (move.markEnPassant) {
+    b.setEnPassant(move.markEnPassant);
   }
 
   // If this pawn promoted, update the type before copying into the board:

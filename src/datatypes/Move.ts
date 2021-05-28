@@ -20,8 +20,10 @@ export type Move = {
   // This exists when a pawn promotes to something:
   promote: PieceType | 0;
 
-  // Mark this pawn as being available for En Passants:
-  canEnPassant: boolean;
+  // Mark this space as being available for En Passants:
+  // Aside, while 0 is a valid coord, it is never possible to get an En Passant there, so 0 is used as the "empty"
+  // state.
+  markEnPassant: Coord;
 };
 
 export function createSimpleMove(what: Space, from: Coord, dest: Coord): Move {
@@ -35,7 +37,7 @@ export function createSimpleMove(what: Space, from: Coord, dest: Coord): Move {
     castleRookFrom: 0,
     castleRookDest: 0,
     promote: 0,
-    canEnPassant: false,
+    markEnPassant: 0,
   };
 }
 
@@ -56,7 +58,7 @@ export function createSimpleCapture(
     castleRookFrom: 0,
     castleRookDest: 0,
     promote: 0,
-    canEnPassant: false,
+    markEnPassant: 0,
   };
 }
 
@@ -78,7 +80,7 @@ export function createCastle(
     castleRookFrom,
     castleRookDest,
     promote: 0,
-    canEnPassant: false,
+    markEnPassant: 0,
   };
 }
 
@@ -92,7 +94,7 @@ export function createFullMove(
   castleRookFrom: Coord,
   castleRookDest: Coord,
   promote: PieceType,
-  canEnPassant: boolean,
+  markEnPassant: Coord,
 ) {
   return {
     what,
@@ -104,6 +106,6 @@ export function createFullMove(
     castleRookFrom,
     castleRookDest,
     promote,
-    canEnPassant,
+    markEnPassant,
   };
 }

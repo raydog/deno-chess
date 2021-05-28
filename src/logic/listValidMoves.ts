@@ -179,10 +179,10 @@ function _pawnMoves(
   sp: Space,
   idx: number,
 ): Move[] {
-  const ourColor = spaceGetColor(sp);
-  const otherColor = 1 - ourColor;
+  const color = spaceGetColor(sp);
+  const enemy = 1 - color;
 
-  const dir = ourColor === Color.White ? 1 : -1;
+  const dir = color === Color.White ? 1 : -1;
   const out: Move[] = [];
 
   const [file, rank] = parseCoord(idx);
@@ -210,63 +210,52 @@ function _pawnMoves(
       _tryPushMove(
         b,
         out,
-        createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, true),
+        createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, oneUp),
       );
     }
   }
 
   // Captures to the left and right. This includes en passants:
+  const ep = b.getEnPassant();
   if (file > 0) {
     const coord = buildCoord(file - 1, rank + dir);
     const spot = b.get(coord);
-    if (spaceIsEmpty(spot)) {
-      const adjCoord = buildCoord(file - 1, rank);
-      const adjSpot = b.get(adjCoord);
-      if (
-        !spaceIsEmpty(adjSpot) && spaceEnPassant(adjSpot) &&
-        spaceGetColor(adjSpot) === otherColor
-      ) {
-        _tryPushMove(
-          b,
-          out,
-          createSimpleCapture(sp, idx, coord, adjSpot, adjCoord),
-        );
-      }
-    } else {
-      if (spaceGetColor(spot) === otherColor) {
-        _tryPushMove(
-          b,
-          out,
-          createSimpleCapture(sp, idx, coord, spot, coord),
-        );
-      }
+    if (coord === ep) {
+      const epCoord = buildCoord(file - 1, rank);
+      const epSpot = b.get(epCoord);
+      _tryPushMove(
+        b,
+        out,
+        createSimpleCapture(sp, idx, coord, epSpot, epCoord),
+      );
+
+    } else if (!spaceIsEmpty(spot) && spaceGetColor(spot) === enemy) {
+      _tryPushMove(
+        b,
+        out,
+        createSimpleCapture(sp, idx, coord, spot, coord),
+      );
     }
   }
 
   if (file < 7) {
     const coord = buildCoord(file + 1, rank + dir);
     const spot = b.get(coord);
-    if (spaceIsEmpty(spot)) {
-      const adjCoord = buildCoord(file + 1, rank);
-      const adjSpot = b.get(adjCoord);
-      if (
-        !spaceIsEmpty(adjSpot) && spaceEnPassant(adjSpot) &&
-        spaceGetColor(adjSpot) === otherColor
-      ) {
-        _tryPushMove(
-          b,
-          out,
-          createSimpleCapture(sp, idx, coord, adjSpot, adjCoord),
-        );
-      }
-    } else {
-      if (spaceGetColor(spot) === otherColor) {
-        _tryPushMove(
-          b,
-          out,
-          createSimpleCapture(sp, idx, coord, spot, coord),
-        );
-      }
+    if (coord === ep) {
+      const epCoord = buildCoord(file + 1, rank);
+      const epSpot = b.get(epCoord);
+      _tryPushMove(
+        b,
+        out,
+        createSimpleCapture(sp, idx, coord, epSpot, epCoord),
+      );
+
+    } else if (!spaceIsEmpty(spot) && spaceGetColor(spot) === enemy) {
+      _tryPushMove(
+        b,
+        out,
+        createSimpleCapture(sp, idx, coord, spot, coord),
+      );
     }
   }
 
