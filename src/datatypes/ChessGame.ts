@@ -2,6 +2,8 @@
 
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
 import { listValidMoves, listAllValidMoves } from "../logic/listValidMoves.ts";
+import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
+import { checkMoveResults } from "../logic/moveResults";
 import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
 import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
@@ -91,9 +93,12 @@ export class ChessGame {
 
     // Else, we have the correct move! Apply to to our own board:
     performMove(this.#board, picked);
+    
+    const results = checkMoveResults(this.#board, picked);
+
     this.#moves.push({
       move: picked,
-      san: "",
+      san: moveToSAN(moves, picked, results),
       // san: al
     });
     this.#turn = 1 - this.#turn;

@@ -50,14 +50,13 @@ const KNIGHT_DIRS: Step[] = [
  */
 export function listAllValidMoves(
   b: Board,
-  color: Color,
-  fullMoves = false,
+  color: Color
 ): Move[] {
   const out: Move[] = [];
   for (let idx = 0; idx < 64; idx++) {
     const sp = b.get(idx);
     if (spaceHasData(sp) && !spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
-      out.push(...listValidMoves(b, idx, fullMoves));
+      out.push(...listValidMoves(b, idx));
     }
   }
   return out;
@@ -71,8 +70,7 @@ export function listAllValidMoves(
  */
 export function listValidMoves(
   b: Board,
-  idx: Coord,
-  fullMoves = false,
+  idx: Coord
 ): Move[] {
   const sp = b.get(idx);
 
@@ -83,23 +81,23 @@ export function listValidMoves(
     // Slidey pieces:
 
     case PieceType.Bishop:
-      return _findMoves(b, sp, idx, BISHOP_DIRS, 8, fullMoves);
+      return _findMoves(b, sp, idx, BISHOP_DIRS, 8);
     case PieceType.Rook:
-      return _findMoves(b, sp, idx, ROOK_DIRS, 8, fullMoves);
+      return _findMoves(b, sp, idx, ROOK_DIRS, 8);
     case PieceType.Queen:
-      return _findMoves(b, sp, idx, QUEEN_DIRS, 8, fullMoves);
+      return _findMoves(b, sp, idx, QUEEN_DIRS, 8);
 
     // Steppy pieces:
 
     case PieceType.Knight:
-      return _findMoves(b, sp, idx, KNIGHT_DIRS, 1, fullMoves);
+      return _findMoves(b, sp, idx, KNIGHT_DIRS, 1);
     case PieceType.King:
-      return _findMoves(b, sp, idx, KING_DIRS, 1, fullMoves);
+      return _findMoves(b, sp, idx, KING_DIRS, 1);
 
     // Other:
 
     case PieceType.Pawn:
-      return _pawnMoves(b, sp, idx, fullMoves);
+      return _pawnMoves(b, sp, idx);
   }
 }
 
@@ -109,8 +107,7 @@ function _findMoves(
   sp: Space,
   idx: number,
   dirs: Step[],
-  maxDist: number,
-  fullMoves: boolean,
+  maxDist: number
 ): Move[] {
   const out: Move[] = [];
 
@@ -132,7 +129,7 @@ function _findMoves(
 
       // If empty, we could either stop here or continue:
       if (spotEmpty) {
-        _tryPushMove(b, out, createSimpleMove(sp, idx, newIdx), fullMoves);
+        _tryPushMove(b, out, createSimpleMove(sp, idx, newIdx));
         continue;
       }
 
@@ -141,8 +138,7 @@ function _findMoves(
         _tryPushMove(
           b,
           out,
-          createSimpleCapture(sp, idx, newIdx, newSp, newIdx),
-          fullMoves,
+          createSimpleCapture(sp, idx, newIdx, newSp, newIdx)
         );
       }
 
@@ -168,8 +164,7 @@ function _findMoves(
         _tryCastle(
           b,
           out,
-          createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest),
-          fullMoves,
+          createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest)
         );
       }
     }
@@ -183,7 +178,6 @@ function _pawnMoves(
   b: Board,
   sp: Space,
   idx: number,
-  fullMoves: boolean,
 ): Move[] {
   const ourColor = spaceGetColor(sp);
   const otherColor = 1 - ourColor;
@@ -203,7 +197,7 @@ function _pawnMoves(
   // Try to move one up:
   if (oneUp >= 0 && oneUp < 64) {
     if (spaceIsEmpty(b.get(oneUp))) {
-      _tryPushMove(b, out, createSimpleMove(sp, idx, oneUp), fullMoves);
+      _tryPushMove(b, out, createSimpleMove(sp, idx, oneUp));
     }
   }
 
@@ -217,7 +211,6 @@ function _pawnMoves(
         b,
         out,
         createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, true),
-        fullMoves,
       );
     }
   }
@@ -237,7 +230,6 @@ function _pawnMoves(
           b,
           out,
           createSimpleCapture(sp, idx, coord, adjSpot, adjCoord),
-          fullMoves,
         );
       }
     } else {
@@ -246,7 +238,6 @@ function _pawnMoves(
           b,
           out,
           createSimpleCapture(sp, idx, coord, spot, coord),
-          fullMoves,
         );
       }
     }
@@ -265,8 +256,7 @@ function _pawnMoves(
         _tryPushMove(
           b,
           out,
-          createSimpleCapture(sp, idx, coord, adjSpot, adjCoord),
-          fullMoves,
+          createSimpleCapture(sp, idx, coord, adjSpot, adjCoord)
         );
       }
     } else {
@@ -274,8 +264,7 @@ function _pawnMoves(
         _tryPushMove(
           b,
           out,
-          createSimpleCapture(sp, idx, coord, spot, coord),
-          fullMoves,
+          createSimpleCapture(sp, idx, coord, spot, coord)
         );
       }
     }
@@ -286,20 +275,13 @@ function _pawnMoves(
 
 // Will push the candidate move to the output array IF it doesn't expose your king to check. Also will populate
 // a few extra details if asked. (Since we've already done the move...)
-function _tryPushMove(b: Board, out: Move[], move: Move, fullMoves: boolean) {
+function _tryPushMove(b: Board, out: Move[], move: Move) {
   const color = spaceGetColor(move.what);
 
   b.save();
 
   performMove(b, move);
   if (!kingInDanger(b, color)) {
-    // This is a valid move, so spend the time to see if this move delivers check:
-    if (fullMoves) {
-      const enemy: Color = 1 - color;
-      move.check = kingInDanger(b, enemy);
-      // TODO: Fork this into a version that DOESN'T allocate an array of objects, and instead short-circuits a bool:
-      move.enemyHasMove = listAllValidMoves(b, enemy, false).length > 0;
-    }
     out.push(move);
   }
 
@@ -307,7 +289,7 @@ function _tryPushMove(b: Board, out: Move[], move: Move, fullMoves: boolean) {
 }
 
 // Will attempt a castle maneuver. Will do the normal checks: Nothing in the way, and nothing checking king en route:
-function _tryCastle(b: Board, out: Move[], move: Move, fullMoves: boolean) {
+function _tryCastle(b: Board, out: Move[], move: Move) {
   const color = spaceGetColor(move.what);
 
   // Every spot in the rook's travel must be empty, apart from the King (which can happen in Chess960)
@@ -342,5 +324,5 @@ function _tryCastle(b: Board, out: Move[], move: Move, fullMoves: boolean) {
 
   if (hasDanger) return;
 
-  _tryPushMove(b, out, move, fullMoves);
+  _tryPushMove(b, out, move);
 }

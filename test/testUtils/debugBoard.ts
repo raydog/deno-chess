@@ -2,6 +2,7 @@ import { Board } from "../../src/datatypes/Board.ts";
 import { buildCoord } from "../../src/datatypes/Coord.ts";
 import { Move } from "../../src/datatypes/Move.ts";
 import { spaceGetFENString } from "../../src/datatypes/Space.ts";
+import { moveAndCheckResults } from "../../src/logic/moveResults.ts";
 
 const FILES = "     A   B   C   D   E   F   G   H  \n";
 const HORIZ = "   +" + "---+".repeat(8) + "\n";
@@ -16,7 +17,7 @@ const HORIZ = "   +" + "---+".repeat(8) + "\n";
  * @param b
  * @param list
  */
-export function debugBoard(b: Board, moves: Move[]): string {
+export function debugBoard(b: Board, moves: Move[], fullCalc = false): string {
   let out = FILES + HORIZ;
 
   for (let rank = 7; rank >= 0; rank--) {
@@ -26,7 +27,7 @@ export function debugBoard(b: Board, moves: Move[]): string {
       const sp = b.get(idx);
       const mid = spaceGetFENString(sp);
       const here = moves.filter((move) => move.dest === idx);
-      const temp = _moveTemplate(here);
+      const temp = _moveTemplate(b, here, fullCalc);
       row += temp.replace("@", mid) + "|";
     }
     out += `${row} ${rank + 1}\n${HORIZ}`;
@@ -34,23 +35,30 @@ export function debugBoard(b: Board, moves: Move[]): string {
   return out + FILES;
 }
 
-function _moveTemplate(moves: Move[]): string {
+function _moveTemplate(b: Board, moves: Move[], fullCalc: boolean): string {
+  
   // Normal:
   if (!moves.length) return " @ ";
 
-  // Any checkmates?
-  if (moves.some((move) => move.enemyHasMove === false && move.check)) {
-    return "#@#";
-  }
+  if (fullCalc) {
 
-  // Any checks at least?
-  if (moves.some((move) => move.check)) {
-    return "+@+";
-  }
+    const results = moves.map(move => moveAndCheckResults(b, move));
 
-  // Uh oh! Any stalemates?
-  if (moves.some((move) => move.enemyHasMove === false && !move.check)) {
-    return "%@%";
+    // Any checkmates?
+    if (results.some((move) => !move.enemyCanMove && move.enemyInCheck)) {
+      return "#@#";
+    }
+
+    // Any checks at least?
+    if (results.some((move) => move.enemyInCheck)) {
+      return "+@+";
+    }
+
+    // Uh oh! Any stalemates?
+    if (results.some((move) => !move.enemyCanMove && !move.enemyInCheck)) {
+      return "%@%";
+    }
+
   }
 
   // Else, it's a move, but not a special-cased one:

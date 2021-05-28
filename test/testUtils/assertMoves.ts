@@ -1,6 +1,7 @@
 import { Board } from "../../src/datatypes/Board.ts";
 import { Move } from "../../src/datatypes/Move.ts";
-import { moveToAN } from "../../src/logic/moveFormats/algebraicNotation.ts";
+import { moveToSAN } from "../../src/logic/moveFormats/moveToSAN.ts";
+import { moveAndCheckResults } from "../../src/logic/moveResults.ts";
 import { asserts } from "../../testDeps.ts";
 import { debugBoard } from "./debugBoard.ts";
 
@@ -10,13 +11,21 @@ import { debugBoard } from "./debugBoard.ts";
  * @param moves
  * @param shouldBe
  */
-export function assertMoves(b: Board, moves: Move[], shouldBe: string[]) {
-  const got = moves.map(moveToAN).sort();
+export function assertMoves(b: Board, moves: Move[], shouldBe: string[], fullCalc = false) {
+
+  // Note: moves is often only a single piece's moves, but the moveToSAN logic wants the list of ALL pieces. That
+  // should be fine, however. It just means the departure coord won't be as specific as it could be, but that wasn't
+  // the purpose of those tests anyways.
+
+  // Howver, we *will* compute the move consequences, since it'll result in better check annotations:
+  const got = moves
+    .map(move => moveToSAN(moves, move, fullCalc ? moveAndCheckResults(b, move) : undefined))
+    .sort();
 
   try {
     asserts.assertEquals(got, shouldBe.sort());
   } catch (ex) {
-    ex.message += "\n" + debugBoard(b, moves);
+    ex.message += "\n" + debugBoard(b, moves, fullCalc);
     throw ex;
   }
 }

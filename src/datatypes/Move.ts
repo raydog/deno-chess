@@ -22,19 +22,6 @@ export type Move = {
 
   // Mark this pawn as being available for En Passants:
   canEnPassant: boolean;
-
-  // Extended props, that are only provided IF asked for:
-
-  // Note: We don't populate these params by default for a variety of reasons:
-
-  // 1. They're not needed for our external API, so it's wasted CPU on that front.
-  // 2. Only the AI and the move recording logic needs them.
-  // 3. Generating these params requires us to enumerate the enemy moves, SO, if we didn't allow the extended prop
-  //    stuff to be optional, we could end up with some costly recursion.
-
-  // enemyHasMove being false indicates end-of-game. The check prop determines if that's checkmate or stalemate.
-  check?: boolean;
-  enemyHasMove?: boolean;
 };
 
 export function createSimpleMove(what: Space, from: Coord, dest: Coord): Move {

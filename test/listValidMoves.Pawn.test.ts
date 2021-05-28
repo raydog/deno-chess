@@ -71,7 +71,7 @@ Deno.test("List Valid Moves > Pawn > White opening capture left", function () {
     h2: encodePieceSpace(PieceType.Pawn, Color.White),
     g3: encodePieceSpace(PieceType.Bishop, Color.Black, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("h2")), ["h3", "h4", "xg3"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("h2")), ["h3", "h4", "hxg3"]);
 });
 
 Deno.test("List Valid Moves > Pawn > White opening capture right", function () {
@@ -79,7 +79,7 @@ Deno.test("List Valid Moves > Pawn > White opening capture right", function () {
     a2: encodePieceSpace(PieceType.Pawn, Color.White),
     b3: encodePieceSpace(PieceType.Rook, Color.Black, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("a2")), ["a3", "a4", "xb3"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("a2")), ["a3", "a4", "axb3"]);
 });
 
 Deno.test("List Valid Moves > Pawn > White opening capture both", function () {
@@ -91,8 +91,8 @@ Deno.test("List Valid Moves > Pawn > White opening capture both", function () {
   assertMoves(b, listValidMoves(b, coordFromAN("c2")), [
     "c3",
     "c4",
-    "xb3",
-    "xd3",
+    "cxb3",
+    "cxd3",
   ]);
 });
 
@@ -101,7 +101,7 @@ Deno.test("List Valid Moves > Pawn > Black opening capture left", function () {
     h7: encodePieceSpace(PieceType.Pawn, Color.Black),
     g6: encodePieceSpace(PieceType.Rook, Color.White, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("h7")), ["h6", "h5", "xg6"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("h7")), ["h6", "h5", "hxg6"]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black opening capture right", function () {
@@ -109,7 +109,7 @@ Deno.test("List Valid Moves > Pawn > Black opening capture right", function () {
     a7: encodePieceSpace(PieceType.Pawn, Color.Black),
     b6: encodePieceSpace(PieceType.Rook, Color.White, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("a7")), ["a6", "a5", "xb6"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("a7")), ["a6", "a5", "axb6"]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black opening capture both", function () {
@@ -121,8 +121,8 @@ Deno.test("List Valid Moves > Pawn > Black opening capture both", function () {
   assertMoves(b, listValidMoves(b, coordFromAN("c7")), [
     "c6",
     "c5",
-    "xb6",
-    "xd6",
+    "cxb6",
+    "cxd6",
   ]);
 });
 
@@ -131,7 +131,7 @@ Deno.test("List Valid Moves > Pawn > White captures en passant on the left", fun
     e5: encodePieceSpace(PieceType.Pawn, Color.White, true),
     d5: encodePieceSpace(PieceType.Pawn, Color.Black, true, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["xd6", "e6"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["exd6", "e6"]);
 });
 
 Deno.test("List Valid Moves > Pawn > White captures en passant on the right", function () {
@@ -139,7 +139,7 @@ Deno.test("List Valid Moves > Pawn > White captures en passant on the right", fu
     e5: encodePieceSpace(PieceType.Pawn, Color.White, true),
     f5: encodePieceSpace(PieceType.Pawn, Color.Black, true, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["e6", "xf6"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["e6", "exf6"]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black captures en passant on the left", function () {
@@ -147,7 +147,7 @@ Deno.test("List Valid Moves > Pawn > Black captures en passant on the left", fun
     e4: encodePieceSpace(PieceType.Pawn, Color.Black, true),
     d4: encodePieceSpace(PieceType.Pawn, Color.White, true, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["xd3", "e3"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["exd3", "e3"]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black captures en passant on the right", function () {
@@ -155,5 +155,5 @@ Deno.test("List Valid Moves > Pawn > Black captures en passant on the right", fu
     e4: encodePieceSpace(PieceType.Pawn, Color.Black, true),
     f4: encodePieceSpace(PieceType.Pawn, Color.White, true, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["e3", "xf3"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["e3", "exf3"]);
 });
