@@ -4,10 +4,11 @@ import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
 
 type Layer = {
-  board: Uint32Array;
-  clock: number;
-  moveNum: number;
-  ep: Coord;
+  board: Uint32Array,
+  clock: number,
+  moveNum: number,
+  ep: Coord,
+  turn: Color,
 };
 
 /**
@@ -15,6 +16,7 @@ type Layer = {
  * This will be translated into a more public-friendly representation in the future.
  */
 export class Board {
+
   #layerIdx = 0;
   #layers: Layer[] = [newLayer()];
   #current: Layer = this.#layers[0];
@@ -97,6 +99,21 @@ export class Board {
   }
 
   /**
+   * Get the turn color.
+   * @returns 
+   */
+  getTurn(): Color {
+    return this.#current.turn;
+  }
+
+  /**
+   * Toggle the turn color from white to black and visa versa.
+   */
+  changeTurn() {
+    this.#current.turn = 1 - this.#current.turn;
+  }
+
+  /**
    * Add a new overlay. This overlay will absorb set()'s, and get()'s take them into account. This allows us to easily
    * undo actions.
    */
@@ -126,6 +143,7 @@ function newLayer(): Layer {
     clock: 0,
     moveNum: 1,
     ep: -1,
+    turn: Color.White,
   };
 }
 
@@ -134,4 +152,5 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.clock = src.clock;
   dest.moveNum = src.moveNum;
   dest.ep = src.ep;
+  dest.turn = src.turn;
 }
