@@ -3,11 +3,11 @@
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
 import { listValidMoves, listAllValidMoves } from "../logic/listValidMoves.ts";
 import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
-import { checkMoveResults } from "../logic/moveResults";
+import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
 import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
-import { Color, colorToString } from "./Color.ts";
+import { Color } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { Move } from "./Move.ts";
 import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
@@ -19,6 +19,12 @@ type AnnotatedMove = {
   move: Move,
   san: string,
 }
+
+type HistoryEntry = {
+  num: number,
+  side: "w" | "b",
+  san: string,
+};
 
 /**
  * A single chess game.
@@ -49,6 +55,16 @@ export class ChessGame {
    */
   public static NewStandardGame(): ChessGame {
     return new ChessGame(buildStandardBoard());
+  }
+
+  history(): HistoryEntry[] {
+    return this.#moves.map((move, idx) => {
+      return {
+        num: (idx >>> 1) + 1,
+        side: (idx & 0x1) ? "b" : "w",
+        san: move.san,
+      };
+    });
   }
 
   /**
@@ -119,14 +135,14 @@ export class ChessGame {
   allMoves(coord?: string): string[] {
     let moves;
     if (coord == null) {
-      moves = listAllValidMoves(this.#board, this.#turn, false);
+      moves = listAllValidMoves(this.#board, this.#turn);
     } else {
       const idx = coordFromAN(coord);
       const sp = this.#board.get(idx);
       if (spaceIsEmpty(sp) || spaceGetColor(sp) !== this.#turn) {
         return [];
       }
-      moves = listValidMoves(this.#board, idx, false);
+      moves = listValidMoves(this.#board, idx);
     }
     return moves.map(move => `${coordToAN(move.from)}${coordToAN(move.dest)}`);
   }

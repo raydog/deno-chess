@@ -7,6 +7,7 @@ const giuocoPiano = ChessGame.NewStandardGame()
   .move("g1-f3").move("b8-c6")
   .move("f1-c4").move("f8-c5");
 
+// console.log(giuocoPiano.history())
 
 bench({
   name: "Giuoco Piano Opening",
