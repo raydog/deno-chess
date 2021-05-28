@@ -40,6 +40,7 @@ const KNIGHT_DIRS: Step[] = [
   [1, -2],
   [-1, -2],
 ];
+const PAWN_CAPS = [-1, 1];
 
 /**
  * Will extract all valid moves for the given player.
@@ -198,58 +199,38 @@ function _pawnMoves(
   if (oneUp >= 0 && oneUp < 64) {
     if (spaceIsEmpty(b.get(oneUp))) {
       _tryPushMove(b, out, createSimpleMove(sp, idx, oneUp));
-    }
-  }
 
-  // If we haven't moved before, we can attempt 2 up:
-  if (twoUp >= 0 && twoUp < 64) {
-    if (
-      !spaceHasMoved(sp) && spaceIsEmpty(b.get(oneUp)) &&
-      spaceIsEmpty(b.get(twoUp))
-    ) {
-      _tryPushMove(
-        b,
-        out,
-        createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, oneUp),
-      );
+      // If we haven't moved before, we can attempt 2 up:
+      if (
+        !spaceHasMoved(sp) && twoUp >= 0 && twoUp < 64 &&
+        spaceIsEmpty(b.get(twoUp))
+      ) {
+        _tryPushMove(
+          b,
+          out,
+          createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, oneUp),
+        );
+      }
     }
   }
 
   // Captures to the left and right. This includes en passants:
   const ep = b.getEnPassant();
-  if (file > 0) {
-    const coord = buildCoord(file - 1, rank + dir);
+
+  for (const fileStep of PAWN_CAPS) {
+    const newFile = file + fileStep;
+    if (newFile < 0 || newFile >= 8)continue;
+
+    const coord = buildCoord(newFile, rank + dir);
     const spot = b.get(coord);
     if (coord === ep) {
-      const epCoord = buildCoord(file - 1, rank);
+      const epCoord = buildCoord(newFile, rank);
       const epSpot = b.get(epCoord);
       _tryPushMove(
         b,
         out,
         createSimpleCapture(sp, idx, coord, epSpot, epCoord),
       );
-
-    } else if (!spaceIsEmpty(spot) && spaceGetColor(spot) === enemy) {
-      _tryPushMove(
-        b,
-        out,
-        createSimpleCapture(sp, idx, coord, spot, coord),
-      );
-    }
-  }
-
-  if (file < 7) {
-    const coord = buildCoord(file + 1, rank + dir);
-    const spot = b.get(coord);
-    if (coord === ep) {
-      const epCoord = buildCoord(file + 1, rank);
-      const epSpot = b.get(epCoord);
-      _tryPushMove(
-        b,
-        out,
-        createSimpleCapture(sp, idx, coord, epSpot, epCoord),
-      );
-
     } else if (!spaceIsEmpty(spot) && spaceGetColor(spot) === enemy) {
       _tryPushMove(
         b,

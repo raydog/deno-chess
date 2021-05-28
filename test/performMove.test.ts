@@ -16,7 +16,18 @@ const an = coordFromAN;
 
 const move = (b: Board, from: string, to: string, ep?: string) =>
   ep
-    ? createFullMove(b.get(an(from)), an(from), an(to), 0, 0, 0, 0, 0, 0, an(ep))
+    ? createFullMove(
+      b.get(an(from)),
+      an(from),
+      an(to),
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      an(ep),
+    )
     : createSimpleMove(b.get(an(from)), an(from), an(to));
 
 Deno.test("Perform Move > Réti Opening", function () {
