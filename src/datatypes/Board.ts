@@ -2,27 +2,82 @@ import { Space, SPACE_EMPTY } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
-import { Turn } from "./Turn.ts";
+
+type Layer = {
+  board: Uint32Array,
+  clock: number,
+  moveNum: number,
+};
 
 /**
  * Internal representation of a Board. Basically 64 integers, with a few extra bells-n-whistles.
  * This will be translated into a more public-friendly representation in the future.
  */
 export class Board {
+  
   #layerIdx = 0;
-  #layers: Uint32Array[] = [new Uint32Array(8 * 8).fill(SPACE_EMPTY)];
+  #layers: Layer[] = [newLayer()];
+  #current: Layer = this.#layers[0];
 
-  // TODO: Maybe in game?
-  #turns: Turn[] = [];
-
+  /**
+   * Set a single space in the board.
+   * 
+   * @param idx 
+   * @param space 
+   */
   set(idx: Coord, space: Space) {
     assert(idx >= 0 && idx < 64, "Invalid set() coord");
-    this.#layers[this.#layerIdx][idx] = space;
+    this.#current.board[idx] = space;
   }
 
+  /**
+   * Get the value of a single space in the board.
+   * 
+   * @param idx 
+   * @returns 
+   */
   get(idx: Coord): Space {
     assert(idx >= 0 && idx < 64, "Invalid get() coord");
-    return this.#layers[this.#layerIdx][idx];
+    return this.#current.board[idx];
+  }
+
+  /**
+   * Increments the half-move clock.
+   */
+  incrClock() {
+    this.#current.clock++;
+  }
+
+  /**
+   * Reset the half-move clock.
+   */
+  resetClock() {
+    this.#current.clock = 0;
+  }
+
+  /**
+   * Increment the current move number.
+   */
+  incrMoveNum() {
+    this.#current.moveNum++;
+  }
+
+  /**
+   * Return the half-move clock.
+   * 
+   * @returns 
+   */
+  getClock(): number {
+    return this.#current.clock;
+  }
+
+  /**
+   * Return the current move number.
+   * 
+   * @returns 
+   */
+  getMoveNum(): number {
+    return this.#current.moveNum;
   }
 
   /**
@@ -30,11 +85,12 @@ export class Board {
    * undo actions.
    */
   save() {
-    this.#layerIdx++;
-    if (this.#layerIdx === this.#layers.length) {
-      this.#layers.push(new Uint32Array(8 * 8));
+    const idx = ++this.#layerIdx;
+    if (idx === this.#layers.length) {
+      this.#layers.push(newLayer());
     }
-    this.#layers[this.#layerIdx].set(this.#layers[this.#layerIdx - 1]);
+    this.#current = this.#layers[idx];
+    copyLayer(this.#layers[idx-1], this.#current);
   }
 
   /**
@@ -42,27 +98,22 @@ export class Board {
    */
   restore() {
     if (this.#layerIdx > 0) {
-      this.#layerIdx--;
+      const idx = --this.#layerIdx;
+      this.#current = this.#layers[idx];
     }
   }
+}
 
-  getTurnColor(): Color {
-    if (!this.#turns.length) return Color.White;
-    const cur = this.#turns[this.#turns.length - 1];
-    return cur.black ? Color.White : Color.Black;
-  }
+function newLayer(): Layer {
+  return {
+    board: new Uint32Array(8 * 8).fill(SPACE_EMPTY),
+    clock: 0,
+    moveNum: 1,
+  };
+}
 
-  getHalfmoveClock(): number {
-    return 0; // TODO.
-  }
-
-  getFullmoveClock(): number {
-    if (!this.#turns.length) return 1;
-    const cur = this.#turns[this.#turns.length - 1];
-    return cur.black ? this.#turns.length + 1 : this.#turns.length;
-  }
-
-  // toString(): string {
-
-  // }
+function copyLayer(src: Layer, dest: Layer) {
+  dest.board.set(src.board);
+  dest.clock = src.clock;
+  dest.moveNum = src.moveNum;
 }

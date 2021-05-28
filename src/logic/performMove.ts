@@ -1,11 +1,14 @@
 import { Board } from "../datatypes/Board.ts";
 import { Move } from "../datatypes/Move.ts";
+import { PieceType } from "../datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceEnPassant,
   spaceMarkMoved,
   spacePromote,
   spaceSetEnPassant,
+spaceGetColor,
+spaceGetType,
 } from "../datatypes/Space.ts";
 
 /**
@@ -51,5 +54,17 @@ export function performMove(
   if (move.castleRook) {
     b.set(move.castleRookDest, spaceMarkMoved(move.castleRook));
     b.set(move.castleRookFrom, SPACE_EMPTY);
+  }
+
+  // If this move is black's, then the turn number just increased:
+  if (spaceGetColor(space)) {
+    b.incrMoveNum();
+  }
+
+  // If a capture or pawn move, reset the clock. Else increment.
+  if (spaceGetType(space) === PieceType.Pawn || move.capture) {
+    b.resetClock();
+  } else {
+    b.incrClock();
   }
 }
