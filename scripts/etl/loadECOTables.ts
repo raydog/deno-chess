@@ -1,22 +1,19 @@
 import { assert } from "../../src/logic/assert.ts";
 import { path, readLines } from "../../testDeps.ts";
 
-
 type OpeningEntry = {
-  eco?: string,
-  name?: string,
-  fen?: string, // TODO: FEN _could_ be non-nullable, if we actually evaluated these steps...
+  eco?: string;
+  name?: string;
+  fen?: string; // TODO: FEN _could_ be non-nullable, if we actually evaluated these steps...
 };
 
 type OpeningTable = { $?: OpeningEntry } & {
-  [rest: string]: OpeningTable,
+  [rest: string]: OpeningTable;
 };
-
 
 const [dataPath, outPath] = Deno.args;
 assert(dataPath, "Need data path");
 assert(outPath, "Need output path");
-
 
 const root: OpeningTable = {};
 
@@ -31,7 +28,7 @@ for await (const entry of Deno.readDir(dataPath)) {
   let num = 0;
   for await (const line of readLines(await Deno.open(fPath))) {
     const parsed = line.split("\t");
-    if (!parsed.length) { continue; }
+    if (!parsed.length) continue;
     if (parsed.length !== 4) {
       console.error(" -> Skipping line:", line);
       continue;
@@ -49,11 +46,14 @@ for await (const entry of Deno.readDir(dataPath)) {
   console.log(" -> Loaded %d rows", num);
 }
 
-
 await Deno.writeTextFile(outPath, JSON.stringify(root, null, 2));
 
-
-function integrateEntry(eco: string, name: string, _fen: string, moveString: string) {
+function integrateEntry(
+  eco: string,
+  name: string,
+  _fen: string,
+  moveString: string,
+) {
   const moves = moveString.trim().split(" ");
 
   let node = root;
@@ -65,8 +65,11 @@ function integrateEntry(eco: string, name: string, _fen: string, moveString: str
     node = node[move];
   }
   // At the Board location:
-  assert(!node.$, `Conflict: '${name}' and '${node.$?.name}' have the same moves`);
+  assert(
+    !node.$,
+    `Conflict: '${name}' and '${node.$?.name}' have the same moves`,
+  );
 
   // Note: we drop the FEN, as it bloats the file a lot, and it could be reconstructed by the opening engine
-  node.$ = { eco, name, /*fen*/ };
+  node.$ = { eco, name /*fen*/ };
 }

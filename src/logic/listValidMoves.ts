@@ -50,7 +50,7 @@ const KNIGHT_DIRS: Step[] = [
  */
 export function listAllValidMoves(
   b: Board,
-  color: Color
+  color: Color,
 ): Move[] {
   const out: Move[] = [];
   for (let idx = 0; idx < 64; idx++) {
@@ -70,7 +70,7 @@ export function listAllValidMoves(
  */
 export function listValidMoves(
   b: Board,
-  idx: Coord
+  idx: Coord,
 ): Move[] {
   const sp = b.get(idx);
 
@@ -107,7 +107,7 @@ function _findMoves(
   sp: Space,
   idx: number,
   dirs: Step[],
-  maxDist: number
+  maxDist: number,
 ): Move[] {
   const out: Move[] = [];
 
@@ -138,7 +138,7 @@ function _findMoves(
         _tryPushMove(
           b,
           out,
-          createSimpleCapture(sp, idx, newIdx, newSp, newIdx)
+          createSimpleCapture(sp, idx, newIdx, newSp, newIdx),
         );
       }
 
@@ -164,7 +164,7 @@ function _findMoves(
         _tryCastle(
           b,
           out,
-          createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest)
+          createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest),
         );
       }
     }
@@ -256,7 +256,7 @@ function _pawnMoves(
         _tryPushMove(
           b,
           out,
-          createSimpleCapture(sp, idx, coord, adjSpot, adjCoord)
+          createSimpleCapture(sp, idx, coord, adjSpot, adjCoord),
         );
       }
     } else {
@@ -264,7 +264,7 @@ function _pawnMoves(
         _tryPushMove(
           b,
           out,
-          createSimpleCapture(sp, idx, coord, spot, coord)
+          createSimpleCapture(sp, idx, coord, spot, coord),
         );
       }
     }

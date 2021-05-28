@@ -12,20 +12,20 @@ export type MoveResults = {
   /**
    * Did a move leave an enemy in check?
    */
-  enemyInCheck: boolean,
+  enemyInCheck: boolean;
 
   /**
    * Does the enemy have any valid moves left?
    */
-  enemyCanMove: boolean,
+  enemyCanMove: boolean;
 };
 
 /**
  * Will apply a move, check it's results, and roll the move back:
- * 
- * @param board 
- * @param move 
- * @returns 
+ *
+ * @param board
+ * @param move
+ * @returns
  */
 export function moveAndCheckResults(board: Board, move: Move) {
   board.save();
@@ -40,12 +40,11 @@ export function moveAndCheckResults(board: Board, move: Move) {
 
 /**
  * Get the results of a move. Assumes that the move has already been done.
- * 
- * @param board 
- * @param move 
+ *
+ * @param board
+ * @param move
  */
 export function checkMoveResults(board: Board, move: Move): MoveResults {
-  
   const color = spaceGetColor(move.what);
   const enemy = 1 - color;
 

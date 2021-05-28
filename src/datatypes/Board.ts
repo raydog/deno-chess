@@ -1,4 +1,4 @@
-import { Space, SPACE_EMPTY, } from "./Space.ts";
+import { Space, SPACE_EMPTY } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
@@ -9,7 +9,6 @@ import { Turn } from "./Turn.ts";
  * This will be translated into a more public-friendly representation in the future.
  */
 export class Board {
-
   #layerIdx = 0;
   #layers: Uint32Array[] = [new Uint32Array(8 * 8).fill(SPACE_EMPTY)];
 

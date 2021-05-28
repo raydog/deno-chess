@@ -1,6 +1,5 @@
 import { ChessGame } from "../../src/datatypes/ChessGame.ts";
-import { runBenchmarks, bench } from "../../testDeps.ts";
-
+import { bench, runBenchmarks } from "../../testDeps.ts";
 
 const giuocoPiano = ChessGame.NewStandardGame()
   .move("e2-e4").move("e7-e5")
@@ -15,11 +14,11 @@ bench({
   func(b) {
     b.start();
     // This operation is pretty quick, so do it a bunch of times to get more signal:
-    for (let i=0; i<100; i++) {
+    for (let i = 0; i < 100; i++) {
       const _moves = giuocoPiano.allMoves();
     }
     b.stop();
-  }
-})
+  },
+});
 
 runBenchmarks();

@@ -36,13 +36,11 @@ export function debugBoard(b: Board, moves: Move[], fullCalc = false): string {
 }
 
 function _moveTemplate(b: Board, moves: Move[], fullCalc: boolean): string {
-  
   // Normal:
   if (!moves.length) return " @ ";
 
   if (fullCalc) {
-
-    const results = moves.map(move => moveAndCheckResults(b, move));
+    const results = moves.map((move) => moveAndCheckResults(b, move));
 
     // Any checkmates?
     if (results.some((move) => !move.enemyCanMove && move.enemyInCheck)) {
@@ -58,7 +56,6 @@ function _moveTemplate(b: Board, moves: Move[], fullCalc: boolean): string {
     if (results.some((move) => !move.enemyCanMove && !move.enemyInCheck)) {
       return "%@%";
     }
-
   }
 
   // Else, it's a move, but not a special-cased one:

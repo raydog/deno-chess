@@ -1,7 +1,7 @@
 // Note: the class in this file serves as the external API.
 
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
-import { listValidMoves, listAllValidMoves } from "../logic/listValidMoves.ts";
+import { listAllValidMoves, listValidMoves } from "../logic/listValidMoves.ts";
 import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
@@ -12,25 +12,23 @@ import { coordFromAN, coordToAN } from "./Coord.ts";
 import { Move } from "./Move.ts";
 import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
 
-
 const MOVE_RE = /^([a-h][1-8])-?([a-h][1-8])$/i;
 
 type AnnotatedMove = {
-  move: Move,
-  san: string,
-}
+  move: Move;
+  san: string;
+};
 
 type HistoryEntry = {
-  num: number,
-  side: "w" | "b",
-  san: string,
+  num: number;
+  side: "w" | "b";
+  san: string;
 };
 
 /**
  * A single chess game.
  */
 export class ChessGame {
-
   #state: GameState = GameState.active;
   #turn: Color = Color.White;
   #board: Board;
@@ -95,21 +93,25 @@ export class ChessGame {
     // Sanity checks:
     const sp = this.#board.get(from);
     if (!spaceHasData(sp) || spaceIsEmpty(sp)) {
-      throw new ChessBadMove(`${move}: Departing square (${coordToAN(from)}) is empty`);
+      throw new ChessBadMove(
+        `${move}: Departing square (${coordToAN(from)}) is empty`,
+      );
     }
 
     // Get the full list of moves. We need the FULL list of moves (and not just the moves for this one piece) because
     // computing the SAN for a move needs to change how the origin is represented based on which moves are currently
     // available to the player:
     const moves = listAllValidMoves(this.#board, this.#turn);
-    const picked = moves.find((move) => move.from === from && move.dest === dest);
+    const picked = moves.find((move) =>
+      move.from === from && move.dest === dest
+    );
     if (!picked) {
       throw new ChessBadMove(`${move}: Invalid move`);
     }
 
     // Else, we have the correct move! Apply to to our own board:
     performMove(this.#board, picked);
-    
+
     const results = checkMoveResults(this.#board, picked);
 
     this.#moves.push({
@@ -126,10 +128,10 @@ export class ChessGame {
    * Returns all available moves for the current player. If a coord is provided, only moves for the piece at that coord
    * will be returned. If that space is either empty, or holds a piece that belongs to the other player, an empty array
    * will be returned.
-   * 
+   *
    * Moves will be returned in UCI format, with the departing and destination coordinates right next to each other. So,
    * "e2e4" will be returned for the classic King's opening.
-   * 
+   *
    * @param coord An optional coordinate, formatted in algebraic notation, so like "a5".
    */
   allMoves(coord?: string): string[] {
@@ -144,7 +146,9 @@ export class ChessGame {
       }
       moves = listValidMoves(this.#board, idx);
     }
-    return moves.map(move => `${coordToAN(move.from)}${coordToAN(move.dest)}`);
+    return moves.map((move) =>
+      `${coordToAN(move.from)}${coordToAN(move.dest)}`
+    );
   }
 }
 

@@ -7,17 +7,20 @@ import { MoveResults } from "../moveResults.ts";
 
 /**
  * Will render a given move in Simple Algebraic Notation. (Or Standard Notation, or Coordinate Notation...)
- * 
+ *
  * Whatever you call it, it looks like "Qbxf7+".
  *
  * @param Board
  * @param move
  * @returns
  */
-export function moveToSAN(moves: Move[], move: Move, result?: MoveResults): string {
-  
+export function moveToSAN(
+  moves: Move[],
+  move: Move,
+  result?: MoveResults,
+): string {
   let mainStr;
-  
+
   // Special case: Castles get their own notation.
   // Aside: FIDE uses zeros here, but we use upper-case O's to be compatible with PGN.
   if (move.castleRook) {
@@ -46,23 +49,23 @@ function _getDeparture(moves: Move[], move: Move): string {
     return full[0];
   }
 
-  const similar = moves.filter(other => {
+  const similar = moves.filter((other) => {
     return other.from !== move.from &&
-      other.dest === move.dest && 
+      other.dest === move.dest &&
       spaceGetType(other.what) === spaceGetType(move.what);
   });
 
   // If the piece type + destination alone are enough to id this spot, that's good enough:
-  if (!similar.length) { return ""; }
+  if (!similar.length) return "";
 
   // Else, this move had a doppelgänger! Find a way to differentiate it!
   const [file, rank] = parseCoord(move.from);
 
-  if (similar.every(other => parseCoord(other.from)[0] !== file)) {
+  if (similar.every((other) => parseCoord(other.from)[0] !== file)) {
     return full[0];
   }
 
-  if (similar.every(other => parseCoord(other.from)[1] !== rank)) {
+  if (similar.every((other) => parseCoord(other.from)[1] !== rank)) {
     return full[1];
   }
 
@@ -89,11 +92,7 @@ function _anPieceType(t: PieceType): string {
 
 // Annotate check (+), and checkmate (#)
 function _checksAndMates(results: MoveResults): string {
-  return (!results.enemyInCheck)
-    ? ""
-    : (results.enemyCanMove)
-      ? "+"
-      : "#";
+  return (!results.enemyInCheck) ? "" : (results.enemyCanMove) ? "+" : "#";
   // if (!results.enemyCanMove) {
   //   // End of game has happened. Either checkmate or stalemate:
   //   return results.enemyInCheck

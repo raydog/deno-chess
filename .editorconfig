@@ -9,6 +9,7 @@ insert_final_newline = true
 charset = utf-8
 
 # Indentation override for all JS under lib directory
-[*.ts]
+[*.ts,*.json]
 indent_style = space
+trim_trailing_whitespace = true
 indent_size = 2
