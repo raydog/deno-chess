@@ -11,7 +11,12 @@ import {
 } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
-import { buildCoord, Coord, nextCoord, parseCoord } from "../datatypes/Coord.ts";
+import {
+  buildCoord,
+  Coord,
+  nextCoord,
+  parseCoord,
+} from "../datatypes/Coord.ts";
 import {
   createCastle,
   createFullMove,
@@ -22,14 +27,20 @@ import {
 import { performMove } from "./performMove.ts";
 import { kingInDanger } from "./kingInDanger.ts";
 
-
 // Pre-compiled lists of moves, since most moves are similar:
 const BISHOP_DIRS: number[] = [15, 17, -17, -15];
 const ROOK_DIRS: number[] = [16, -16, 1, -1];
 const QUEEN_DIRS: number[] = [...ROOK_DIRS, ...BISHOP_DIRS];
 const KING_DIRS: number[] = [...QUEEN_DIRS];
 const KNIGHT_DIRS: number[] = [
-  31, 33, 14, 18, -18, -14, -33, -31
+  31,
+  33,
+  14,
+  18,
+  -18,
+  -14,
+  -33,
+  -31,
 ];
 const PAWN_CAPS = [-1, 1];
 
@@ -107,11 +118,10 @@ function _findMoves(
 
   for (const step of dirs) {
     for (
-      let newIdx = idx + step, n=0;
-      (newIdx & 0x88) === 0 && n<maxDist;
+      let newIdx = idx + step, n = 0;
+      (newIdx & 0x88) === 0 && n < maxDist;
       newIdx += step, n++
     ) {
-
       const newSp = b.get(newIdx);
       const spotEmpty = spaceIsEmpty(newSp);
       const spotColor = spaceGetColor(newSp);
@@ -178,7 +188,7 @@ function _pawnMoves(
   const oneUp = idx + 16 * dir;
   const twoUp = idx + 32 * dir;
 
-  if (oneUp & 0x88) { return out; }
+  if (oneUp & 0x88) return out;
 
   // Try to move one up:
   if (spaceIsEmpty(b.get(oneUp))) {

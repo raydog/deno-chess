@@ -28,13 +28,13 @@ export const parseCoord = (
  * @returns
  */
 export const buildCoord = (file: number, rank: number): number =>
-  ((rank & 0x7) << 4) | (file & 0x7)
+  ((rank & 0x7) << 4) | (file & 0x7);
 
 /**
  * Given an index, will return the next one.
- * 
- * @param idx 
- * @returns 
+ *
+ * @param idx
+ * @returns
  */
 export const nextCoord = (idx: Coord) => idx + ((idx & 0x7) === 7 ? 9 : 1);
 
