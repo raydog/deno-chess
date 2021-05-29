@@ -1,8 +1,7 @@
-import { Color } from "../../datatypes/Color.ts";
 import { coordToAN, parseCoord } from "../../datatypes/Coord.ts";
 import { Move } from "../../datatypes/Move.ts";
 import { PieceType } from "../../datatypes/PieceType.ts";
-import { spaceGetColor, spaceGetType } from "../../datatypes/Space.ts";
+import { spaceGetType } from "../../datatypes/Space.ts";
 import { MoveResults } from "../moveResults.ts";
 
 /**

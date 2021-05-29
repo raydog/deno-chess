@@ -24,11 +24,11 @@ const PAWN_ROW = Array(8).fill(PieceType.Pawn);
 export function buildStandardBoard(): Board {
   const out = new Board();
 
-  _setRow(out, Color.White, 0, BACK_ROW);
-  _setRow(out, Color.White, 8, PAWN_ROW);
+  _setRow(out, Color.White, 0x00, BACK_ROW);
+  _setRow(out, Color.White, 0x10, PAWN_ROW);
 
-  _setRow(out, Color.Black, 48, PAWN_ROW);
-  _setRow(out, Color.Black, 56, BACK_ROW);
+  _setRow(out, Color.Black, 0x60, PAWN_ROW);
+  _setRow(out, Color.Black, 0x70, BACK_ROW);
 
   return out;
 }
