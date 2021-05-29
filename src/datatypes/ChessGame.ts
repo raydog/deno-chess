@@ -1,5 +1,6 @@
 // Note: the class in this file serves as the external API.
 
+import { boardToASCII } from "../logic/boardFormats/ascii.ts";
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
 import { listAllValidMoves, listValidMoves } from "../logic/listValidMoves.ts";
 import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
@@ -7,12 +8,11 @@ import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
 import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
-import { Color } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { Move } from "./Move.ts";
 import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
 
-const MOVE_RE = /^([a-h][1-8])-?([a-h][1-8])$/i;
+const MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/i;
 
 type AnnotatedMove = {
   move: Move;
@@ -21,9 +21,11 @@ type AnnotatedMove = {
 
 type HistoryEntry = {
   num: number;
-  side: "w" | "b";
-  san: string;
+  white: string;
+  black: string | null;
 };
+
+type Turn = "w" | "b";
 
 /**
  * A single chess game.
@@ -38,14 +40,6 @@ export class ChessGame {
   }
 
   /**
-   * Used in benchmarks
-   * @private
-   */
-  private _getBoard(): Board {
-    return this.#board;
-  }
-
-  /**
    * Start a brand new chess game. The board is set up in the standard way, and it is White's turn to play.
    *
    * @returns The new ChessGame.
@@ -54,14 +48,34 @@ export class ChessGame {
     return new ChessGame(buildStandardBoard());
   }
 
+  /**
+   * Return a list of all turns in the game.
+   * 
+   * @returns 
+   */
   history(): HistoryEntry[] {
-    return this.#moves.map((move, idx) => {
-      return {
-        num: (idx >>> 1) + 1,
-        side: (idx & 0x1) ? "b" : "w",
-        san: move.san,
-      };
-    });
+    return this.#moves
+      .reduce((acc, move, idx) => {
+        const isBlack = Boolean(idx & 1);
+        if (isBlack) {
+          acc[acc.length - 1].black = move.san;
+        } else {
+          acc.push({
+            num: (idx >> 1) + 1,
+            white: move.san,
+            black: null,
+          });
+        }
+        return acc;
+      }, [] as HistoryEntry[]);
+  }
+
+  /**
+   * Who's turn is it? Returns either white or black.
+   * @returns 
+   */
+  getTurn(): Turn {
+    return this.#board.getTurn() ? "b": "w";
   }
 
   /**
@@ -151,6 +165,10 @@ export class ChessGame {
     return moves.map((move) =>
       `${coordToAN(move.from)}${coordToAN(move.dest)}`
     );
+  }
+
+  toString(): string {
+    return boardToASCII(this.#board);
   }
 }
 

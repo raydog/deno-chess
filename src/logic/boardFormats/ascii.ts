@@ -18,7 +18,7 @@ export function boardToASCII(b: Board): string {
       const idx = buildCoord(file, rank);
       const sp = b.get(idx);
       const space = file ? "  " : "";
-      row += space + spaceIsEmpty(sp) ? "." : spaceGetFENString(sp);
+      row += space + (spaceIsEmpty(sp) ? "." : spaceGetFENString(sp));
     }
     out += row + " |\n";
   }
