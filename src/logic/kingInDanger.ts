@@ -6,9 +6,9 @@ import {
   spaceIsEmpty,
 } from "../datatypes/Space.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
-import { buildCoord, parseCoord } from "../datatypes/Coord.ts";
+import { nextCoord } from "../datatypes/Coord.ts";
 
-type MoveInfo = [file: number, rank: number, mask: number];
+type MoveInfo = [step: number, mask: number];
 
 const _mask = (...pieces: PieceType[]) => {
   return pieces.reduce(
@@ -20,46 +20,46 @@ const _mask = (...pieces: PieceType[]) => {
 // List of the offsets for slide moves. The mask is a bitmap of which pieces we're afraid of in this direction.
 // NOTE: if the piece enums change, we'll need to update the masks as well.
 const SLIDES: MoveInfo[] = [
-  [0, 1, _mask(PieceType.Rook, PieceType.Queen)],
-  [0, -1, _mask(PieceType.Rook, PieceType.Queen)],
-  [1, 0, _mask(PieceType.Rook, PieceType.Queen)],
-  [-1, 0, _mask(PieceType.Rook, PieceType.Queen)],
-  [1, 1, _mask(PieceType.Bishop, PieceType.Queen)],
-  [1, -1, _mask(PieceType.Bishop, PieceType.Queen)],
-  [-1, 1, _mask(PieceType.Bishop, PieceType.Queen)],
-  [-1, -1, _mask(PieceType.Bishop, PieceType.Queen)],
+  [16, _mask(PieceType.Rook, PieceType.Queen)],
+  [-16, _mask(PieceType.Rook, PieceType.Queen)],
+  [1, _mask(PieceType.Rook, PieceType.Queen)],
+  [-1, _mask(PieceType.Rook, PieceType.Queen)],
+  [15, _mask(PieceType.Bishop, PieceType.Queen)],
+  [17, _mask(PieceType.Bishop, PieceType.Queen)],
+  [-17, _mask(PieceType.Bishop, PieceType.Queen)],
+  [-15, _mask(PieceType.Bishop, PieceType.Queen)],
 ];
 
 // List of the offsets for steppy moves. With a similar "do I care?" bitmask:
 const STEPS: MoveInfo[] = [
-  [2, 1, _mask(PieceType.Knight)],
-  [-2, 1, _mask(PieceType.Knight)],
-  [2, -1, _mask(PieceType.Knight)],
-  [-2, -1, _mask(PieceType.Knight)],
-  [1, 2, _mask(PieceType.Knight)],
-  [-1, 2, _mask(PieceType.Knight)],
-  [1, -2, _mask(PieceType.Knight)],
-  [-1, -2, _mask(PieceType.Knight)],
+  [31, _mask(PieceType.Knight)],
+  [33, _mask(PieceType.Knight)],
+  [14, _mask(PieceType.Knight)],
+  [18, _mask(PieceType.Knight)],
+  [-18, _mask(PieceType.Knight)],
+  [-14, _mask(PieceType.Knight)],
+  [-33, _mask(PieceType.Knight)],
+  [-31, _mask(PieceType.Knight)],
 
-  [1, -1, _mask(PieceType.King)],
-  [1, 0, _mask(PieceType.King)],
-  [1, 1, _mask(PieceType.King)],
-  [0, 1, _mask(PieceType.King)],
-  [0, -1, _mask(PieceType.King)],
-  [-1, -1, _mask(PieceType.King)],
-  [-1, 0, _mask(PieceType.King)],
-  [-1, 1, _mask(PieceType.King)],
+  [15, _mask(PieceType.King)],
+  [16, _mask(PieceType.King)],
+  [17, _mask(PieceType.King)],
+  [-1, _mask(PieceType.King)],
+  [1, _mask(PieceType.King)],
+  [-17, _mask(PieceType.King)],
+  [-16, _mask(PieceType.King)],
+  [-15, _mask(PieceType.King)],
 ];
 
 // Similar for pawns, but the index in this array is equal to the enum value for the KING'S color:
 const PAWNS: MoveInfo[][] = [
   [
-    [-1, 1, _mask(PieceType.Pawn)],
-    [1, 1, _mask(PieceType.Pawn)],
+    [15, _mask(PieceType.Pawn)],
+    [17, _mask(PieceType.Pawn)],
   ],
   [
-    [-1, -1, _mask(PieceType.Pawn)],
-    [1, -1, _mask(PieceType.Pawn)],
+    [-17, _mask(PieceType.Pawn)],
+    [-15, _mask(PieceType.Pawn)],
   ],
 ];
 
@@ -74,7 +74,7 @@ const PAWNS: MoveInfo[][] = [
  * @returns
  */
 export function kingInDanger(b: Board, kingColor: Color): boolean {
-  for (let idx = 0; idx < 64; idx++) {
+  for (let idx = 0; (idx & 0x88) === 0; idx = nextCoord(idx)) {
     const spot = b.get(idx);
 
     if (
@@ -85,16 +85,14 @@ export function kingInDanger(b: Board, kingColor: Color): boolean {
     }
 
     // Else, this is a King that we care about. Scan out, looking for possible attackers.
-    const [baseFile, baseRank] = parseCoord(idx);
 
     // Slidy pieces first:
-    for (const [offFile, offRank, offMask] of SLIDES) {
+    for (const [offset, offMask] of SLIDES) {
       for (
-        let file = baseFile + offFile, rank = baseRank + offRank;
-        fileRankOk(file, rank);
-        file += offFile, rank += offRank
+        let newIdx = idx + offset;
+        (newIdx & 0x88) === 0;
+        newIdx += offset
       ) {
-        const newIdx = buildCoord(file, rank);
         const newSpot = b.get(newIdx);
         if (spaceIsEmpty(newSpot)) continue;
         if (spaceGetColor(newSpot) === kingColor) break;
@@ -108,11 +106,10 @@ export function kingInDanger(b: Board, kingColor: Color): boolean {
     }
 
     // Now steppy pieces:
-    for (const [offFile, offRank, offMask] of STEPS) {
-      const file = baseFile + offFile, rank = baseRank + offRank;
-      if (!fileRankOk(file, rank)) continue;
+    for (const [offset, offMask] of STEPS) {
+      const newIdx = idx + offset;
+      if (newIdx & 0x88) continue;
 
-      const newIdx = buildCoord(baseFile + offFile, baseRank + offRank);
       const newSpot = b.get(newIdx);
       if (
         !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
@@ -124,11 +121,10 @@ export function kingInDanger(b: Board, kingColor: Color): boolean {
     }
 
     // And now pawns:
-    for (const [offFile, offRank, offMask] of PAWNS[kingColor]) {
-      const file = baseFile + offFile, rank = baseRank + offRank;
-      if (!fileRankOk(file, rank)) continue;
+    for (const [offset, offMask] of PAWNS[kingColor]) {
+      const newIdx = idx + offset;
+      if (newIdx & 0x88) continue;
 
-      const newIdx = buildCoord(baseFile + offFile, baseRank + offRank);
       const newSpot = b.get(newIdx);
       if (
         !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
@@ -140,8 +136,4 @@ export function kingInDanger(b: Board, kingColor: Color): boolean {
     }
   }
   return false;
-}
-
-function fileRankOk(file: number, rank: number): boolean {
-  return file >= 0 && file < 8 && rank >= 0 && rank < 8;
 }

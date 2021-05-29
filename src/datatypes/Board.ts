@@ -3,6 +3,9 @@ import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
 
+// Uses the 0x88 strategy:
+const BOARD_SIZE = 8 * 8 * 2;
+
 type Layer = {
   board: Uint8Array;
   clock: number;
@@ -12,7 +15,7 @@ type Layer = {
 };
 
 /**
- * Internal representation of a Board. Basically 64 integers, with a few extra bells-n-whistles.
+ * Internal representation of a Board. Basically a bunch of integers, with a few extra bells-n-whistles.
  * This will be translated into a more public-friendly representation in the future.
  */
 export class Board {
@@ -27,7 +30,7 @@ export class Board {
    * @param space
    */
   set(idx: Coord, space: Space) {
-    assert(idx >= 0 && idx < 64, "Invalid set() coord");
+    assert((idx & 0x88) === 0, "Invalid set() coord");
     this.#current.board[idx] = space;
   }
 
@@ -38,7 +41,7 @@ export class Board {
    * @returns
    */
   get(idx: Coord): Space {
-    assert(idx >= 0 && idx < 64, "Invalid get() coord");
+    assert((idx & 0x88) === 0, "Invalid get() coord");
     return this.#current.board[idx];
   }
 
@@ -138,7 +141,7 @@ export class Board {
 
 function newLayer(): Layer {
   return {
-    board: new Uint8Array(8 * 8).fill(SPACE_EMPTY),
+    board: new Uint8Array(BOARD_SIZE).fill(SPACE_EMPTY),
     clock: 0,
     moveNum: 1,
     ep: -1,

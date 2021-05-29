@@ -5,7 +5,7 @@ import { bench, runBenchmarks } from "../../testDeps.ts";
 
 bench({
   name: "Giuoco Piano Opening",
-  runs: 500,
+  runs: 1000,
   func(b) {
     const giuocoPiano = ChessGame.NewStandardGame()
       .move("e2-e4").move("e7-e5")
