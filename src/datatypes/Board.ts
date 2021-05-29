@@ -4,11 +4,11 @@ import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
 
 type Layer = {
-  board: Uint8Array,
-  clock: number,
-  moveNum: number,
-  ep: Coord,
-  turn: Color,
+  board: Uint8Array;
+  clock: number;
+  moveNum: number;
+  ep: Coord;
+  turn: Color;
 };
 
 /**
@@ -16,7 +16,6 @@ type Layer = {
  * This will be translated into a more public-friendly representation in the future.
  */
 export class Board {
-
   #layerIdx = 0;
   #layers: Layer[] = [newLayer()];
   #current: Layer = this.#layers[0];
@@ -100,7 +99,7 @@ export class Board {
 
   /**
    * Get the turn color.
-   * @returns 
+   * @returns
    */
   getTurn(): Color {
     return this.#current.turn;

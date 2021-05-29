@@ -7,7 +7,6 @@ bench({
   name: "Giuoco Piano Opening",
   runs: 500,
   func(b) {
-
     const giuocoPiano = ChessGame.NewStandardGame()
       .move("e2-e4").move("e7-e5")
       .move("g1-f3").move("b8-c6")

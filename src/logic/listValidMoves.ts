@@ -219,7 +219,7 @@ function _pawnMoves(
 
   for (const fileStep of PAWN_CAPS) {
     const newFile = file + fileStep;
-    if (newFile < 0 || newFile >= 8)continue;
+    if (newFile < 0 || newFile >= 8) continue;
 
     const coord = buildCoord(newFile, rank + dir);
     const spot = b.get(coord);
