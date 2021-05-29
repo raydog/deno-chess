@@ -30,7 +30,6 @@ type HistoryEntry = {
  */
 export class ChessGame {
   #state: GameState = GameState.active;
-  #turn: Color = Color.White;
   #board: Board;
   #moves: AnnotatedMove[] = [];
 
@@ -101,7 +100,8 @@ export class ChessGame {
     // Get the full list of moves. We need the FULL list of moves (and not just the moves for this one piece) because
     // computing the SAN for a move needs to change how the origin is represented based on which moves are currently
     // available to the player:
-    const moves = listAllValidMoves(this.#board, this.#turn);
+    const turn = this.#board.getTurn();
+    const moves = listAllValidMoves(this.#board, turn);
     const picked = moves.find((move) =>
       move.from === from && move.dest === dest
     );
@@ -119,7 +119,8 @@ export class ChessGame {
       san: moveToSAN(moves, picked, results),
       // san: al
     });
-    this.#turn = 1 - this.#turn;
+
+    this.#board.changeTurn();
 
     return this;
   }
@@ -136,12 +137,13 @@ export class ChessGame {
    */
   allMoves(coord?: string): string[] {
     let moves;
+    const turn = this.#board.getTurn();
     if (coord == null) {
-      moves = listAllValidMoves(this.#board, this.#turn);
+      moves = listAllValidMoves(this.#board, turn);
     } else {
       const idx = coordFromAN(coord);
       const sp = this.#board.get(idx);
-      if (spaceIsEmpty(sp) || spaceGetColor(sp) !== this.#turn) {
+      if (spaceIsEmpty(sp) || spaceGetColor(sp) !== turn) {
         return [];
       }
       moves = listValidMoves(this.#board, idx);
