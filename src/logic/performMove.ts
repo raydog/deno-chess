@@ -3,12 +3,10 @@ import { Move } from "../datatypes/Move.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
-  spaceEnPassant,
   spaceGetColor,
   spaceGetType,
   spaceMarkMoved,
   spacePromote,
-  spaceSetEnPassant,
 } from "../datatypes/Space.ts";
 
 /**

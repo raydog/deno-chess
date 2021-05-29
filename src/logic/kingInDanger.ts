@@ -6,111 +6,142 @@ import {
   spaceIsEmpty,
 } from "../datatypes/Space.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
-import { buildCoord, Coord, parseCoord } from "../datatypes/Coord.ts";
+import { buildCoord, parseCoord } from "../datatypes/Coord.ts";
 
-type Step = [x: number, y: number];
+type MoveInfo = [file: number, rank: number, mask: number];
 
-// Pre-compiled lists of moves, since most moves are similar:
-const BISHOP_DIRS: Step[] = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
-const ROOK_DIRS: Step[] = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-const QUEEN_DIRS: Step[] = [...ROOK_DIRS, ...BISHOP_DIRS];
-const KING_DIRS: Step[] = [...QUEEN_DIRS];
-const KNIGHT_DIRS: Step[] = [
-  [2, 1],
-  [2, -1],
-  [-2, 1],
-  [-2, -1],
-  [1, 2],
-  [-1, 2],
-  [1, -2],
-  [-1, -2],
+const _mask = (...pieces: PieceType[]) => {
+  return pieces.reduce(
+    (acc, piece: PieceType) => acc | (1 << piece),
+    0,
+  );
+};
+
+// List of the offsets for slide moves. The mask is a bitmap of which pieces we're afraid of in this direction.
+// NOTE: if the piece enums change, we'll need to update the masks as well.
+const SLIDES: MoveInfo[] = [
+  [0, 1, _mask(PieceType.Rook, PieceType.Queen)],
+  [0, -1, _mask(PieceType.Rook, PieceType.Queen)],
+  [1, 0, _mask(PieceType.Rook, PieceType.Queen)],
+  [-1, 0, _mask(PieceType.Rook, PieceType.Queen)],
+  [1, 1, _mask(PieceType.Bishop, PieceType.Queen)],
+  [1, -1, _mask(PieceType.Bishop, PieceType.Queen)],
+  [-1, 1, _mask(PieceType.Bishop, PieceType.Queen)],
+  [-1, -1, _mask(PieceType.Bishop, PieceType.Queen)],
+];
+
+// List of the offsets for steppy moves. With a similar "do I care?" bitmask:
+const STEPS: MoveInfo[] = [
+  [2, 1, _mask(PieceType.Knight)],
+  [-2, 1, _mask(PieceType.Knight)],
+  [2, -1, _mask(PieceType.Knight)],
+  [-2, -1, _mask(PieceType.Knight)],
+  [1, 2, _mask(PieceType.Knight)],
+  [-1, 2, _mask(PieceType.Knight)],
+  [1, -2, _mask(PieceType.Knight)],
+  [-1, -2, _mask(PieceType.Knight)],
+
+  [1, -1, _mask(PieceType.King)],
+  [1, 0, _mask(PieceType.King)],
+  [1, 1, _mask(PieceType.King)],
+  [0, 1, _mask(PieceType.King)],
+  [0, -1, _mask(PieceType.King)],
+  [-1, -1, _mask(PieceType.King)],
+  [-1, 0, _mask(PieceType.King)],
+  [-1, 1, _mask(PieceType.King)],
+];
+
+// Similar for pawns, but the index in this array is equal to the enum value for the KING'S color:
+const PAWNS: MoveInfo[][] = [
+  [
+    [-1, 1, _mask(PieceType.Pawn)],
+    [1, 1, _mask(PieceType.Pawn)],
+  ],
+  [
+    [-1, -1, _mask(PieceType.Pawn)],
+    [1, -1, _mask(PieceType.Pawn)],
+  ],
 ];
 
 /**
  * Returns true if a king of the given color is currently in danger.
  *
- * TODO: This method is fairly inefficient. Perhaps optimize, eventually?
+ * TODO: This method is alright, performance-wise, but we might consider incrementally-updated attack maps at some
+ * point...
  *
  * @param b
  * @param kingColor
  * @returns
  */
 export function kingInDanger(b: Board, kingColor: Color): boolean {
-  const isTargetKing = (idx: Coord): boolean => {
-    const sp = b.get(idx);
-    return !spaceIsEmpty(sp) && spaceGetType(sp) === PieceType.King &&
-      spaceGetColor(sp) === kingColor;
-  };
-
   for (let idx = 0; idx < 64; idx++) {
-    const sp = b.get(idx);
-    if (spaceIsEmpty(sp)) continue;
-    if (spaceGetColor(sp) === kingColor) continue;
+    const spot = b.get(idx);
 
-    // Ok, this space contains an opponent piece. Check to see if they are capable of delivering check:
-    const [file, rank] = parseCoord(idx);
-    const type = spaceGetType(sp);
-    switch (type) {
-      case PieceType.Pawn: {
-        const dir = kingColor === Color.White ? -1 : 1;
-        const newrank = rank + dir;
-        if (newrank < 0 || newrank >= 8) break;
-        if (file > 0 && isTargetKing(buildCoord(file - 1, newrank))) {
+    if (
+      spaceIsEmpty(spot) || spaceGetType(spot) !== PieceType.King ||
+      spaceGetColor(spot) !== kingColor
+    ) {
+      continue;
+    }
+
+    // Else, this is a King that we care about. Scan out, looking for possible attackers.
+    const [baseFile, baseRank] = parseCoord(idx);
+
+    // Slidy pieces first:
+    for (const [offFile, offRank, offMask] of SLIDES) {
+      for (
+        let file = baseFile + offFile, rank = baseRank + offRank;
+        fileRankOk(file, rank);
+        file += offFile, rank += offRank
+      ) {
+        const newIdx = buildCoord(file, rank);
+        const newSpot = b.get(newIdx);
+        if (spaceIsEmpty(newSpot)) continue;
+        if (spaceGetColor(newSpot) === kingColor) break;
+        if (offMask & (1 << spaceGetType(newSpot))) {
+          // This is an enemy piece that we care about:
           return true;
         }
-        if (
-          file < 7 && isTargetKing(buildCoord(file + 1, rank + dir))
-        ) {
-          return true;
-        }
-        break;
-      }
-
-      // Slidey pieces:
-
-      case PieceType.Bishop:
-      case PieceType.Rook:
-      case PieceType.Queen: {
-        const dirs = type === PieceType.Bishop
-          ? BISHOP_DIRS
-          : (type === PieceType.Rook)
-          ? ROOK_DIRS
-          : QUEEN_DIRS;
-        for (const [dx, dy] of dirs) {
-          for (let dist = 1; dist < 8; dist++) {
-            const x = file + dx * dist, y = rank + dy * dist;
-            if (x < 0 || x >= 8 || y < 0 || y >= 8) break;
-
-            const idx = buildCoord(x, y);
-            const sp = b.get(idx);
-
-            // Don't care if empty:
-            if (spaceIsEmpty(sp)) continue;
-
-            // Else there's a piece here. Is it the king?
-            if (isTargetKing(idx)) return true;
-
-            // No, but there's still a piece here, so quit with this direction:
-            break;
-          }
-        }
-        break;
-      }
-
-      // Steppy pieces:
-
-      case PieceType.Knight:
-      case PieceType.King: {
-        const dirs = type === PieceType.Knight ? KNIGHT_DIRS : KING_DIRS;
-        for (const [dx, dy] of dirs) {
-          const x = file + dx, y = rank + dy;
-          if (x < 0 || x >= 8 || y < 0 || y >= 8) continue;
-          if (isTargetKing(buildCoord(x, y))) return true;
-        }
+        // Else, some other enemy piece. Next direction...
         break;
       }
     }
-  }
 
+    // Now steppy pieces:
+    for (const [offFile, offRank, offMask] of STEPS) {
+      const file = baseFile + offFile, rank = baseRank + offRank;
+      if (!fileRankOk(file, rank)) continue;
+
+      const newIdx = buildCoord(baseFile + offFile, baseRank + offRank);
+      const newSpot = b.get(newIdx);
+      if (
+        !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
+        (offMask & (1 << spaceGetType(newSpot)))
+      ) {
+        // This is a steppy piece, in a spot that we care about:
+        return true;
+      }
+    }
+
+    // And now pawns:
+    for (const [offFile, offRank, offMask] of PAWNS[kingColor]) {
+      const file = baseFile + offFile, rank = baseRank + offRank;
+      if (!fileRankOk(file, rank)) continue;
+
+      const newIdx = buildCoord(baseFile + offFile, baseRank + offRank);
+      const newSpot = b.get(newIdx);
+      if (
+        !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
+        (offMask & (1 << spaceGetType(newSpot)))
+      ) {
+        // This is a pawn in a spot that we care about:
+        return true;
+      }
+    }
+  }
   return false;
+}
+
+function fileRankOk(file: number, rank: number): boolean {
+  return file >= 0 && file < 8 && rank >= 0 && rank < 8;
 }
