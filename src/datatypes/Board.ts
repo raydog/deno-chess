@@ -4,7 +4,7 @@ import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
 
 type Layer = {
-  board: Uint32Array,
+  board: Uint8Array,
   clock: number,
   moveNum: number,
   ep: Coord,
@@ -139,7 +139,7 @@ export class Board {
 
 function newLayer(): Layer {
   return {
-    board: new Uint32Array(8 * 8).fill(SPACE_EMPTY),
+    board: new Uint8Array(8 * 8).fill(SPACE_EMPTY),
     clock: 0,
     moveNum: 1,
     ep: -1,
