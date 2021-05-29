@@ -7,9 +7,17 @@ export class ChessError extends Error {
 /**
  * The game is over.
  */
-export class ChessGameOver extends ChessError {}
+export class ChessGameOver extends ChessError {
+  constructor() {
+    super("Game is over");
+  }
+}
 
 /**
  * A Chess move was either formatted incorrectly, or was otherwise invalid.
  */
-export class ChessBadMove extends ChessError {}
+export class ChessBadMove extends ChessError {
+  constructor(msg: string) {
+    super("Bad move: " + msg);
+  }
+}

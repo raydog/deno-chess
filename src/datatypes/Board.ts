@@ -2,6 +2,7 @@ import { Space, SPACE_EMPTY } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { Color } from "./Color.ts";
+import { GameStatus } from "./GameStatus.ts";
 
 // Uses the 0x88 strategy:
 const BOARD_SIZE = 8 * 8 * 2;
@@ -11,7 +12,7 @@ type Layer = {
   clock: number;
   moveNum: number;
   ep: Coord;
-  turn: Color;
+  status: GameStatus;
 };
 
 /**
@@ -101,18 +102,18 @@ export class Board {
   }
 
   /**
-   * Get the turn color.
+   * Get the game status.
    * @returns
    */
-  getTurn(): Color {
-    return this.#current.turn;
+  getStatus(): GameStatus {
+    return this.#current.status;
   }
 
   /**
-   * Toggle the turn color from white to black and visa versa.
+   * Update the game status.
    */
-  changeTurn() {
-    this.#current.turn = 1 - this.#current.turn;
+  setStatus(s: GameStatus) {
+    this.#current.status = s;
   }
 
   /**
@@ -145,7 +146,7 @@ function newLayer(): Layer {
     clock: 0,
     moveNum: 1,
     ep: -1,
-    turn: Color.White,
+    status: GameStatus.WhiteTurn,
   };
 }
 
@@ -154,5 +155,5 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.clock = src.clock;
   dest.moveNum = src.moveNum;
   dest.ep = src.ep;
-  dest.turn = src.turn;
+  dest.status = src.status;
 }

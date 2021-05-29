@@ -7,8 +7,10 @@ import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
-import { ChessBadMove, ChessGameOver } from "./ChessError.ts";
+import { ChessBadMove, ChessError, ChessGameOver } from "./ChessError.ts";
+import { Color } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
+import { GameStatus } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
 import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
 
@@ -25,13 +27,21 @@ type HistoryEntry = {
   black: string | null;
 };
 
-type Turn = "w" | "b";
+type Status =
+  | "white"
+  | "black"
+  | "checkmate-white"
+  | "checkmate-black"
+  | "draw-other"
+  | "draw-stalemate"
+  | "draw-repetition"
+  | "draw-fifty-moves"
+  | "draw-no-material";
 
 /**
  * A single chess game.
  */
 export class ChessGame {
-  #state: GameState = GameState.active;
   #board: Board;
   #moves: AnnotatedMove[] = [];
 
@@ -50,8 +60,8 @@ export class ChessGame {
 
   /**
    * Return a list of all turns in the game.
-   * 
-   * @returns 
+   *
+   * @returns
    */
   history(): HistoryEntry[] {
     return this.#moves
@@ -71,11 +81,13 @@ export class ChessGame {
   }
 
   /**
-   * Who's turn is it? Returns either white or black.
-   * @returns 
+   * What's the game's status? Details the turn (if active), the winner (if checkmate), or the terminal state, if the
+   * game was drawn for some reason.
+   *
+   * @returns A status string.
    */
-  getTurn(): Turn {
-    return this.#board.getTurn() ? "b": "w";
+  getStatus(): Status {
+    return _statusString(this.#board.getStatus());
   }
 
   /**
@@ -93,8 +105,10 @@ export class ChessGame {
    * @param move A string like "b1c3", "d1-h5", etc.
    * @param promote
    */
-  public move(move: string, promote: Piece = Piece.Q): ChessGame {
-    if (this.#state !== "active") {
+  public move(move: string, promote = "Q"): ChessGame {
+    const status = this.#board.getStatus();
+
+    if (status >= 2) {
       throw new ChessGameOver();
     }
 
@@ -114,8 +128,7 @@ export class ChessGame {
     // Get the full list of moves. We need the FULL list of moves (and not just the moves for this one piece) because
     // computing the SAN for a move needs to change how the origin is represented based on which moves are currently
     // available to the player:
-    const turn = this.#board.getTurn();
-    const moves = listAllValidMoves(this.#board, turn);
+    const moves = listAllValidMoves(this.#board, _statusAsColor(status));
     const picked = moves.find((move) =>
       move.from === from && move.dest === dest
     );
@@ -134,7 +147,7 @@ export class ChessGame {
       // san: al
     });
 
-    this.#board.changeTurn();
+    this.#board.setStatus(results.newGameStatus);
 
     return this;
   }
@@ -150,14 +163,19 @@ export class ChessGame {
    * @param coord An optional coordinate, formatted in algebraic notation, so like "a5".
    */
   allMoves(coord?: string): string[] {
+    const status = this.#board.getStatus();
+    if (status >= 2) {
+      return [];
+    }
+
     let moves;
-    const turn = this.#board.getTurn();
+
     if (coord == null) {
-      moves = listAllValidMoves(this.#board, turn);
+      moves = listAllValidMoves(this.#board, _statusAsColor(status));
     } else {
       const idx = coordFromAN(coord);
       const sp = this.#board.get(idx);
-      if (spaceIsEmpty(sp) || spaceGetColor(sp) !== turn) {
+      if (spaceIsEmpty(sp) || spaceGetColor(sp) !== _statusAsColor(status)) {
         return [];
       }
       moves = listValidMoves(this.#board, idx);
@@ -172,79 +190,35 @@ export class ChessGame {
   }
 }
 
-/**
- * A side in the game. Either white or black.
- */
-export const enum Side {
-  "white" = "white",
-  "black" = "black",
-} /**
- * A piece type, abbreviated to one character.
- */
-
-export const enum Piece {
-  /**
-   * Pawn
-   */
-  P = "P",
-
-  /**
-   * Bishop
-   */
-  B = "B",
-
-  /**
-   * Knight
-   */
-  N = "N",
-
-  /**
-   * Rook
-   */
-  R = "R",
-
-  /**
-   * Queen
-   */
-  Q = "Q",
-
-  /**
-   * King
-   */
-  K = "K",
+function _statusAsColor(status: GameStatus): Color {
+  // Status IS a color when the game is active. Just make sure the game is active:
+  if (status >= 2) { throw new ChessError("Expected game to be active"); }
+  return status as unknown as Color;
 }
 
-/**
- * The state of the current game. If the game is over (or drawn) will also explain why.
- */
-export const enum GameState {
-  /**
-   * The game is active. `Game.turn` describes who's the next to move.
-   */
-  "active" = "active",
-
-  /**
-   * The game is over. `Game.turn` describes who has won.
-   */
-  "checkmate" = "checkmate",
-
-  /**
-   * The game is over, since it is `Game.turn`'s move, and they have no legal moves available to them.
-   */
-  "draw:stalemate" = "draw:stalemate",
-
-  /**
-   * The game is over, since it is the 3rd time that this current board state has been encountered.
-   */
-  "draw:repetition" = "draw:repetition",
-
-  /**
-   * The game is over, since it's been 50 moves since the last capture or pawn move.
-   */
-  "draw:fifty-moves" = "draw:fifty-moves",
-
-  /**
-   * The game is over, since there just isn't enough material left on the board to deliver checkmate.
-   */
-  "draw:no-material" = "draw:no-material",
+// Convert our own status enum into an externally-available string:
+function _statusString(status: GameStatus): Status {
+  switch (status) {
+    case GameStatus.WhiteTurn:
+      return "white";
+    case GameStatus.BlackTurn:
+      return "black";
+    case GameStatus.CheckmateWhite:
+      return "checkmate-white";
+    case GameStatus.CheckmateBlack:
+      return "checkmate-black";
+    case GameStatus.Draw:
+      return "draw-other";
+    case GameStatus.DrawStalemate:
+      return "draw-stalemate";
+    case GameStatus.DrawRepetition:
+      return "draw-repetition";
+    case GameStatus.DrawFiftyMove:
+      return "draw-fifty-moves";
+    case GameStatus.DrawNoMaterial:
+      return "draw-no-material";
+    default:
+      // For some reason, Typescript isn't type-narrowing this:
+      throw new ChessError("Bad status code: " + status);
+  }
 }

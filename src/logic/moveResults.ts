@@ -1,6 +1,8 @@
 import { Board } from "../datatypes/Board.ts";
+import { GameStatus } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import { spaceGetColor } from "../datatypes/Space.ts";
+import { assert } from "./assert.ts";
 import { kingInDanger } from "./kingInDanger.ts";
 import { listAllValidMoves } from "./listValidMoves.ts";
 import { performMove } from "./performMove.ts";
@@ -18,6 +20,11 @@ export type MoveResults = {
    * Does the enemy have any valid moves left?
    */
   enemyCanMove: boolean;
+
+  /**
+   * The game's state after this move.
+   */
+  newGameStatus: GameStatus;
 };
 
 /**
@@ -48,9 +55,45 @@ export function checkMoveResults(board: Board, move: Move): MoveResults {
   const color = spaceGetColor(move.what);
   const enemy = 1 - color;
 
+  const enemyInCheck = kingInDanger(board, enemy);
+
+  // TODO: Fork this into a version that DOESN'T allocate an array of objects, and instead short-circuits a bool:
+  const enemyCanMove = listAllValidMoves(board, enemy).length > 0;
+
+  const newGameStatus = _nextState(board, enemyInCheck, enemyCanMove);
+
   return {
-    enemyInCheck: kingInDanger(board, enemy),
-    // TODO: Fork this into a version that DOESN'T allocate an array of objects, and instead short-circuits a bool:
-    enemyCanMove: listAllValidMoves(board, enemy).length > 0,
+    enemyInCheck,
+    enemyCanMove,
+    newGameStatus,
   };
+}
+
+function _nextState(
+  board: Board,
+  enemyInCheck: boolean,
+  enemyCanMove: boolean,
+): GameStatus {
+  const priorStatus = board.getStatus();
+
+  // If we're moving, this had better
+  assert(priorStatus <= 1, "Attempting to move after game is over");
+
+  // If no moves, this is DEFINITELY a terminal state.
+  if (!enemyCanMove) {
+    if (enemyInCheck) {
+      // CHECKMATE
+      return GameStatus.CheckmateWhite + priorStatus;
+    }
+    // Else, STALEMATE:
+    return GameStatus.DrawStalemate;
+  }
+
+  // Else, there are a few other situations that can trigger end-of-game:
+  if (board.getClock() >= 100) {
+    return GameStatus.DrawFiftyMove;
+  }
+
+  // Else, the game is still on. Toggle the player:
+  return 1 - priorStatus;
 }
