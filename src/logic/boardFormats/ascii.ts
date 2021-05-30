@@ -1,26 +1,59 @@
 import { Board } from "../../datatypes/Board.ts";
+import { Color } from "../../datatypes/Color.ts";
 import { buildCoord } from "../../datatypes/Coord.ts";
-import { spaceGetFENString, spaceIsEmpty } from "../../datatypes/Space.ts";
+import {
+  Space,
+  spaceGetColor,
+  spaceGetFENString,
+  spaceIsEmpty,
+} from "../../datatypes/Space.ts";
 
 const BAR = "   +------------------------+\n";
 const FILES = "     a  b  c  d  e  f  g  h";
 
+type StyleObj = {
+  dim(val: string): string;
+  blue(val: string): string;
+};
+
+const STYLE_COLOR: StyleObj = {
+  dim: (val: string) => `\x1b[2m${val}\x1b[22m`,
+  blue: (val: string) => `\x1b[34m${val}\x1b[39m`,
+};
+
+const STYLE_NO_COLOR: StyleObj = {
+  dim: (val: string) => val,
+  blue: (val: string) => val,
+};
+
 /**
- * Inspired by the ASCII view from Chess.js:
+ * Render as ASCII. Will include ANSI colors, if asked.
+ *
+ * Inspired by the ASCII view from Chess.js.
  *
  * @param b
  */
-export function boardToASCII(b: Board): string {
+export function boardToASCII(b: Board, color: boolean): string {
   let out = BAR;
+
+  const style = color ? STYLE_COLOR : STYLE_NO_COLOR;
+
   for (let rank = 7; rank >= 0; rank--) {
-    let row = ` ${rank + 1} | `;
+    let row = ` ${style.dim(String(rank + 1))} | `;
     for (let file = 0; file < 8; file++) {
       const idx = buildCoord(file, rank);
       const sp = b.get(idx);
       const space = file ? "  " : "";
-      row += space + (spaceIsEmpty(sp) ? "." : spaceGetFENString(sp));
+      row += space + _formatSpace(style, sp);
     }
     out += row + " |\n";
   }
-  return out + BAR + FILES;
+  return out + BAR + style.dim(FILES);
+}
+
+function _formatSpace(style: StyleObj, sp: Space): string {
+  if (spaceIsEmpty(sp)) return style.dim(".");
+  return (spaceGetColor(sp) === Color.White)
+    ? spaceGetFENString(sp)
+    : style.blue(spaceGetFENString(sp));
 }

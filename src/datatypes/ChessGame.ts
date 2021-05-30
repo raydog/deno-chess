@@ -27,7 +27,10 @@ type HistoryEntry = {
   black: string | null;
 };
 
-type Status =
+/**
+ * This game's status.
+ */
+export type Status =
   | "white"
   | "black"
   | "checkmate-white"
@@ -44,6 +47,7 @@ type Status =
 export class ChessGame {
   #board: Board;
   #moves: AnnotatedMove[] = [];
+  #color: boolean = (typeof Deno !== "undefined" && Deno.noColor === false);
 
   private constructor(b: Board) {
     this.#board = b;
@@ -88,6 +92,15 @@ export class ChessGame {
    */
   getStatus(): Status {
     return _statusString(this.#board.getStatus());
+  }
+
+  /**
+   * Returns true if this game is over.
+   *
+   * @returns
+   */
+  isGameOver(): boolean {
+    return this.#board.getStatus() >= 2;
   }
 
   /**
@@ -185,14 +198,14 @@ export class ChessGame {
     );
   }
 
-  toString(): string {
-    return boardToASCII(this.#board);
+  toString(color = this.#color): string {
+    return boardToASCII(this.#board, color);
   }
 }
 
 function _statusAsColor(status: GameStatus): Color {
   // Status IS a color when the game is active. Just make sure the game is active:
-  if (status >= 2) { throw new ChessError("Expected game to be active"); }
+  if (status >= 2) throw new ChessError("Expected game to be active");
   return status as unknown as Color;
 }
 
