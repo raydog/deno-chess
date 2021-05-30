@@ -1,5 +1,6 @@
 import { ChessGameOver } from "../src/datatypes/ChessError.ts";
 import { ChessGame } from "../src/datatypes/ChessGame.ts";
+import { coordToAN } from "../src/datatypes/Coord.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("ChessGame Public API > Start new standard game", function () {
@@ -127,34 +128,46 @@ Deno.test("ChessGame Public API > Draws after 3 repeats", function () {
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
-// Deno.test("ChessGame Public API > Draws 50 moves after pawn move", function () {
-//   const game = ChessGame.NewStandardGame();
-//   game.move("e2e4").move("e7e6");
+Deno.test("ChessGame Public API > Draws after 50 moves", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("d2d4").move("d7d5");
+  game.move("d1d3").move("d8d7");
+  game.move("d3a3").move("d7d8");
+  game.move("g1f3").move("g8f6");
+  game.move("f3e5").move("f6e4");
 
-//   // Each loop does 2 full moves, and returns to the opening position:
-//   for (let i = 0; i < 25; i++) {
-//     game.move("b1c3").move("g8f6");
-//     game.move("c3b1").move("f6g8");
-//   }
+  // The white piece runs a circuit around the board. The black piece just move back and forward:
+  for (let n=0; n<2; n++) {
+    for (let i = 0; i < 7; i++) {
+      game.move(coordToAN(i | 0x20) + coordToAN((i+1) | 0x20));
+      game.move((i%2 === 0) ? "d8d7" : "d7d8");
+    }
+    for (let i = 2; i < 5; i++) {
+      game.move(coordToAN((i*0x10) | 7) + coordToAN((i*0x10+0x10) | 7));
+      game.move((i%2 === 1) ? "d8d7" : "d7d8");
+    }
+    for (let i = 7; i > 0; i--) {
+      game.move(coordToAN(i | 0x50) + coordToAN((i-1) | 0x50));
+      game.move((i%2 === 1) ? "d8d7" : "d7d8");
+    }
+    for (let i = 5; i > 2; i--) {
+      game.move(coordToAN((i*0x10)) + coordToAN((i*0x10-0x10)));
+      game.move((i%2 === 0) ? "d8d7" : "d7d8");
+    }
+    // Avoid repetition fails:
+    if (n === 0) {
+      game.move("e1d1").move("c8f5");
+    }
+  }
 
-//   asserts.assertEquals(game.getStatus(), "draw-fifty-moves");
-//   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
-// });
+  for (let i = 0; i < 5; i++) {
+    game.move(coordToAN(i | 0x20) + coordToAN((i+1) | 0x20));
+    game.move((i%2 === 0) ? "d8d7" : "d7d8");
+  }
 
-// Deno.test("ChessGame Public API > Draws 50 moves after capture", function () {
-//   const game = ChessGame.NewStandardGame();
-//   game.move("e2e4").move("d7d5");
-//   game.move("e4d5").move("d8d5");
-
-//   // Each loop does 2 full moves, and returns to the opening position:
-//   for (let i = 0; i < 25; i++) {
-//     game.move("b1c3").move("g8f6");
-//     game.move("c3b1").move("f6g8");
-//   }
-
-//   asserts.assertEquals(game.getStatus(), "draw-fifty-moves");
-//   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
-// });
+  asserts.assertEquals(game.getStatus(), "draw-fifty-moves");
+  asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
+});
 
 Deno.test("ChessGame Public API > Stalemate", function () {
   const game = ChessGame.NewStandardGame();
