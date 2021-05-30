@@ -1,6 +1,6 @@
 import { Board } from "../../datatypes/Board.ts";
 import { Color } from "../../datatypes/Color.ts";
-import { buildCoord } from "../../datatypes/Coord.ts";
+import { buildCoord, Coord } from "../../datatypes/Coord.ts";
 import {
   Space,
   spaceGetColor,
@@ -13,47 +13,63 @@ const FILES = "     a  b  c  d  e  f  g  h";
 
 type StyleObj = {
   dim(val: string): string;
-  blue(val: string): string;
+  black(val: string): string;
+  darkBg(val: string): string;
+  lightBg(val: string): string;
 };
 
 const STYLE_COLOR: StyleObj = {
   dim: (val: string) => `\x1b[2m${val}\x1b[22m`,
-  blue: (val: string) => `\x1b[34m${val}\x1b[39m`,
+  black: (val: string) => `\x1b[30m${val}\x1b[39m`,
+  darkBg: (val: string) => `\x1b[44m${val}\x1b[49m`,
+  lightBg: (val: string) => `\x1b[46m${val}\x1b[49m`,
 };
 
 const STYLE_NO_COLOR: StyleObj = {
   dim: (val: string) => val,
-  blue: (val: string) => val,
+  black: (val: string) => val,
+  darkBg: (val: string) => val,
+  lightBg: (val: string) => val,
 };
 
 /**
  * Render as ASCII. Will include ANSI colors, if asked.
  *
- * Inspired by the ASCII view from Chess.js.
+ * Inspired by (but slightly different from) the ASCII view from Chess.js.
  *
  * @param b
  */
 export function boardToASCII(b: Board, color: boolean): string {
-  let out = BAR;
 
   const style = color ? STYLE_COLOR : STYLE_NO_COLOR;
+  let out = style.dim(FILES) + "\n" + BAR;
 
   for (let rank = 7; rank >= 0; rank--) {
-    let row = ` ${style.dim(String(rank + 1))} | `;
+    let row = ` ${style.dim(String(rank + 1))} |`;
     for (let file = 0; file < 8; file++) {
       const idx = buildCoord(file, rank);
       const sp = b.get(idx);
-      const space = file ? "  " : "";
-      row += space + _formatSpace(style, sp);
+      row += _formatSpace(style, idx, sp);
     }
-    out += row + " |\n";
+    out += row + `| ${style.dim(String(rank + 1))}\n`;
   }
   return out + BAR + style.dim(FILES);
 }
 
-function _formatSpace(style: StyleObj, sp: Space): string {
-  if (spaceIsEmpty(sp)) return style.dim(".");
-  return (spaceGetColor(sp) === Color.White)
-    ? spaceGetFENString(sp)
-    : style.blue(spaceGetFENString(sp));
+function _formatSpace(style: StyleObj, idx: Coord, sp: Space): string {
+  let str: string;
+
+  if (spaceIsEmpty(sp)) {
+    str = style.dim("   ");
+  } else {
+    const fen = " " + spaceGetFENString(sp) + " ";
+    str = (spaceGetColor(sp) === Color.White)
+      ? fen
+      : style.black(fen);
+  }
+
+  // MaGiC!
+  return ((((idx >>> 4) ^ idx) & 1) === 0)
+    ? style.darkBg(str)
+    : style.lightBg(str);
 }

@@ -11,15 +11,16 @@ Deno.test("ChessGame Public API > String rendering", function () {
   const game = ChessGame.NewStandardGame();
   asserts.assertEquals(
     game.toString(false),
-    `   +------------------------+
- 8 | r  n  b  q  k  b  n  r |
- 7 | p  p  p  p  p  p  p  p |
- 6 | .  .  .  .  .  .  .  . |
- 5 | .  .  .  .  .  .  .  . |
- 4 | .  .  .  .  .  .  .  . |
- 3 | .  .  .  .  .  .  .  . |
- 2 | P  P  P  P  P  P  P  P |
- 1 | R  N  B  Q  K  B  N  R |
+    `     a  b  c  d  e  f  g  h
+   +------------------------+
+ 8 | r  n  b  q  k  b  n  r | 8
+ 7 | p  p  p  p  p  p  p  p | 7
+ 6 |                        | 6
+ 5 |                        | 5
+ 4 |                        | 4
+ 3 |                        | 3
+ 2 | P  P  P  P  P  P  P  P | 2
+ 1 | R  N  B  Q  K  B  N  R | 1
    +------------------------+
      a  b  c  d  e  f  g  h`,
   );
@@ -85,8 +86,6 @@ Deno.test("ChessGame Public API > Can castle queenside", function () {
   game.move("d2d4").move("c8a6");
   game.move("d4d5").move("d8f6");
   game.move("d1d2").move("e8c8");
-
-  console.log(game.toString());
   asserts.assertEquals(game.history().reverse()[0].black, "O-O-O");
   asserts.assertEquals(game.getStatus(), "white");
 });
