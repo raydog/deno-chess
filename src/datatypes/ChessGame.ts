@@ -23,7 +23,7 @@ type AnnotatedMove = {
 };
 
 /**
- * A record of a single 
+ * A record of a single
  */
 export type HistoryEntry = {
   num: number;
@@ -49,13 +49,12 @@ export interface Status {
 
   /**
    * The color who is to play.
-   * 
+   *
    * Note: In endgame situations, this is the player who is IN the situation. So, for example, when "checkmate", this is
    * the player who is currently checked, and has no available move. So the winner would be the OTHER player.
    */
-  turn: "white" | "black", 
+  turn: "white" | "black";
 }
-
 
 /**
  * A single chess game.
@@ -138,7 +137,6 @@ export class ChessGame {
    * @param promote
    */
   public move(move: string, promote = "Q"): ChessGame {
-
     if (this.isGameOver()) {
       throw new ChessGameOver();
     }

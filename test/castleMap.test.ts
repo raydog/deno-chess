@@ -1,4 +1,9 @@
-import { buildCastleMap, castleMapKingMoved, castleMapRookMoved, castleMapGetFile } from "../src/datatypes/CastleMap.ts";
+import {
+  buildCastleMap,
+  castleMapGetFile,
+  castleMapKingMoved,
+  castleMapRookMoved,
+} from "../src/datatypes/CastleMap.ts";
 import { Color } from "../src/datatypes/Color.ts";
 import { asserts } from "../testDeps.ts";
 

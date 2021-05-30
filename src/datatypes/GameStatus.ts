@@ -2,7 +2,6 @@
  * The Game's current state.
  */
 export const enum GameStatus {
-
   /**
    * Game is active.
    */

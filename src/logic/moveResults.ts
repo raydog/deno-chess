@@ -62,7 +62,12 @@ export function checkMoveResults(board: Board, move: Move): MoveResults {
 
   const timesMoveSeen = board.putBoardHash(hashBoard(board));
 
-  const newGameStatus = _nextState(board, enemyInCheck, enemyCanMove, timesMoveSeen);
+  const newGameStatus = _nextState(
+    board,
+    enemyInCheck,
+    enemyCanMove,
+    timesMoveSeen,
+  );
 
   return {
     enemyInCheck,

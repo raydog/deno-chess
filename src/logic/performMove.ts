@@ -1,14 +1,17 @@
 import { Board } from "../datatypes/Board.ts";
-import { castleMapKingMoved, castleMapRookMoved } from "../datatypes/CastleMap.ts";
+import {
+  castleMapKingMoved,
+  castleMapRookMoved,
+} from "../datatypes/CastleMap.ts";
 import { Move } from "../datatypes/Move.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
+  spaceHasMoved,
   spaceMarkMoved,
   spacePromote,
-spaceHasMoved,
 } from "../datatypes/Space.ts";
 
 /**
@@ -27,7 +30,7 @@ export function performMove(
   let space = spaceMarkMoved(move.what);
   const color = spaceGetColor(space);
   const type = spaceGetType(space);
-  
+
   // If this is a king, remove all castle eligibility, either because it's castling NOW, or because it's otherwise
   // moving.
   if (type === PieceType.King) {

@@ -2,7 +2,12 @@ import { Board } from "../../src/datatypes/Board.ts";
 import { buildCastleMap } from "../../src/datatypes/CastleMap.ts";
 import { Coord, coordFromAN } from "../../src/datatypes/Coord.ts";
 import { PieceType } from "../../src/datatypes/PieceType.ts";
-import { Space, spaceGetType, spaceHasMoved, spaceIsEmpty } from "../../src/datatypes/Space.ts";
+import {
+  Space,
+  spaceGetType,
+  spaceHasMoved,
+  spaceIsEmpty,
+} from "../../src/datatypes/Space.ts";
 
 type BoardLayout = {
   [an: string]: Space;
@@ -31,14 +36,22 @@ export function boardLayout(layout: BoardLayout): Board {
       _coordIfValid(out, 0x04, 0x07),
       _coordIfValid(out, 0x74, 0x70),
       _coordIfValid(out, 0x74, 0x77),
-    )
+    ),
   );
   return out;
 }
 
 function _coordIfValid(b: Board, king: Coord, rook: Coord): Coord {
   const k = b.get(king), r = b.get(rook);
-  if (spaceIsEmpty(k) || spaceHasMoved(k) || spaceGetType(k) !== PieceType.King) { return 0x88; }
-  if (spaceIsEmpty(r) || spaceHasMoved(r) || spaceGetType(r) !== PieceType.Rook) { return 0x88; }
+  if (
+    spaceIsEmpty(k) || spaceHasMoved(k) || spaceGetType(k) !== PieceType.King
+  ) {
+    return 0x88;
+  }
+  if (
+    spaceIsEmpty(r) || spaceHasMoved(r) || spaceGetType(r) !== PieceType.Rook
+  ) {
+    return 0x88;
+  }
   return rook;
 }

@@ -14,7 +14,7 @@ import {
  */
 export function boardRenderFEN(board: Board): string {
   let out = "";
-  
+
   for (let rank = 0x70; rank >= 0x00; rank -= 0x10) {
     let empty = 0;
     for (let file = 0; file < 8; file++) {
@@ -44,8 +44,6 @@ export function boardRenderFEN(board: Board): string {
   }
 
   // Note: this doens't
-
-
 
   // TODO: Other game flags.
   // const turn = board.getTurnColor() === Color.White ? "w" : "b";

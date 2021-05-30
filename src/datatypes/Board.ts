@@ -109,7 +109,7 @@ export class Board {
    * Get the game status.
    * @returns
    */
-   getStatus(): GameStatus {
+  getStatus(): GameStatus {
     return this.#current.status;
   }
 
@@ -124,7 +124,7 @@ export class Board {
    * Get the turn.
    * @returns
    */
-   getTurn(): Color {
+  getTurn(): Color {
     return this.#current.turn;
   }
 
@@ -135,7 +135,7 @@ export class Board {
     this.#current.turn = t;
   }
 
-   /**
+  /**
     * Get the castle status.
     * @returns
     */
@@ -153,14 +153,14 @@ export class Board {
   /**
    * Will push a board hash into our history objects. Returns the number of times we've seen this exact configuration
    * before.
-   * 
-   * @param hash 
+   *
+   * @param hash
    */
   putBoardHash(hash: string): number {
     // When getting the prior number, run backwards through history until we find this hash. We don't duplicate the hash
     // histories the same way as other Layer data, because duplicating those objects is slow, and we need to change
     // layers frequently. (Far more frequently than they're used...)
-    for (let idx=this.#layerIdx; idx >= 0; idx--) {
+    for (let idx = this.#layerIdx; idx >= 0; idx--) {
       if (hash in this.#layers[idx].seen) {
         // Oh! this one! Add 1, copy forward, and return.
         const num = 1 + this.#layers[idx].seen[hash];

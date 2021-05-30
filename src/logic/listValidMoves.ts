@@ -155,7 +155,9 @@ function _findMoves(
       const rookFrom = rank | kRank;
       const rookDest = rank | 5;
       _tryCastle(
-        b, out, createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest)
+        b,
+        out,
+        createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
       );
     }
 
@@ -164,7 +166,9 @@ function _findMoves(
       const rookFrom = rank | qRank;
       const rookDest = rank | 3;
       _tryCastle(
-        b, out, createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest)
+        b,
+        out,
+        createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
       );
     }
 
@@ -275,8 +279,18 @@ function _tryCastle(b: Board, out: Move[], move: Move) {
   const color = spaceGetColor(move.what);
 
   // Every spot in the travel must be empty, apart from the King and Rook:
-  const min = Math.min(move.castleRookFrom, move.castleRookDest, move.from, move.dest);
-  const max = Math.max(move.castleRookFrom, move.castleRookDest, move.from, move.dest);
+  const min = Math.min(
+    move.castleRookFrom,
+    move.castleRookDest,
+    move.from,
+    move.dest,
+  );
+  const max = Math.max(
+    move.castleRookFrom,
+    move.castleRookDest,
+    move.from,
+    move.dest,
+  );
   for (let idx = min; idx <= max; idx++) {
     if (idx === move.from || idx === move.castleRookFrom) {
       continue;

@@ -124,7 +124,10 @@ Deno.test("ChessGame Public API > Draws after 3 repeats", function () {
   game.move("b1c3").move("g8f6");
   game.move("c3b1").move("f6g8"); // Third times the charm.
 
-  asserts.assertEquals(game.getStatus(), { state: "draw-repetition", turn: "white" });
+  asserts.assertEquals(game.getStatus(), {
+    state: "draw-repetition",
+    turn: "white",
+  });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
@@ -137,22 +140,22 @@ Deno.test("ChessGame Public API > Draws after 50 moves", function () {
   game.move("f3e5").move("f6e4");
 
   // The white piece runs a circuit around the board. The black piece just move back and forward:
-  for (let n=0; n<2; n++) {
+  for (let n = 0; n < 2; n++) {
     for (let i = 0; i < 7; i++) {
-      game.move(coordToAN(i | 0x20) + coordToAN((i+1) | 0x20));
-      game.move((i%2 === 0) ? "d8d7" : "d7d8");
+      game.move(coordToAN(i | 0x20) + coordToAN((i + 1) | 0x20));
+      game.move((i % 2 === 0) ? "d8d7" : "d7d8");
     }
     for (let i = 2; i < 5; i++) {
-      game.move(coordToAN((i*0x10) | 7) + coordToAN((i*0x10+0x10) | 7));
-      game.move((i%2 === 1) ? "d8d7" : "d7d8");
+      game.move(coordToAN((i * 0x10) | 7) + coordToAN((i * 0x10 + 0x10) | 7));
+      game.move((i % 2 === 1) ? "d8d7" : "d7d8");
     }
     for (let i = 7; i > 0; i--) {
-      game.move(coordToAN(i | 0x50) + coordToAN((i-1) | 0x50));
-      game.move((i%2 === 1) ? "d8d7" : "d7d8");
+      game.move(coordToAN(i | 0x50) + coordToAN((i - 1) | 0x50));
+      game.move((i % 2 === 1) ? "d8d7" : "d7d8");
     }
     for (let i = 5; i > 2; i--) {
-      game.move(coordToAN((i*0x10)) + coordToAN((i*0x10-0x10)));
-      game.move((i%2 === 0) ? "d8d7" : "d7d8");
+      game.move(coordToAN((i * 0x10)) + coordToAN((i * 0x10 - 0x10)));
+      game.move((i % 2 === 0) ? "d8d7" : "d7d8");
     }
     // Avoid repetition fails:
     if (n === 0) {
@@ -161,11 +164,14 @@ Deno.test("ChessGame Public API > Draws after 50 moves", function () {
   }
 
   for (let i = 0; i < 5; i++) {
-    game.move(coordToAN(i | 0x20) + coordToAN((i+1) | 0x20));
-    game.move((i%2 === 0) ? "d8d7" : "d7d8");
+    game.move(coordToAN(i | 0x20) + coordToAN((i + 1) | 0x20));
+    game.move((i % 2 === 0) ? "d8d7" : "d7d8");
   }
 
-  asserts.assertEquals(game.getStatus(), { state: "draw-fifty-moves", turn: "white" });
+  asserts.assertEquals(game.getStatus(), {
+    state: "draw-fifty-moves",
+    turn: "white",
+  });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
@@ -183,6 +189,9 @@ Deno.test("ChessGame Public API > Stalemate", function () {
   game.move("b8c8").move("f7g6");
   game.move("c8e6"); // Stalemate
 
-  asserts.assertEquals(game.getStatus(), { state: "draw-stalemate", turn: "black" });
+  asserts.assertEquals(game.getStatus(), {
+    state: "draw-stalemate",
+    turn: "black",
+  });
   asserts.assertThrows(() => game.move("a2a4"), ChessGameOver, "Game is over");
 });

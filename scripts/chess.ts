@@ -45,7 +45,7 @@ while (true) {
   }
 
   const cmd = await repl.prompt();
-  if (cmd == null) { break; }
+  if (cmd == null) break;
 
   const normal = cmd.trim().toLowerCase();
   switch (normal) {
