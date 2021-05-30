@@ -1,7 +1,6 @@
 import { Space, SPACE_EMPTY } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
-import { Color } from "./Color.ts";
 import { GameStatus } from "./GameStatus.ts";
 
 // Uses the 0x88 strategy:

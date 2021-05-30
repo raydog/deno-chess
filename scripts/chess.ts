@@ -82,9 +82,10 @@ function printGame(game: ChessGame) {
       const numStr = turn.num + '.';
       turnStr = `${numStr.padEnd(4)} ${turn.white.padEnd(7)} ${turn.black || "..." }`;
     }
-    console.log(board[line].padEnd(32), turnStr);
+    console.log(board[line], " ", turnStr);
   }
 
+  console.log("\n%s", game.hash());
   const status = game.getStatus();
   console.log("\n%s", STATUS_STRINGS[status]);
 }

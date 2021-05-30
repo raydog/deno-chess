@@ -2,6 +2,7 @@
 
 import { boardToASCII } from "../logic/boardFormats/ascii.ts";
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
+import { hashBoard } from "../logic/hashBoard.ts";
 import { listAllValidMoves, listValidMoves } from "../logic/listValidMoves.ts";
 import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../logic/moveResults.ts";
@@ -200,6 +201,10 @@ export class ChessGame {
 
   toString(color = this.#color): string {
     return boardToASCII(this.#board, color);
+  }
+
+  hash(): string {
+    return hashBoard(this.#board);
   }
 }
 

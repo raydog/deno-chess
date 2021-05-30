@@ -8,8 +8,8 @@ import {
   spaceIsEmpty,
 } from "../../datatypes/Space.ts";
 
-const BAR = "   +------------------------+\n";
-const FILES = "     a  b  c  d  e  f  g  h";
+const BAR = "   +------------------------+  \n";
+const FILES = "     a  b  c  d  e  f  g  h    ";
 
 type StyleObj = {
   dim(val: string): string;
@@ -20,7 +20,7 @@ type StyleObj = {
 
 const STYLE_COLOR: StyleObj = {
   dim: (val: string) => `\x1b[2m${val}\x1b[22m`,
-  black: (val: string) => `\x1b[30m${val}\x1b[39m`,
+  black: (val: string) => `\x1b[30;2m${val}\x1b[39;22m`,
   darkBg: (val: string) => `\x1b[44m${val}\x1b[49m`,
   lightBg: (val: string) => `\x1b[46m${val}\x1b[49m`,
 };
@@ -40,7 +40,6 @@ const STYLE_NO_COLOR: StyleObj = {
  * @param b
  */
 export function boardToASCII(b: Board, color: boolean): string {
-
   const style = color ? STYLE_COLOR : STYLE_NO_COLOR;
   let out = style.dim(FILES) + "\n" + BAR;
 
@@ -63,9 +62,7 @@ function _formatSpace(style: StyleObj, idx: Coord, sp: Space): string {
     str = style.dim("   ");
   } else {
     const fen = " " + spaceGetFENString(sp) + " ";
-    str = (spaceGetColor(sp) === Color.White)
-      ? fen
-      : style.black(fen);
+    str = (spaceGetColor(sp) === Color.White) ? fen : style.black(fen);
   }
 
   // MaGiC!

@@ -10,19 +10,21 @@ Deno.test("ChessGame Public API > Start new standard game", function () {
 Deno.test("ChessGame Public API > String rendering", function () {
   const game = ChessGame.NewStandardGame();
   asserts.assertEquals(
-    game.toString(false),
-    `     a  b  c  d  e  f  g  h
-   +------------------------+
- 8 | r  n  b  q  k  b  n  r | 8
- 7 | p  p  p  p  p  p  p  p | 7
- 6 |                        | 6
- 5 |                        | 5
- 4 |                        | 4
- 3 |                        | 3
- 2 | P  P  P  P  P  P  P  P | 2
- 1 | R  N  B  Q  K  B  N  R | 1
-   +------------------------+
-     a  b  c  d  e  f  g  h`,
+    game.toString(false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 | r  n  b  q  k  b  n  r | 8",
+      " 7 | p  p  p  p  p  p  p  p | 7",
+      " 6 |                        | 6",
+      " 5 |                        | 5",
+      " 4 |                        | 4",
+      " 3 |                        | 3",
+      " 2 | P  P  P  P  P  P  P  P | 2",
+      " 1 | R  N  B  Q  K  B  N  R | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
   );
 });
 
@@ -116,11 +118,11 @@ Deno.test("ChessGame Public API > Draws after 50 moves", function () {
   const game = ChessGame.NewStandardGame();
 
   // Each loop does 2 full moves, and returns to the opening position:
-  for (let i=0; i<25; i++) {
+  for (let i = 0; i < 25; i++) {
     game.move("b1c3").move("g8f6");
     game.move("c3b1").move("f6g8");
   }
-  
+
   asserts.assertEquals(game.getStatus(), "draw-fifty-moves");
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
@@ -130,22 +132,22 @@ Deno.test("ChessGame Public API > Draws 50 moves after pawn move", function () {
   game.move("e2e4").move("e7e6");
 
   // Each loop does 2 full moves, and returns to the opening position:
-  for (let i=0; i<25; i++) {
+  for (let i = 0; i < 25; i++) {
     game.move("b1c3").move("g8f6");
     game.move("c3b1").move("f6g8");
   }
-  
+
   asserts.assertEquals(game.getStatus(), "draw-fifty-moves");
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
 Deno.test("ChessGame Public API > Draws 50 moves after capture", function () {
   const game = ChessGame.NewStandardGame();
-  game.move("e2e4").move("d7d5")
+  game.move("e2e4").move("d7d5");
   game.move("e4d5").move("d8d5");
 
   // Each loop does 2 full moves, and returns to the opening position:
-  for (let i=0; i<25; i++) {
+  for (let i = 0; i < 25; i++) {
     game.move("b1c3").move("g8f6");
     game.move("c3b1").move("f6g8");
   }

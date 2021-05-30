@@ -31,7 +31,7 @@ export const buildCoord = (file: number, rank: number): number =>
   ((rank & 0x7) << 4) | (file & 0x7);
 
 /**
- * Given an index, will return the next one.
+ * Given an index, will return the next one. Allows for linear scans over the full tablespace.
  *
  * @param idx
  * @returns
