@@ -10,12 +10,7 @@ import {
 } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
-import {
-  buildCoord,
-  Coord,
-  nextCoord,
-  parseCoord,
-} from "../datatypes/Coord.ts";
+import { buildCoord, Coord, parseCoord } from "../datatypes/Coord.ts";
 import {
   createCastle,
   createFullMove,
@@ -55,10 +50,13 @@ export function listAllValidMoves(
   color: Color,
 ): Move[] {
   const out: Move[] = [];
-  for (let idx = 0; (idx & 0x88) === 0; idx = nextCoord(idx)) {
-    const sp = b.get(idx);
-    if (!spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
-      out.push(...listValidMoves(b, idx));
+  for (let rank = 0; rank < 0x80; rank += 0x10) {
+    for (let file = 0; file < 0x8; file++) {
+      const idx = rank | file;
+      const sp = b.get(idx);
+      if (!spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
+        out.push(...listValidMoves(b, idx));
+      }
     }
   }
   return out;

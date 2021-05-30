@@ -69,9 +69,7 @@ export function spaceMarkMoved(sp: Space): Space {
 }
 
 export function spacePromote(sp: Space, t: PieceType): Space {
-  return (sp === SPACE_EMPTY)
-    ? sp
-    : (sp & 0xf8) | (t & 0x7);
+  return (sp === SPACE_EMPTY) ? sp : (sp & 0xf8) | (t & 0x7);
 }
 
 // Assumes the space has data. Just set to 0 if it's null:

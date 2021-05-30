@@ -6,7 +6,6 @@ import {
   spaceIsEmpty,
 } from "../datatypes/Space.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
-import { nextCoord } from "../datatypes/Coord.ts";
 
 type MoveInfo = [step: number, mask: number];
 
@@ -74,64 +73,68 @@ const PAWNS: MoveInfo[][] = [
  * @returns
  */
 export function kingInDanger(b: Board, kingColor: Color): boolean {
-  for (let idx = 0; (idx & 0x88) === 0; idx = nextCoord(idx)) {
-    const spot = b.get(idx);
+  for (let rank = 0; rank < 0x80; rank += 0x10) {
+    for (let file = 0; file < 0x8; file++) {
+      const idx = rank | file;
 
-    if (
-      spaceIsEmpty(spot) || spaceGetType(spot) !== PieceType.King ||
-      spaceGetColor(spot) !== kingColor
-    ) {
-      continue;
-    }
+      const spot = b.get(idx);
 
-    // Else, this is a King that we care about. Scan out, looking for possible attackers.
-
-    // Slidy pieces first:
-    for (const [offset, offMask] of SLIDES) {
-      for (
-        let newIdx = idx + offset;
-        (newIdx & 0x88) === 0;
-        newIdx += offset
+      if (
+        spaceIsEmpty(spot) || spaceGetType(spot) !== PieceType.King ||
+        spaceGetColor(spot) !== kingColor
       ) {
+        continue;
+      }
+
+      // Else, this is a King that we care about. Scan out, looking for possible attackers.
+
+      // Slidy pieces first:
+      for (const [offset, offMask] of SLIDES) {
+        for (
+          let newIdx = idx + offset;
+          (newIdx & 0x88) === 0;
+          newIdx += offset
+        ) {
+          const newSpot = b.get(newIdx);
+          if (spaceIsEmpty(newSpot)) continue;
+          if (spaceGetColor(newSpot) === kingColor) break;
+          if (offMask & (1 << spaceGetType(newSpot))) {
+            // This is an enemy piece that we care about:
+            return true;
+          }
+          // Else, some other enemy piece. Next direction...
+          break;
+        }
+      }
+
+      // Now steppy pieces:
+      for (const [offset, offMask] of STEPS) {
+        const newIdx = idx + offset;
+        if (newIdx & 0x88) continue;
+
         const newSpot = b.get(newIdx);
-        if (spaceIsEmpty(newSpot)) continue;
-        if (spaceGetColor(newSpot) === kingColor) break;
-        if (offMask & (1 << spaceGetType(newSpot))) {
-          // This is an enemy piece that we care about:
+        if (
+          !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
+          (offMask & (1 << spaceGetType(newSpot)))
+        ) {
+          // This is a steppy piece, in a spot that we care about:
           return true;
         }
-        // Else, some other enemy piece. Next direction...
-        break;
       }
-    }
 
-    // Now steppy pieces:
-    for (const [offset, offMask] of STEPS) {
-      const newIdx = idx + offset;
-      if (newIdx & 0x88) continue;
+      // And now pawns:
+      for (const [offset, offMask] of PAWNS[kingColor]) {
+        const newIdx = idx + offset;
+        if (newIdx & 0x88) continue;
 
-      const newSpot = b.get(newIdx);
-      if (
-        !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
-        (offMask & (1 << spaceGetType(newSpot)))
-      ) {
-        // This is a steppy piece, in a spot that we care about:
-        return true;
-      }
-    }
-
-    // And now pawns:
-    for (const [offset, offMask] of PAWNS[kingColor]) {
-      const newIdx = idx + offset;
-      if (newIdx & 0x88) continue;
-
-      const newSpot = b.get(newIdx);
-      if (
-        !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
-        (offMask & (1 << spaceGetType(newSpot)))
-      ) {
-        // This is a pawn in a spot that we care about:
-        return true;
+        const newSpot = b.get(newIdx);
+        if (
+          !spaceIsEmpty(newSpot) && spaceGetColor(newSpot) !== kingColor &&
+          (offMask & (1 << spaceGetType(newSpot)))
+        ) {
+          // This is a pawn in a spot that we care about:
+          return true;
+        }
       }
     }
   }

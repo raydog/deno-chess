@@ -31,14 +31,6 @@ export const buildCoord = (file: number, rank: number): number =>
   ((rank & 0x7) << 4) | (file & 0x7);
 
 /**
- * Given an index, will return the next one. Allows for linear scans over the full tablespace.
- *
- * @param idx
- * @returns
- */
-export const nextCoord = (idx: Coord) => idx + ((idx & 0x7) === 7 ? 9 : 1);
-
-/**
  * Helper: Produce a packed coord from a chess coordinate in Algebraic Notation.
  *
  * @param an

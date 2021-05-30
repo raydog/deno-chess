@@ -8,13 +8,12 @@ const PIECE_STRINGS = " PBNRQK  pbnrqk";
  * unlike most other Chess engines. Mostly because this is Javascript, and we don't have any of those fancy-dancy
  * 64-bit integers, and I don't want to use BigInts.
  */
- export function hashBoard(b: Board): string {
+export function hashBoard(b: Board): string {
   let out = "";
   let spaces = 0;
 
   for (let rank = 0; rank < 0x80; rank += 0x10) {
     for (let file = 0; file < 0x8; file++) {
-
       const idx = rank | file;
 
       const sp = b.get(idx);

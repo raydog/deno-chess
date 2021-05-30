@@ -5,7 +5,6 @@ import { ChessGame, Status } from "../src/datatypes/ChessGame.ts";
 
 // Quick class to handle user I/O:
 class ChessRepl {
-
   #te = new TextEncoder();
   #lines = readLines(Deno.stdin);
 
@@ -29,14 +28,13 @@ const STATUS_STRINGS: { [status in Status]: string } = {
   "draw-other": "Draw",
 };
 
-
 const game = ChessGame.NewStandardGame();
 const repl = new ChessRepl();
 
-
 // Main Game loop
 let needPrint = true;
-mainLoop: while (true) {
+mainLoop:
+while (true) {
   if (needPrint) {
     printGame(game);
     needPrint = false;
@@ -50,13 +48,16 @@ mainLoop: while (true) {
   const normal = cmd.trim().toLowerCase();
 
   switch (normal) {
-    case "q": case "quit": case "exit": case "resign":
+    case "q":
+    case "quit":
+    case "exit":
+    case "resign":
       break mainLoop;
-    
+
     case "?":
       console.log("Moves:", game.allMoves().join(", "));
       break;
-    
+
     default: {
       // Else, assume this is a move.
       try {
@@ -69,18 +70,18 @@ mainLoop: while (true) {
   }
 }
 
-
 // Print out a current game's state:
 function printGame(game: ChessGame) {
   const board = game.toString().split("\n");
   const history = game.history().slice(-board.length);
 
-  for (let line=0; line<board.length; line++) {
+  for (let line = 0; line < board.length; line++) {
     let turnStr = "";
     const turn = history[line];
     if (turn) {
-      const numStr = turn.num + '.';
-      turnStr = `${numStr.padEnd(4)} ${turn.white.padEnd(7)} ${turn.black || "..." }`;
+      const numStr = turn.num + ".";
+      turnStr = `${numStr.padEnd(4)} ${turn.white.padEnd(7)} ${turn.black ||
+        "..."}`;
     }
     console.log(board[line], " ", turnStr);
   }
