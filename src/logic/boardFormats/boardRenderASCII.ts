@@ -39,7 +39,7 @@ const STYLE_NO_COLOR: StyleObj = {
  *
  * @param b
  */
-export function boardToASCII(b: Board, color: boolean): string {
+export function boardRenderASCII(b: Board, color: boolean): string {
   const style = color ? STYLE_COLOR : STYLE_NO_COLOR;
   let out = style.dim(FILES) + "\n" + BAR;
 

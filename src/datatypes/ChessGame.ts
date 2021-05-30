@@ -1,6 +1,6 @@
 // Note: the class in this file serves as the external API.
 
-import { boardToASCII } from "../logic/boardFormats/ascii.ts";
+import { boardRenderASCII } from "../logic/boardFormats/boardRenderASCII.ts";
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
 import { hashBoard } from "../logic/hashBoard.ts";
 import { listAllValidMoves, listValidMoves } from "../logic/listValidMoves.ts";
@@ -200,7 +200,7 @@ export class ChessGame {
   }
 
   toString(color = this.#color): string {
-    return boardToASCII(this.#board, color);
+    return boardRenderASCII(this.#board, color);
   }
 
   hash(): string {

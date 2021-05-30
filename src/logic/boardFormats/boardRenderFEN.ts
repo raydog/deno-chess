@@ -12,7 +12,7 @@ import {
  *
  * @param board
  */
-export function forsythEdwardsNotation(board: Board): string {
+export function boardRenderFEN(board: Board): string {
   let out = "";
   let ep: Coord | null = null;
   for (let rank = 7; rank >= 0; rank--) {
