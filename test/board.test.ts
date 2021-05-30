@@ -14,7 +14,7 @@ Deno.test("Board > Can set pieces", function () {
   const b = new Board();
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Rook, Color.White, false, false),
+    encodePieceSpace(PieceType.Rook, Color.White, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, Color.White);
 });
@@ -24,14 +24,14 @@ Deno.test("Board > Can add overlays", function () {
 
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Rook, Color.White, false, false),
+    encodePieceSpace(PieceType.Rook, Color.White, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, Color.White);
 
   b.save();
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Queen, Color.Black, false, false),
+    encodePieceSpace(PieceType.Queen, Color.Black, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PieceType.Queen, Color.Black);
 });
@@ -41,7 +41,7 @@ Deno.test("Board > Can remove overlays", function () {
 
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Rook, Color.White, false, false),
+    encodePieceSpace(PieceType.Rook, Color.White, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, Color.White);
 

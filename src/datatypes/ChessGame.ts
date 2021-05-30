@@ -13,7 +13,7 @@ import { Color } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
-import { spaceGetColor, spaceHasData, spaceIsEmpty } from "./Space.ts";
+import { spaceGetColor, spaceIsEmpty } from "./Space.ts";
 
 const MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/i;
 
@@ -133,7 +133,7 @@ export class ChessGame {
 
     // Sanity checks:
     const sp = this.#board.get(from);
-    if (!spaceHasData(sp) || spaceIsEmpty(sp)) {
+    if (spaceIsEmpty(sp)) {
       throw new ChessBadMove(
         `${move}: Departing square (${coordToAN(from)}) is empty`,
       );

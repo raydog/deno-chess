@@ -5,7 +5,6 @@ import {
   SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
-  spaceHasData,
   spaceHasMoved,
   spaceIsEmpty,
 } from "../datatypes/Space.ts";
@@ -58,7 +57,7 @@ export function listAllValidMoves(
   const out: Move[] = [];
   for (let idx = 0; (idx & 0x88) === 0; idx = nextCoord(idx)) {
     const sp = b.get(idx);
-    if (spaceHasData(sp) && !spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
+    if (!spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
       out.push(...listValidMoves(b, idx));
     }
   }
@@ -77,7 +76,6 @@ export function listValidMoves(
 ): Move[] {
   const sp = b.get(idx);
 
-  assert(spaceHasData(sp), "Listing moves of null space");
   assert(!spaceIsEmpty(sp), "Listing moves of empty space");
 
   switch (spaceGetType(sp)) {

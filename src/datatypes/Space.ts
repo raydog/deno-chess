@@ -36,59 +36,42 @@ const UNICODE_MAP = [
 /**
  * Information on a space. Packed into a number for perf reasons.
  *
- * Format: (MSB) 0PMC TTTD (LSB)
+ * Format: (MSB) 000M CTTT (LSB)
  *
- * - D = data? (0 = null, 1 = this space has data)
  * - T = type (0-empty, 1-pawn, 2-bishop, ... same as enum)
  * - C = color (0-white, 1-black)
  * - M = moved? (1 if this piece has moved during this game)
- * - P = en passant? (1 if this is a pawn that *just* double-stepped)
  *
  * @private
  */
 export type Space = number;
 
-export const SPACE_NULL = 0;
-export const SPACE_EMPTY = 1;
-
-export function spaceHasData(sp: Space): boolean {
-  return sp !== SPACE_NULL;
-}
+export const SPACE_EMPTY = 0;
 
 export function spaceIsEmpty(sp: Space): boolean {
   return sp === SPACE_EMPTY;
 }
 
 export function spaceGetType(sp: Space): PieceType {
-  return (sp >>> 1) & 0x7;
+  return sp & 0x7;
 }
 
 export function spaceGetColor(sp: Space): Color {
-  return (sp >>> 4) & 0x1;
+  return (sp >>> 3) & 0x1;
 }
 
 export function spaceHasMoved(sp: Space): boolean {
-  return Boolean(sp & 0x20);
-}
-
-export function spaceEnPassant(sp: Space): boolean {
-  return Boolean(sp & 0x40);
+  return Boolean(sp & 0x10);
 }
 
 export function spaceMarkMoved(sp: Space): Space {
-  return (sp === SPACE_NULL || sp === SPACE_EMPTY) ? sp : sp | 0x20;
-}
-
-export function spaceSetEnPassant(sp: Space, passant: boolean): Space {
-  return (sp === SPACE_NULL || sp === SPACE_EMPTY)
-    ? sp
-    : (sp & 0xbf) | (passant ? 0x40 : 0);
+  return (sp === SPACE_EMPTY) ? sp : sp | 0x10;
 }
 
 export function spacePromote(sp: Space, t: PieceType): Space {
-  return (sp === SPACE_NULL || sp === SPACE_EMPTY)
+  return (sp === SPACE_EMPTY)
     ? sp
-    : (sp & 0xf1) | (t << 1);
+    : (sp & 0xf8) | (t & 0x7);
 }
 
 // Assumes the space has data. Just set to 0 if it's null:
@@ -96,22 +79,20 @@ export const encodePieceSpace = (
   t: PieceType,
   c: Color,
   moved = false,
-  passant = false,
 ): Space => {
-  return 1 | (t << 1) | (c << 4) | (Number(moved) << 5) |
-    (Number(passant) << 6);
+  return t | (c << 3) | (Number(moved) << 4);
 };
 
 export function spaceGetFENString(sp: Space): string {
   // Technically not valid, as FEN collapses these, but w/e
-  if (!spaceHasData(sp) || spaceIsEmpty(sp)) return " ";
+  if (spaceIsEmpty(sp)) return " ";
 
   const hash = _hashPiece(spaceGetColor(sp), spaceGetType(sp));
   return FEN_MAP[hash];
 }
 
 export function spaceGetUnicodeString(sp: Space): string {
-  if (!spaceHasData(sp) || spaceIsEmpty(sp)) return " ";
+  if (spaceIsEmpty(sp)) return " ";
 
   const hash = _hashPiece(spaceGetColor(sp), spaceGetType(sp));
   return UNICODE_MAP[hash];

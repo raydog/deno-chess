@@ -2,7 +2,7 @@ import { Board } from "../../datatypes/Board.ts";
 import { Color } from "../../datatypes/Color.ts";
 import { buildCoord, Coord } from "../../datatypes/Coord.ts";
 import {
-  spaceEnPassant,
+  // spaceEnPassant,
   spaceGetFENString,
   spaceIsEmpty,
 } from "../../datatypes/Space.ts";
@@ -32,9 +32,9 @@ export function forsythEdwardsNotation(board: Board): string {
         empty = 0;
       }
 
-      if (spaceEnPassant(spot)) {
-        ep = idx;
-      }
+      // if (spaceEnPassant(spot)) {
+      //   ep = idx;
+      // }
 
       row += spaceGetFENString(spot);
     }

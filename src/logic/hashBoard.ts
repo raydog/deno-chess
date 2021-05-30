@@ -1,5 +1,4 @@
 import { Board } from "../datatypes/Board.ts";
-import { nextCoord } from "../datatypes/Coord.ts";
 import { spaceIsEmpty } from "../datatypes/Space.ts";
 
 const PIECE_STRINGS = " PBNRQK  pbnrqk";
@@ -29,7 +28,7 @@ const PIECE_STRINGS = " PBNRQK  pbnrqk";
       }
 
       // Magic. Possible because type and color are stored near each other in the bitmap:
-      const typeAndColor = (sp >>> 1) & 0xf;
+      const typeAndColor = sp & 0xf;
       out += PIECE_STRINGS[typeAndColor];
     }
   }
