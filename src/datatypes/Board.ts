@@ -3,6 +3,7 @@ import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
 import { CastleMap } from "./CastleMap.ts";
+import { Color } from "./Color.ts";
 
 // Uses the 0x88 strategy:
 const BOARD_SIZE = 8 * 8 * 2;
@@ -13,6 +14,7 @@ type Layer = {
   moveNum: number;
   ep: Coord;
   status: GameStatus;
+  turn: Color;
   seen: { [hash: string]: number };
   castles: CastleMap;
 };
@@ -107,7 +109,7 @@ export class Board {
    * Get the game status.
    * @returns
    */
-  getStatus(): GameStatus {
+   getStatus(): GameStatus {
     return this.#current.status;
   }
 
@@ -119,10 +121,25 @@ export class Board {
   }
 
   /**
-   * Get the castle status.
+   * Get the turn.
    * @returns
    */
-   getCastles(): CastleMap {
+   getTurn(): Color {
+    return this.#current.turn;
+  }
+
+  /**
+   * Update the turn.
+   */
+  setTurn(t: Color) {
+    this.#current.turn = t;
+  }
+
+   /**
+    * Get the castle status.
+    * @returns
+    */
+  getCastles(): CastleMap {
     return this.#current.castles;
   }
 
@@ -187,7 +204,8 @@ function newLayer(): Layer {
     clock: 0,
     moveNum: 1,
     ep: -1,
-    status: GameStatus.WhiteTurn,
+    status: GameStatus.Active,
+    turn: Color.White,
     seen: {},
     castles: 0,
   };
@@ -199,6 +217,7 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.moveNum = src.moveNum;
   dest.ep = src.ep;
   dest.status = src.status;
+  dest.turn = src.turn;
   dest.seen = {}; // Just create new object instead of copying massive objects.
   dest.castles = src.castles;
 }

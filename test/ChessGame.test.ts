@@ -5,7 +5,7 @@ import { asserts } from "../testDeps.ts";
 
 Deno.test("ChessGame Public API > Start new standard game", function () {
   const game = ChessGame.NewStandardGame();
-  asserts.assertEquals(game.getStatus(), "white");
+  asserts.assertEquals(game.getStatus(), { state: "active", turn: "white" });
 });
 
 Deno.test("ChessGame Public API > String rendering", function () {
@@ -68,7 +68,7 @@ Deno.test("ChessGame Public API > List single pawn moves", function () {
 Deno.test("ChessGame Public API > Can move", function () {
   const game = ChessGame.NewStandardGame();
   game.move("e2e4");
-  asserts.assertEquals(game.getStatus(), "black");
+  asserts.assertEquals(game.getStatus(), { state: "active", turn: "black" });
 });
 
 Deno.test("ChessGame Public API > Can castle kingside", function () {
@@ -78,7 +78,7 @@ Deno.test("ChessGame Public API > Can castle kingside", function () {
   game.move("f1c4").move("f8c5");
   game.move("e1g1");
   asserts.assertEquals(game.history().reverse()[0].white, "O-O");
-  asserts.assertEquals(game.getStatus(), "black");
+  asserts.assertEquals(game.getStatus(), { state: "active", turn: "black" });
 });
 
 Deno.test("ChessGame Public API > Can castle queenside", function () {
@@ -90,7 +90,7 @@ Deno.test("ChessGame Public API > Can castle queenside", function () {
   game.move("d4d5").move("d8f6");
   game.move("d1d2").move("e8c8");
   asserts.assertEquals(game.history().reverse()[0].black, "O-O-O");
-  asserts.assertEquals(game.getStatus(), "white");
+  asserts.assertEquals(game.getStatus(), { state: "active", turn: "white" });
 });
 
 Deno.test("ChessGame Public API > Can checkmate", function () {
@@ -100,7 +100,7 @@ Deno.test("ChessGame Public API > Can checkmate", function () {
     .move("f1c4").move("f8c5")
     .move("d1f3").move("d7d6")
     .move("f3f7");
-  asserts.assertEquals(game.getStatus(), "checkmate-white");
+  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black" });
 });
 
 Deno.test("ChessGame Public API > Rejects moves after game over", function () {
@@ -111,7 +111,7 @@ Deno.test("ChessGame Public API > Rejects moves after game over", function () {
     .move("d1f3").move("d7d6")
     .move("f3f7");
 
-  asserts.assertEquals(game.getStatus(), "checkmate-white");
+  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black" });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
@@ -124,7 +124,7 @@ Deno.test("ChessGame Public API > Draws after 3 repeats", function () {
   game.move("b1c3").move("g8f6");
   game.move("c3b1").move("f6g8"); // Third times the charm.
 
-  asserts.assertEquals(game.getStatus(), "draw-repetition");
+  asserts.assertEquals(game.getStatus(), { state: "draw-repetition", turn: "white" });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
@@ -165,7 +165,7 @@ Deno.test("ChessGame Public API > Draws after 50 moves", function () {
     game.move((i%2 === 0) ? "d8d7" : "d7d8");
   }
 
-  asserts.assertEquals(game.getStatus(), "draw-fifty-moves");
+  asserts.assertEquals(game.getStatus(), { state: "draw-fifty-moves", turn: "white" });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
@@ -183,6 +183,6 @@ Deno.test("ChessGame Public API > Stalemate", function () {
   game.move("b8c8").move("f7g6");
   game.move("c8e6"); // Stalemate
 
-  asserts.assertEquals(game.getStatus(), "draw-stalemate");
+  asserts.assertEquals(game.getStatus(), { state: "draw-stalemate", turn: "black" });
   asserts.assertThrows(() => game.move("a2a4"), ChessGameOver, "Game is over");
 });

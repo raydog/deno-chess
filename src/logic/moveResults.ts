@@ -2,7 +2,6 @@ import { Board } from "../datatypes/Board.ts";
 import { GameStatus } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import { spaceGetColor } from "../datatypes/Space.ts";
-import { assert } from "./assert.ts";
 import { hashBoard } from "./hashBoard.ts";
 import { kingInDanger } from "./kingInDanger.ts";
 import { listAllValidMoves } from "./listValidMoves.ts";
@@ -80,14 +79,11 @@ function _nextState(
 ): GameStatus {
   const priorStatus = board.getStatus();
 
-  // If we're moving, this had better
-  assert(priorStatus <= 1, "Attempting to move after game is over");
-
   // If no moves, this is DEFINITELY a terminal state.
   if (!enemyCanMove) {
     if (enemyInCheck) {
       // CHECKMATE
-      return GameStatus.CheckmateWhite + priorStatus;
+      return GameStatus.Checkmate;
     }
     // Else, STALEMATE:
     return GameStatus.DrawStalemate;
@@ -103,5 +99,5 @@ function _nextState(
   }
 
   // Else, the game is still on. Toggle the player:
-  return 1 - priorStatus;
+  return priorStatus;
 }

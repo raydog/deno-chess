@@ -14,13 +14,12 @@ import {
  */
 export function boardRenderFEN(board: Board): string {
   let out = "";
-  let ep: Coord | null = null;
-  for (let rank = 7; rank >= 0; rank--) {
-    let row = "";
+  
+  for (let rank = 0x70; rank >= 0x00; rank -= 0x10) {
     let empty = 0;
     for (let file = 0; file < 8; file++) {
-      const idx = buildCoord(file, rank);
-      const spot = board.get(buildCoord(file, rank));
+      const idx = rank | file;
+      const spot = board.get(idx);
 
       if (spaceIsEmpty(spot)) {
         empty++;
@@ -28,27 +27,25 @@ export function boardRenderFEN(board: Board): string {
       }
 
       if (empty) {
-        row += empty;
+        out += empty;
         empty = 0;
       }
 
-      // if (spaceEnPassant(spot)) {
-      //   ep = idx;
-      // }
-
-      row += spaceGetFENString(spot);
+      out += spaceGetFENString(spot);
     }
 
     if (empty) {
-      row += empty;
+      out += empty;
     }
 
-    if (rank > 0) {
-      row += "/";
+    if (rank) {
+      out += "/";
     }
-
-    out += row;
   }
+
+  // Note: this doens't
+
+
 
   // TODO: Other game flags.
   // const turn = board.getTurnColor() === Color.White ? "w" : "b";

@@ -1,28 +1,17 @@
-import { Color } from "./Color.ts";
-
 /**
  * The Game's current state.
  */
 export const enum GameStatus {
-  /**
-   * Game is active, and it's White's turn to play.
-   */
-  WhiteTurn = Color.White,
 
   /**
-   * Game is active, and it's Black's turn to play.
+   * Game is active.
    */
-  BlackTurn = Color.Black,
+  Active = 0,
 
   /**
-   * Game is over, and white won by checkmating black.
+   * Game is over, and it was a checkmate.
    */
-  CheckmateWhite = 10,
-
-  /**
-   * Game is over, and black won by checkmating black.
-   */
-  CheckmateBlack,
+  Checkmate = 10,
 
   /**
    * Game is drawn, for some unknown reason. (Adjournment, death, ...)

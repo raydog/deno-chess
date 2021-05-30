@@ -22,25 +22,40 @@ type AnnotatedMove = {
   san: string;
 };
 
-type HistoryEntry = {
+/**
+ * A record of a single 
+ */
+export type HistoryEntry = {
   num: number;
   white: string;
   black: string | null;
 };
 
 /**
- * This game's status.
+ * The current game status.
  */
-export type Status =
-  | "white"
-  | "black"
-  | "checkmate-white"
-  | "checkmate-black"
-  | "draw-other"
-  | "draw-stalemate"
-  | "draw-repetition"
-  | "draw-fifty-moves"
-  | "draw-no-material";
+export interface Status {
+  /**
+   * What's the game situation? Either "active" or some manner of game-over.
+   */
+  state:
+    | "active"
+    | "checkmate"
+    | "draw-other"
+    | "draw-stalemate"
+    | "draw-repetition"
+    | "draw-fifty-moves"
+    | "draw-no-material";
+
+  /**
+   * The color who is to play.
+   * 
+   * Note: In endgame situations, this is the player who is IN the situation. So, for example, when "checkmate", this is
+   * the player who is currently checked, and has no available move. So the winner would be the OTHER player.
+   */
+  turn: "white" | "black", 
+}
+
 
 /**
  * A single chess game.
@@ -92,7 +107,10 @@ export class ChessGame {
    * @returns A status string.
    */
   getStatus(): Status {
-    return _statusString(this.#board.getStatus());
+    return {
+      state: _gameStatusString(this.#board.getStatus()),
+      turn: (this.#board.getTurn() === Color.White) ? "white" : "black",
+    };
   }
 
   /**
@@ -101,7 +119,7 @@ export class ChessGame {
    * @returns
    */
   isGameOver(): boolean {
-    return this.#board.getStatus() >= 2;
+    return Boolean(this.#board.getStatus());
   }
 
   /**
@@ -120,9 +138,8 @@ export class ChessGame {
    * @param promote
    */
   public move(move: string, promote = "Q"): ChessGame {
-    const status = this.#board.getStatus();
 
-    if (status >= 2) {
+    if (this.isGameOver()) {
       throw new ChessGameOver();
     }
 
@@ -142,7 +159,8 @@ export class ChessGame {
     // Get the full list of moves. We need the FULL list of moves (and not just the moves for this one piece) because
     // computing the SAN for a move needs to change how the origin is represented based on which moves are currently
     // available to the player:
-    const moves = listAllValidMoves(this.#board, _statusAsColor(status));
+    const turn = this.#board.getTurn();
+    const moves = listAllValidMoves(this.#board, turn);
     const picked = moves.find((move) =>
       move.from === from && move.dest === dest
     );
@@ -161,6 +179,7 @@ export class ChessGame {
       // san: al
     });
 
+    this.#board.setTurn(1 - this.#board.getTurn());
     this.#board.setStatus(results.newGameStatus);
 
     return this;
@@ -177,19 +196,19 @@ export class ChessGame {
    * @param coord An optional coordinate, formatted in algebraic notation, so like "a5".
    */
   allMoves(coord?: string): string[] {
-    const status = this.#board.getStatus();
-    if (status >= 2) {
+    if (this.isGameOver()) {
       return [];
     }
 
+    const turn = this.#board.getTurn();
     let moves;
 
     if (coord == null) {
-      moves = listAllValidMoves(this.#board, _statusAsColor(status));
+      moves = listAllValidMoves(this.#board, turn);
     } else {
       const idx = coordFromAN(coord);
       const sp = this.#board.get(idx);
-      if (spaceIsEmpty(sp) || spaceGetColor(sp) !== _statusAsColor(status)) {
+      if (spaceIsEmpty(sp) || spaceGetColor(sp) !== turn) {
         return [];
       }
       moves = listValidMoves(this.#board, idx);
@@ -208,23 +227,13 @@ export class ChessGame {
   }
 }
 
-function _statusAsColor(status: GameStatus): Color {
-  // Status IS a color when the game is active. Just make sure the game is active:
-  if (status >= 2) throw new ChessError("Expected game to be active");
-  return status as unknown as Color;
-}
-
 // Convert our own status enum into an externally-available string:
-function _statusString(status: GameStatus): Status {
+function _gameStatusString(status: GameStatus): Status["state"] {
   switch (status) {
-    case GameStatus.WhiteTurn:
-      return "white";
-    case GameStatus.BlackTurn:
-      return "black";
-    case GameStatus.CheckmateWhite:
-      return "checkmate-white";
-    case GameStatus.CheckmateBlack:
-      return "checkmate-black";
+    case GameStatus.Active:
+      return "active";
+    case GameStatus.Checkmate:
+      return "checkmate";
     case GameStatus.Draw:
       return "draw-other";
     case GameStatus.DrawStalemate:
