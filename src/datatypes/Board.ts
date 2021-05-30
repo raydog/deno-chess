@@ -12,6 +12,7 @@ type Layer = {
   moveNum: number;
   ep: Coord;
   status: GameStatus;
+  seen: { [hash: string]: number };
 };
 
 /**
@@ -116,6 +117,30 @@ export class Board {
   }
 
   /**
+   * Will push a board hash into our history objects. Returns the number of times we've seen this exact configuration
+   * before.
+   * 
+   * @param hash 
+   */
+  putBoardHash(hash: string): number {
+    // When getting the prior number, run backwards through history until we find this hash. We don't duplicate the hash
+    // histories the same way as other Layer data, because duplicating those objects is slow, and we need to change
+    // layers frequently. (Far more frequently than they're used...)
+    for (let idx=this.#layerIdx; idx >= 0; idx--) {
+      if (hash in this.#layers[idx].seen) {
+        // Oh! this one! Add 1, copy forward, and return.
+        const num = 1 + this.#layers[idx].seen[hash];
+        this.#current.seen[hash] = num;
+        return num;
+      }
+    }
+
+    // Else, not found:
+    this.#current.seen[hash] = 1;
+    return 1;
+  }
+
+  /**
    * Add a new overlay. This overlay will absorb set()'s, and get()'s take them into account. This allows us to easily
    * undo actions.
    */
@@ -146,6 +171,7 @@ function newLayer(): Layer {
     moveNum: 1,
     ep: -1,
     status: GameStatus.WhiteTurn,
+    seen: {},
   };
 }
 
@@ -155,4 +181,5 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.moveNum = src.moveNum;
   dest.ep = src.ep;
   dest.status = src.status;
+  dest.seen = {}; // Just create new object instead of copying massive objects.
 }

@@ -3,6 +3,7 @@ import { Color } from "../../datatypes/Color.ts";
 import { Coord } from "../../datatypes/Coord.ts";
 import { PieceType } from "../../datatypes/PieceType.ts";
 import { encodePieceSpace } from "../../datatypes/Space.ts";
+import { hashBoard } from "../hashBoard.ts";
 
 const BACK_ROW = [
   PieceType.Rook,
@@ -29,6 +30,8 @@ export function buildStandardBoard(): Board {
 
   _setRow(out, Color.Black, 0x60, PAWN_ROW);
   _setRow(out, Color.Black, 0x70, BACK_ROW);
+
+  out.putBoardHash(hashBoard(out));
 
   return out;
 }

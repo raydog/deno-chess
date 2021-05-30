@@ -3,6 +3,7 @@ import { GameStatus } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import { spaceGetColor } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
+import { hashBoard } from "./hashBoard.ts";
 import { kingInDanger } from "./kingInDanger.ts";
 import { listAllValidMoves } from "./listValidMoves.ts";
 import { performMove } from "./performMove.ts";
@@ -60,7 +61,9 @@ export function checkMoveResults(board: Board, move: Move): MoveResults {
   // TODO: Fork this into a version that DOESN'T allocate an array of objects, and instead short-circuits a bool:
   const enemyCanMove = listAllValidMoves(board, enemy).length > 0;
 
-  const newGameStatus = _nextState(board, enemyInCheck, enemyCanMove);
+  const timesMoveSeen = board.putBoardHash(hashBoard(board));
+
+  const newGameStatus = _nextState(board, enemyInCheck, enemyCanMove, timesMoveSeen);
 
   return {
     enemyInCheck,
@@ -73,6 +76,7 @@ function _nextState(
   board: Board,
   enemyInCheck: boolean,
   enemyCanMove: boolean,
+  timesMoveSeen: number,
 ): GameStatus {
   const priorStatus = board.getStatus();
 
@@ -92,6 +96,10 @@ function _nextState(
   // Else, there are a few other situations that can trigger end-of-game:
   if (board.getClock() >= 100) {
     return GameStatus.DrawFiftyMove;
+  }
+
+  if (timesMoveSeen >= 3) {
+    return GameStatus.DrawRepetition;
   }
 
   // Else, the game is still on. Toggle the player:
