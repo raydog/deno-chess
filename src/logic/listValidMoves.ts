@@ -20,6 +20,7 @@ import {
 } from "../datatypes/Move.ts";
 import { performMove } from "./performMove.ts";
 import { kingInDanger } from "./kingInDanger.ts";
+import { castleMapGetFile } from "../datatypes/CastleMap.ts";
 
 // Pre-compiled lists of moves, since most moves are similar:
 const BISHOP_DIRS: number[] = [15, 17, -17, -15];
@@ -144,26 +145,49 @@ function _findMoves(
   // Special-case, if King, and king hasn't moved yet, check the same rank for Rooks that haven't moved, and then maybe
   // try castling:
   if (spaceGetType(sp) === PieceType.King && !spaceHasMoved(sp)) {
-    // Possible castle situation! Find the rooks:
-    const [, rank] = parseCoord(idx);
-    for (let newFile = 0; newFile < 8; newFile++) {
-      const newIdx = buildCoord(newFile, rank);
-      const newSpot = b.get(newIdx);
-      if (
-        spaceGetType(newSpot) === PieceType.Rook &&
-        spaceGetColor(newSpot) === color && !spaceHasMoved(newSpot)
-      ) {
-        // Candidate castle! Build the final positions for validation:
-        const queenSide = newIdx < idx;
-        const kingDest = queenSide ? buildCoord(2, rank) : buildCoord(6, rank);
-        const rookDest = queenSide ? buildCoord(3, rank) : buildCoord(5, rank);
-        _tryCastle(
-          b,
-          out,
-          createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest),
-        );
-      }
+    const castles = b.getCastles();
+    const kRank = castleMapGetFile(castles, color, true);
+    const qRank = castleMapGetFile(castles, color, false);
+    const rank = idx & 0xf0;
+
+    if ((kRank & 0x8) === 0) {
+      const kingDest = rank | 6;
+      const rookFrom = rank | kRank;
+      const rookDest = rank | 5;
+      _tryCastle(
+        b, out, createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest)
+      );
     }
+
+    if ((qRank & 0x8) === 0) {
+      const kingDest = rank | 2;
+      const rookFrom = rank | qRank;
+      const rookDest = rank | 3;
+      _tryCastle(
+        b, out, createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest)
+      );
+    }
+
+    // Possible castle situation! Find the rooks:
+    // const [, rank] = parseCoord(idx);
+    // for (let newFile = 0; newFile < 8; newFile++) {
+    //   const newIdx = buildCoord(newFile, rank);
+    //   const newSpot = b.get(newIdx);
+    //   if (
+    //     spaceGetType(newSpot) === PieceType.Rook &&
+    //     spaceGetColor(newSpot) === color && !spaceHasMoved(newSpot)
+    //   ) {
+    //     // Candidate castle! Build the final positions for validation:
+    //     const queenSide = newIdx < idx;
+    //     const kingDest = queenSide ? buildCoord(2, rank) : buildCoord(6, rank);
+    //     const rookDest = queenSide ? buildCoord(3, rank) : buildCoord(5, rank);
+    //     _tryCastle(
+    //       b,
+    //       out,
+    //       createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest),
+    //     );
+    //   }
+    // }
   }
 
   return out;
@@ -250,10 +274,10 @@ function _tryPushMove(b: Board, out: Move[], move: Move) {
 function _tryCastle(b: Board, out: Move[], move: Move) {
   const color = spaceGetColor(move.what);
 
-  // Every spot in the rook's travel must be empty, apart from the King (which can happen in Chess960)
-  const rookMin = Math.min(move.castleRookFrom, move.castleRookDest);
-  const rookMax = Math.max(move.castleRookFrom, move.castleRookDest);
-  for (let idx = rookMin; idx <= rookMax; idx++) {
+  // Every spot in the travel must be empty, apart from the King and Rook:
+  const min = Math.min(move.castleRookFrom, move.castleRookDest, move.from, move.dest);
+  const max = Math.max(move.castleRookFrom, move.castleRookDest, move.from, move.dest);
+  for (let idx = min; idx <= max; idx++) {
     if (idx === move.from || idx === move.castleRookFrom) {
       continue;
     }

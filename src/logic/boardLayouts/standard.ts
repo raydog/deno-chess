@@ -1,4 +1,5 @@
 import { Board } from "../../datatypes/Board.ts";
+import { buildCastleMap } from "../../datatypes/CastleMap.ts";
 import { Color } from "../../datatypes/Color.ts";
 import { Coord } from "../../datatypes/Coord.ts";
 import { PieceType } from "../../datatypes/PieceType.ts";
@@ -31,6 +32,7 @@ export function buildStandardBoard(): Board {
   _setRow(out, Color.Black, 0x60, PAWN_ROW);
   _setRow(out, Color.Black, 0x70, BACK_ROW);
 
+  out.setCastles(buildCastleMap(0x00, 0x07, 0x70, 0x77));
   out.putBoardHash(hashBoard(out));
 
   return out;

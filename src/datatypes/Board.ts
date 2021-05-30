@@ -2,6 +2,7 @@ import { Space, SPACE_EMPTY } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
+import { CastleMap } from "./CastleMap.ts";
 
 // Uses the 0x88 strategy:
 const BOARD_SIZE = 8 * 8 * 2;
@@ -13,6 +14,7 @@ type Layer = {
   ep: Coord;
   status: GameStatus;
   seen: { [hash: string]: number };
+  castles: CastleMap;
 };
 
 /**
@@ -117,6 +119,21 @@ export class Board {
   }
 
   /**
+   * Get the castle status.
+   * @returns
+   */
+   getCastles(): CastleMap {
+    return this.#current.castles;
+  }
+
+  /**
+   * Update the castle status.
+   */
+  setCastles(s: CastleMap) {
+    this.#current.castles = s;
+  }
+
+  /**
    * Will push a board hash into our history objects. Returns the number of times we've seen this exact configuration
    * before.
    * 
@@ -172,6 +189,7 @@ function newLayer(): Layer {
     ep: -1,
     status: GameStatus.WhiteTurn,
     seen: {},
+    castles: 0,
   };
 }
 
@@ -182,4 +200,5 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.ep = src.ep;
   dest.status = src.status;
   dest.seen = {}; // Just create new object instead of copying massive objects.
+  dest.castles = src.castles;
 }

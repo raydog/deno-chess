@@ -45,9 +45,13 @@ while (true) {
   }
 
   const cmd = await repl.prompt();
-  const normal = cmd.trim().toLowerCase();
+  if (cmd == null) { break; }
 
+  const normal = cmd.trim().toLowerCase();
   switch (normal) {
+    case "":
+      break;
+
     case "q":
     case "quit":
     case "exit":
@@ -86,7 +90,6 @@ function printGame(game: ChessGame) {
     console.log(board[line], " ", turnStr);
   }
 
-  console.log("\n%s", game.hash());
   const status = game.getStatus();
   console.log("\n%s", STATUS_STRINGS[status]);
 }

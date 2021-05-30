@@ -1,4 +1,5 @@
 import { Board } from "../datatypes/Board.ts";
+import { castleMapKingMoved, castleMapRookMoved } from "../datatypes/CastleMap.ts";
 import { Move } from "../datatypes/Move.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
 import {
@@ -7,6 +8,7 @@ import {
   spaceGetType,
   spaceMarkMoved,
   spacePromote,
+spaceHasMoved,
 } from "../datatypes/Space.ts";
 
 /**
@@ -23,6 +25,19 @@ export function performMove(
 
   // This piece just moved:
   let space = spaceMarkMoved(move.what);
+  const color = spaceGetColor(space);
+  const type = spaceGetType(space);
+  
+  // If this is a king, remove all castle eligibility, either because it's castling NOW, or because it's otherwise
+  // moving.
+  if (type === PieceType.King) {
+    b.setCastles(castleMapKingMoved(b.getCastles(), color));
+  }
+
+  // If this is a rook that hasn't moved before, mark it as ineligible for castles:
+  if (type === PieceType.Rook && !spaceHasMoved(move.what)) {
+    b.setCastles(castleMapRookMoved(b.getCastles(), move.from));
+  }
 
   // Mark as being vulnerable to En Passant if requested:
   if (move.markEnPassant) {
