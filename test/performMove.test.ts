@@ -93,7 +93,7 @@ Deno.test("Perform Move > Sicilian defense", function () {
     move(b, "g1", "f3"),
   );
 
-  asserts.assertEquals(b.getEnPassant(), 0);
+  asserts.assertEquals(b.getEnPassant(), 0x88);
   asserts.assertEquals(spaceIsEmpty(b.get(an("g1"))), true);
   asserts.assertEquals(spaceGetType(b.get(an("f3"))), PieceType.Knight);
   asserts.assertEquals(spaceHasMoved(b.get(an("f3"))), true);

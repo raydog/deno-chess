@@ -195,3 +195,37 @@ Deno.test("ChessGame Public API > Stalemate", function () {
   });
   asserts.assertThrows(() => game.move("a2a4"), ChessGameOver, "Game is over");
 });
+
+Deno.test("ChessGame Public API > FEN > Standard opening", function () {
+  const game = ChessGame.NewStandardGame();
+
+  asserts.assertEquals(game.toFENString(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+});
+
+Deno.test("ChessGame Public API > FEN > Checkmate", function () {
+  const game = ChessGame.NewStandardGame();
+
+  game.move("f2f3").move("e7e5");
+  game.move("g2g4").move("d8h4"); // Ouch!
+
+  asserts.assertEquals(game.toFENString(), "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3");
+});
+
+Deno.test("ChessGame Public API > FEN > Stalemate", function () {
+  const game = ChessGame.NewStandardGame();
+
+  game.move("e2e3").move("a7a5");
+  game.move("d1h5").move("a8a6");
+  game.move("h5a5").move("h7h5");
+  game.move("h2h4").move("a6h6");
+  game.move("a5c7").move("f7f6");
+  game.move("c7d7").move("e8f7");
+  game.move("d7b7").move("d8d3");
+  game.move("b7b8").move("d3h7");
+  game.move("b8c8").move("f7g6");
+  game.move("c8e6"); // Stalemate
+
+  asserts.assertEquals(game.toFENString(), "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10");
+});
+
+

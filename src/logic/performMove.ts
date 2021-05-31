@@ -24,7 +24,7 @@ export function performMove(
   move: Move,
 ) {
   // Clear all En Passant-marked pawns from this board:
-  b.setEnPassant(0);
+  b.setEnPassant(0x88);
 
   // This piece just moved:
   let space = spaceMarkMoved(move.what);
@@ -78,4 +78,7 @@ export function performMove(
   } else {
     b.incrClock();
   }
+
+  // Toggle the active player:
+  b.setTurn(1 - b.getTurn());
 }

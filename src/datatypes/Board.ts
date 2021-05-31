@@ -203,7 +203,7 @@ function newLayer(): Layer {
     board: new Uint8Array(BOARD_SIZE).fill(SPACE_EMPTY),
     clock: 0,
     moveNum: 1,
-    ep: -1,
+    ep: 0x88,
     status: GameStatus.Active,
     turn: Color.White,
     seen: {},
