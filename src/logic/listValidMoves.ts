@@ -68,6 +68,9 @@ export function listAllValidMoves(
  *
  * Will check the board to see if castles or en passant are possible. Will also respect checks, so pieces can be pinned,
  * or moves will be restricted if king is currently in check.
+ * 
+ * If a move would result in a promotion (a Pawn reached its final rank) the move will include a Promote property equal
+ * to PieceType.Queen. If a different piece is desired, just update the property before performing that move.
  */
 export function listValidMoves(
   b: Board,
@@ -171,27 +174,6 @@ function _findMoves(
         createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
       );
     }
-
-    // Possible castle situation! Find the rooks:
-    // const [, rank] = parseCoord(idx);
-    // for (let newFile = 0; newFile < 8; newFile++) {
-    //   const newIdx = buildCoord(newFile, rank);
-    //   const newSpot = b.get(newIdx);
-    //   if (
-    //     spaceGetType(newSpot) === PieceType.Rook &&
-    //     spaceGetColor(newSpot) === color && !spaceHasMoved(newSpot)
-    //   ) {
-    //     // Candidate castle! Build the final positions for validation:
-    //     const queenSide = newIdx < idx;
-    //     const kingDest = queenSide ? buildCoord(2, rank) : buildCoord(6, rank);
-    //     const rookDest = queenSide ? buildCoord(3, rank) : buildCoord(5, rank);
-    //     _tryCastle(
-    //       b,
-    //       out,
-    //       createCastle(sp, idx, kingDest, newSpot, newIdx, rookDest),
-    //     );
-    //   }
-    // }
   }
 
   return out;
@@ -212,11 +194,16 @@ function _pawnMoves(
   const oneUp = idx + 16 * dir;
   const twoUp = idx + 32 * dir;
 
+  // !?! Should have promoted...
   if (oneUp & 0x88) return out;
+
+  // One up being ok, but two up being bad means oneUp is the last rank:
+  const promote = (twoUp & 0x88) ? PieceType.Queen : 0;
 
   // Try to move one up:
   if (spaceIsEmpty(b.get(oneUp))) {
-    _tryPushMove(b, out, createSimpleMove(sp, idx, oneUp));
+
+    _tryPushMove(b, out, createFullMove(sp, idx, oneUp, 0, 0, 0, 0, 0, promote, 0));
 
     // If we haven't moved before, we can attempt 2 up:
     if (
@@ -245,13 +232,13 @@ function _pawnMoves(
       _tryPushMove(
         b,
         out,
-        createSimpleCapture(sp, idx, coord, epSpot, epCoord),
+        createFullMove(sp, idx, coord, epSpot, epCoord, 0, 0, 0, promote, 0),
       );
     } else if (!spaceIsEmpty(spot) && spaceGetColor(spot) === enemy) {
       _tryPushMove(
         b,
         out,
-        createSimpleCapture(sp, idx, coord, spot, coord),
+        createFullMove(sp, idx, coord, spot, coord, 0, 0, 0, promote, 0),
       );
     }
   }

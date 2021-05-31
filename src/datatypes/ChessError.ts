@@ -21,3 +21,9 @@ export class ChessBadMove extends ChessError {
     super("Bad move: " + msg);
   }
 }
+
+export class ChessNeedsPromotion extends ChessError {
+  constructor() {
+    super("Promotion piece is required for this move");
+  }
+}

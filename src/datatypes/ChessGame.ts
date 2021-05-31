@@ -9,11 +9,12 @@ import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
-import { ChessBadMove, ChessError, ChessGameOver } from "./ChessError.ts";
+import { ChessBadMove, ChessError, ChessGameOver, ChessNeedsPromotion } from "./ChessError.ts";
 import { Color } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
+import { PieceType } from "./PieceType.ts";
 import { spaceGetColor, spaceIsEmpty } from "./Space.ts";
 
 const MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/i;
@@ -56,6 +57,11 @@ export interface Status {
    */
   turn: "white" | "black";
 }
+
+/**
+ * A piece that you can promote a Pawn to. (B)ishop, (R)ook, K(N)ight, or (Q)ueen
+ */
+type PromotePiece = "B" | "R" | "N" | "Q";
 
 /**
  * A single chess game.
@@ -129,15 +135,16 @@ export class ChessGame {
    * next to each other. (An optional hyphen can be included if you want.) For example, a classic King's opening would
    * look like: "e2e4" or "e2-e4", if you opt to include the hyphen. This is not full algebraic notation, so don't add
    * "x" to indicate capture, don't add "=Q" to indicate promotion, etc.
-   *
-   * If this move involves a pawn reaching its final rank (and so it's promoting) you can add the additional `promote`
-   * parameter to indicate what piece type this should promote to. If omitted, Queen is assumed. If this parameter is
-   * included when this ISN'T a promotion, it'll just be ignored. Trying to promote to a Pawn will error.
-   *
+   * 
+   * This method has a promote property, that can be assigned to a string (like "Q" or "R" or "N") is this move involves
+   * a Pawn reaching its final rank. If a promotion piece is included when not necessary, it'll just be ignored.
+   * However, if this move NEEDS a promotion piece, and it isn't provided, this method will throw a ChessNeedsPromotion
+   * error.
+   * 
    * @param move A string like "b1c3", "d1-h5", etc.
-   * @param promote
+   * @param promote Either "Q", "N", "R" or "B".
    */
-  public move(move: string, promote = "Q"): ChessGame {
+  public move(move: string, promote?: PromotePiece): ChessGame {
     if (this.isGameOver()) {
       throw new ChessGameOver();
     }
@@ -165,6 +172,14 @@ export class ChessGame {
     );
     if (!picked) {
       throw new ChessBadMove(`${move}: Invalid move`);
+    }
+
+    // Do we require a promotion?
+    if (picked.promote) {
+      if (promote == null) {
+        throw new ChessNeedsPromotion();
+      }
+      picked.promote = _pieceTypeForString(promote);
     }
 
     // Else, we have the correct move! Apply to to our own board:
@@ -250,4 +265,14 @@ function _gameStatusString(status: GameStatus): Status["state"] {
       // For some reason, Typescript isn't type-narrowing this:
       throw new ChessError("Bad status code: " + status);
   }
+}
+
+function _pieceTypeForString(str: PromotePiece): PieceType {
+  switch (str) {
+    case "B": return PieceType.Bishop;
+    case "N": return PieceType.Knight;
+    case "R": return PieceType.Rook;
+    case "Q": return PieceType.Queen;
+  }
+  throw new ChessError("Invalid promotion string: " + str);
 }

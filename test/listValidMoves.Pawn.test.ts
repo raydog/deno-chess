@@ -29,9 +29,9 @@ Deno.test("List Valid Moves > Pawn > White basic move", function () {
 
 Deno.test("List Valid Moves > Pawn > Black basic move", function () {
   const b = boardLayout({
-    b2: encodePieceSpace(PieceType.Pawn, Color.Black, true),
+    b3: encodePieceSpace(PieceType.Pawn, Color.Black, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("b2")), ["b1"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("b3")), ["b2"]);
 });
 
 Deno.test("List Valid Moves > Pawn > White blocked by white", function () {
@@ -64,6 +64,36 @@ Deno.test("List Valid Moves > Pawn > Black blocked by black", function () {
     b2: encodePieceSpace(PieceType.Queen, Color.Black, true),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("b3")), []);
+});
+
+Deno.test("List Valid Moves > Pawn > White promotion", function () {
+  const b = boardLayout({
+    c7: encodePieceSpace(PieceType.Pawn, Color.White, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("c7")), ["c8=Q"]);
+});
+
+Deno.test("List Valid Moves > Pawn > Black promotion", function () {
+  const b = boardLayout({
+    e2: encodePieceSpace(PieceType.Pawn, Color.Black, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("e2")), ["e1=Q"]);
+});
+
+Deno.test("List Valid Moves > Pawn > White capture promotion", function () {
+  const b = boardLayout({
+    c7: encodePieceSpace(PieceType.Pawn, Color.White, true),
+    d8: encodePieceSpace(PieceType.Queen, Color.Black, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("c7")), ["c8=Q", "cxd8=Q"]);
+});
+
+Deno.test("List Valid Moves > Pawn > Black capture promotion", function () {
+  const b = boardLayout({
+    e2: encodePieceSpace(PieceType.Pawn, Color.Black, true),
+    f1: encodePieceSpace(PieceType.Queen, Color.White, true),
+  });
+  assertMoves(b, listValidMoves(b, coordFromAN("e2")), ["e1=Q", "exf1=Q"]);
 });
 
 Deno.test("List Valid Moves > Pawn > White opening capture left", function () {

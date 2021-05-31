@@ -1,4 +1,4 @@
-import { ChessGameOver } from "../src/datatypes/ChessError.ts";
+import { ChessGameOver, ChessNeedsPromotion } from "../src/datatypes/ChessError.ts";
 import { ChessGame } from "../src/datatypes/ChessGame.ts";
 import { coordToAN } from "../src/datatypes/Coord.ts";
 import { asserts } from "../testDeps.ts";
@@ -95,12 +95,40 @@ Deno.test("ChessGame Public API > Can castle queenside", function () {
 
 Deno.test("ChessGame Public API > Can checkmate", function () {
   const game = ChessGame.NewStandardGame();
-  game
-    .move("e2e4").move("e7e5")
-    .move("f1c4").move("f8c5")
-    .move("d1f3").move("d7d6")
-    .move("f3f7");
+  game.move("e2e4").move("e7e5");
+  game.move("f1c4").move("f8c5");
+  game.move("d1f3").move("d7d6");
+  game.move("f3f7");
   asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black" });
+});
+
+Deno.test("ChessGame Public API > Promote requires a param", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("a2a4").move("b7b5");
+  game.move("a4b5").move("b8a6");
+  game.move("b5b6").move("a6c5");
+  game.move("b6b7").move("c5e6");
+  asserts.assertThrows(() => game.move("b7b8"), ChessNeedsPromotion, "Promotion piece");
+});
+
+Deno.test("ChessGame Public API > Promote to Knight", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("a2a4").move("b7b5");
+  game.move("a4b5").move("b8a6");
+  game.move("b5b6").move("a6c5");
+  game.move("b6b7").move("c5e6");
+  game.move("b7b8", "N");
+  asserts.assertEquals(game.history().reverse()[0].white, "b8=N");
+});
+
+Deno.test("ChessGame Public API > Promote to Queen after capture", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("a2a4").move("b7b5");
+  game.move("a4b5").move("b8a6");
+  game.move("b5b6").move("a6c5");
+  game.move("b6b7").move("c5e6");
+  game.move("b7a8", "Q");
+  asserts.assertEquals(game.history().reverse()[0].white, "bxa8=Q");
 });
 
 Deno.test("ChessGame Public API > Rejects moves after game over", function () {
