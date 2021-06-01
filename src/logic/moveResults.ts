@@ -2,6 +2,7 @@ import { Board } from "../datatypes/Board.ts";
 import { GameStatus } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import { spaceGetColor } from "../datatypes/Space.ts";
+import { boardLacksMaterial } from "./boardLacksMaterial.ts";
 import { hashBoard } from "./hashBoard.ts";
 import { kingInDanger } from "./kingInDanger.ts";
 import { listAllValidMoves } from "./listValidMoves.ts";
@@ -101,6 +102,10 @@ function _nextState(
 
   if (timesMoveSeen >= 3) {
     return GameStatus.DrawRepetition;
+  }
+
+  if (boardLacksMaterial(board)) {
+    return GameStatus.DrawNoMaterial;
   }
 
   // Else, the game is still on. Toggle the player:
