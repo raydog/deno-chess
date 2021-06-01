@@ -76,4 +76,30 @@ bench({
 //   },
 // });
 
+bench({
+  name: "String in Set",
+  runs: 1000,
+  func(b) {
+    const set = new Set(["Kk", "Kkr", "KRk", "KBk", "Kkb"]);
+    b.start();
+    for (let i = 0; i < LOOP; i++) {
+      set.has("KRk");
+    }
+    b.stop();
+  },
+});
+
+bench({
+  name: "String in Object",
+  runs: 1000,
+  func(b) {
+    const set = { Kk: true, Kkr: true, KRk: true, KBk: true, Kkb: true };
+    b.start();
+    for (let i = 0; i < LOOP; i++) {
+      set["KRk"] === true;
+    }
+    b.stop();
+  },
+});
+
 runBenchmarks();

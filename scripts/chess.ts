@@ -15,19 +15,6 @@ class ChessRepl {
   }
 }
 
-// User-visible strings for the status codes:
-const STATUS_STRINGS: { [status in Status]: string } = {
-  white: "White to play",
-  black: "Black to play",
-  "checkmate-white": "CHECKMATE! White wins",
-  "checkmate-black": "CHECKMATE! Black wins",
-  "draw-stalemate": "Draw: Stalemate",
-  "draw-repetition": "Draw: Threefold repetition",
-  "draw-fifty-moves": "Draw: 50 move rule",
-  "draw-no-material": "Draw: Dead position",
-  "draw-other": "Draw",
-};
-
 const game = ChessGame.NewStandardGame();
 const repl = new ChessRepl();
 
@@ -91,5 +78,32 @@ function printGame(game: ChessGame) {
   }
 
   const status = game.getStatus();
-  console.log("\n%s", STATUS_STRINGS[status]);
+  console.log("\n%s", _statusString(status));
+}
+
+function _statusString(status: Status) {
+  if (status.state === "active") {
+    const turn = (status.turn === "white") ? "White" : "Black";
+    return `${turn} to play`;
+  }
+  if (status.state === "checkmate") {
+    const winner = (status.turn === "white") ? "Black" : "White";
+    return `Checkmate! ${winner} wins`;
+  }
+  if (status.state === "draw-stalemate") {
+    const turn = (status.turn === "white") ? "White" : "Black";
+    return `Draw: ${turn} is in stalemate`;
+  }
+  if (status.state === "draw-fifty-moves") {
+    return `Draw: 50 moves since last pawn move or capture`;
+  }
+  if (status.state === "draw-repetition") {
+    return `Draw: Threefold repetition`;
+  }
+  if (status.state === "draw-no-material") {
+    return `Draw: Not enough material left for checkmate`;
+  }
+  if (status.state === "draw-other") {
+    return `Draw`;
+  }
 }

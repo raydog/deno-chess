@@ -9,7 +9,12 @@ import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
 import { Board } from "./Board.ts";
-import { ChessBadMove, ChessError, ChessGameOver, ChessNeedsPromotion } from "./ChessError.ts";
+import {
+  ChessBadMove,
+  ChessError,
+  ChessGameOver,
+  ChessNeedsPromotion,
+} from "./ChessError.ts";
 import { Color } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
@@ -135,12 +140,12 @@ export class ChessGame {
    * next to each other. (An optional hyphen can be included if you want.) For example, a classic King's opening would
    * look like: "e2e4" or "e2-e4", if you opt to include the hyphen. This is not full algebraic notation, so don't add
    * "x" to indicate capture, don't add "=Q" to indicate promotion, etc.
-   * 
+   *
    * This method has a promote property, that can be assigned to a string (like "Q" or "R" or "N") is this move involves
    * a Pawn reaching its final rank. If a promotion piece is included when not necessary, it'll just be ignored.
    * However, if this move NEEDS a promotion piece, and it isn't provided, this method will throw a ChessNeedsPromotion
    * error.
-   * 
+   *
    * @param move A string like "b1c3", "d1-h5", etc.
    * @param promote Either "Q", "N", "R" or "B".
    */
@@ -269,10 +274,14 @@ function _gameStatusString(status: GameStatus): Status["state"] {
 
 function _pieceTypeForString(str: PromotePiece): PieceType {
   switch (str) {
-    case "B": return PieceType.Bishop;
-    case "N": return PieceType.Knight;
-    case "R": return PieceType.Rook;
-    case "Q": return PieceType.Queen;
+    case "B":
+      return PieceType.Bishop;
+    case "N":
+      return PieceType.Knight;
+    case "R":
+      return PieceType.Rook;
+    case "Q":
+      return PieceType.Queen;
   }
   throw new ChessError("Invalid promotion string: " + str);
 }

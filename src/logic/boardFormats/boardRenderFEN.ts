@@ -1,7 +1,7 @@
 import { Board } from "../../datatypes/Board.ts";
 import { CastleMap, castleMapGetFile } from "../../datatypes/CastleMap.ts";
 import { Color } from "../../datatypes/Color.ts";
-import { buildCoord, Coord, coordToAN } from "../../datatypes/Coord.ts";
+import { coordToAN } from "../../datatypes/Coord.ts";
 import {
   // spaceEnPassant,
   spaceGetFENString,

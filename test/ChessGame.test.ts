@@ -1,4 +1,7 @@
-import { ChessGameOver, ChessNeedsPromotion } from "../src/datatypes/ChessError.ts";
+import {
+  ChessGameOver,
+  ChessNeedsPromotion,
+} from "../src/datatypes/ChessError.ts";
 import { ChessGame } from "../src/datatypes/ChessGame.ts";
 import { coordToAN } from "../src/datatypes/Coord.ts";
 import { asserts } from "../testDeps.ts";
@@ -108,7 +111,11 @@ Deno.test("ChessGame Public API > Promote requires a param", function () {
   game.move("a4b5").move("b8a6");
   game.move("b5b6").move("a6c5");
   game.move("b6b7").move("c5e6");
-  asserts.assertThrows(() => game.move("b7b8"), ChessNeedsPromotion, "Promotion piece");
+  asserts.assertThrows(
+    () => game.move("b7b8"),
+    ChessNeedsPromotion,
+    "Promotion piece",
+  );
 });
 
 Deno.test("ChessGame Public API > Promote to Knight", function () {
@@ -227,7 +234,10 @@ Deno.test("ChessGame Public API > Stalemate", function () {
 Deno.test("ChessGame Public API > FEN > Standard opening", function () {
   const game = ChessGame.NewStandardGame();
 
-  asserts.assertEquals(game.toFENString(), "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+  asserts.assertEquals(
+    game.toFENString(),
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  );
 });
 
 Deno.test("ChessGame Public API > FEN > Checkmate", function () {
@@ -236,7 +246,10 @@ Deno.test("ChessGame Public API > FEN > Checkmate", function () {
   game.move("f2f3").move("e7e5");
   game.move("g2g4").move("d8h4"); // Ouch!
 
-  asserts.assertEquals(game.toFENString(), "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3");
+  asserts.assertEquals(
+    game.toFENString(),
+    "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
+  );
 });
 
 Deno.test("ChessGame Public API > FEN > Stalemate", function () {
@@ -253,7 +266,8 @@ Deno.test("ChessGame Public API > FEN > Stalemate", function () {
   game.move("b8c8").move("f7g6");
   game.move("c8e6"); // Stalemate
 
-  asserts.assertEquals(game.toFENString(), "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10");
+  asserts.assertEquals(
+    game.toFENString(),
+    "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10",
+  );
 });
-
-

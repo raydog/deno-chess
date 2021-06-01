@@ -10,7 +10,7 @@ import {
 } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
-import { buildCoord, Coord, parseCoord } from "../datatypes/Coord.ts";
+import { Coord } from "../datatypes/Coord.ts";
 import {
   createCastle,
   createFullMove,
@@ -68,7 +68,7 @@ export function listAllValidMoves(
  *
  * Will check the board to see if castles or en passant are possible. Will also respect checks, so pieces can be pinned,
  * or moves will be restricted if king is currently in check.
- * 
+ *
  * If a move would result in a promotion (a Pawn reached its final rank) the move will include a Promote property equal
  * to PieceType.Queen. If a different piece is desired, just update the property before performing that move.
  */
@@ -202,8 +202,11 @@ function _pawnMoves(
 
   // Try to move one up:
   if (spaceIsEmpty(b.get(oneUp))) {
-
-    _tryPushMove(b, out, createFullMove(sp, idx, oneUp, 0, 0, 0, 0, 0, promote, 0));
+    _tryPushMove(
+      b,
+      out,
+      createFullMove(sp, idx, oneUp, 0, 0, 0, 0, 0, promote, 0),
+    );
 
     // If we haven't moved before, we can attempt 2 up:
     if (
