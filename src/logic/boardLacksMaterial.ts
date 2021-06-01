@@ -1,10 +1,5 @@
 import { Board } from "../datatypes/Board.ts";
-import { Color } from "../datatypes/Color.ts";
-import {
-  spaceGetColor,
-  spaceGetType,
-  spaceIsEmpty,
-} from "../datatypes/Space.ts";
+import { spaceGetType, spaceIsEmpty } from "../datatypes/Space.ts";
 import { PieceType } from "../datatypes/PieceType.ts";
 
 /**
@@ -35,7 +30,6 @@ export function boardLacksMaterial(b: Board): boolean {
       const spot = b.get(idx);
       if (spaceIsEmpty(spot)) continue;
 
-      const color = spaceGetColor(spot);
       const type = spaceGetType(spot);
 
       // Queens and rooks are strong enough that we can bail early if we encounter them. Pawns too, since none of the
