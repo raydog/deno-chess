@@ -27,3 +27,7 @@ export class ChessNeedsPromotion extends ChessError {
     super("Promotion piece is required for this move");
   }
 }
+
+export class ChessParseError extends ChessError {
+
+}

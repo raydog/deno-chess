@@ -74,7 +74,7 @@ export function performMove(
 
   // If a capture or pawn move, reset the clock. Else increment.
   if (spaceGetType(space) === PieceType.Pawn || move.capture) {
-    b.resetClock();
+    b.setClock(0);
   } else {
     b.incrClock();
   }

@@ -1,12 +1,12 @@
-import { Board } from "../../datatypes/Board.ts";
-import { Color } from "../../datatypes/Color.ts";
-import { buildCoord, Coord } from "../../datatypes/Coord.ts";
+import { Board } from "../datatypes/Board.ts";
+import { Color } from "../datatypes/Color.ts";
+import { buildCoord, Coord } from "../datatypes/Coord.ts";
 import {
   Space,
   spaceGetColor,
   spaceGetFENString,
   spaceIsEmpty,
-} from "../../datatypes/Space.ts";
+} from "../datatypes/Space.ts";
 
 const BAR = "   +------------------------+  \n";
 const FILES = "     a  b  c  d  e  f  g  h    ";

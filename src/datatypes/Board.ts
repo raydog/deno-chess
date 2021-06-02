@@ -60,8 +60,8 @@ export class Board {
   /**
    * Reset the half-move clock.
    */
-  resetClock() {
-    this.#current.clock = 0;
+  setClock(val: number) {
+    this.#current.clock = val;
   }
 
   /**
@@ -69,6 +69,13 @@ export class Board {
    */
   incrMoveNum() {
     this.#current.moveNum++;
+  }
+
+  /**
+   * Increment the current move number.
+   */
+  setMoveNum(val: number) {
+    this.#current.moveNum = val;
   }
 
   /**

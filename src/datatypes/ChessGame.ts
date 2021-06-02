@@ -1,7 +1,7 @@
 // Note: the class in this file serves as the external API.
 
-import { boardRenderASCII } from "../logic/boardFormats/boardRenderASCII.ts";
-import { boardRenderFEN } from "../logic/boardFormats/boardRenderFEN.ts";
+import { boardRenderASCII } from "../logic/boardRenderASCII.ts";
+import { boardToFEN } from "../logic/FEN/boardToFEN.ts";
 import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
 import { hashBoard } from "../logic/hashBoard.ts";
 import { listAllValidMoves, listValidMoves } from "../logic/listValidMoves.ts";
@@ -241,7 +241,7 @@ export class ChessGame {
   }
 
   toFENString() {
-    return boardRenderFEN(this.#board);
+    return boardToFEN(this.#board);
   }
 
   hash(): string {
