@@ -1,7 +1,7 @@
 import { Space, SPACE_EMPTY } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
-import { GameStatus } from "./GameStatus.ts";
+import { GameStatus, GAMESTATUS_ACTIVE } from "./GameStatus.ts";
 import { CastleMap } from "./CastleMap.ts";
 import { Color, COLOR_WHITE } from "./Color.ts";
 
@@ -211,7 +211,7 @@ function newLayer(): Layer {
     clock: 0,
     moveNum: 1,
     ep: 0x88,
-    status: GameStatus.Active,
+    status: GAMESTATUS_ACTIVE,
     turn: COLOR_WHITE,
     seen: {},
     castles: 0,

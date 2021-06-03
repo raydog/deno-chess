@@ -1,6 +1,6 @@
 import { Board } from "../datatypes/Board.ts";
 import { Color } from "../datatypes/Color.ts";
-import { GameStatus } from "../datatypes/GameStatus.ts";
+import { GameStatus, GAMESTATUS_CHECKMATE, GAMESTATUS_DRAW_FIFTYMOVES, GAMESTATUS_DRAW_NOMATERIAL, GAMESTATUS_DRAW_REPETITION, GAMESTATUS_DRAW_STALEMATE } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import { spaceGetColor } from "../datatypes/Space.ts";
 import { boardLacksMaterial } from "./boardLacksMaterial.ts";
@@ -91,23 +91,23 @@ function _nextState(
   if (!enemyCanMove) {
     if (enemyInCheck) {
       // CHECKMATE
-      return GameStatus.Checkmate;
+      return GAMESTATUS_CHECKMATE;
     }
     // Else, STALEMATE:
-    return GameStatus.DrawStalemate;
+    return GAMESTATUS_DRAW_STALEMATE;
   }
 
   // Else, there are a few other situations that can trigger end-of-game:
   if (board.getClock() >= 100) {
-    return GameStatus.DrawFiftyMove;
+    return GAMESTATUS_DRAW_FIFTYMOVES;
   }
 
   if (timesMoveSeen >= 3) {
-    return GameStatus.DrawRepetition;
+    return GAMESTATUS_DRAW_REPETITION;
   }
 
   if (boardLacksMaterial(board)) {
-    return GameStatus.DrawNoMaterial;
+    return GAMESTATUS_DRAW_NOMATERIAL;
   }
 
   // Else, the game is still on. Toggle the player:

@@ -17,7 +17,7 @@ import {
 } from "./ChessError.ts";
 import { Color, COLOR_WHITE } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
-import { GameStatus } from "./GameStatus.ts";
+import { GameStatus, GAMESTATUS_ACTIVE, GAMESTATUS_CHECKMATE, GAMESTATUS_DRAW, GAMESTATUS_DRAW_FIFTYMOVES, GAMESTATUS_DRAW_NOMATERIAL, GAMESTATUS_DRAW_REPETITION, GAMESTATUS_DRAW_STALEMATE } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
 import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KNIGHT, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "./PieceType.ts";
 import { spaceGetColor, spaceIsEmpty } from "./Space.ts";
@@ -263,19 +263,19 @@ export class ChessGame {
 // Convert our own status enum into an externally-available string:
 function _gameStatusString(status: GameStatus): Status["state"] {
   switch (status) {
-    case GameStatus.Active:
+    case GAMESTATUS_ACTIVE:
       return "active";
-    case GameStatus.Checkmate:
+    case GAMESTATUS_CHECKMATE:
       return "checkmate";
-    case GameStatus.Draw:
+    case GAMESTATUS_DRAW:
       return "draw-other";
-    case GameStatus.DrawStalemate:
+    case GAMESTATUS_DRAW_STALEMATE:
       return "draw-stalemate";
-    case GameStatus.DrawRepetition:
+    case GAMESTATUS_DRAW_REPETITION:
       return "draw-repetition";
-    case GameStatus.DrawFiftyMove:
+    case GAMESTATUS_DRAW_FIFTYMOVES:
       return "draw-fifty-moves";
-    case GameStatus.DrawNoMaterial:
+    case GAMESTATUS_DRAW_NOMATERIAL:
       return "draw-no-material";
     default:
       // For some reason, Typescript isn't type-narrowing this:
