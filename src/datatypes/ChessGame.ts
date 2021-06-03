@@ -190,7 +190,7 @@ export class ChessGame {
     // Else, we have the correct move! Apply to to our own board:
     performMove(this.#board, picked);
 
-    const results = checkMoveResults(this.#board, picked);
+    const results = checkMoveResults(this.#board, turn);
 
     this.#moves.push({
       move: picked,

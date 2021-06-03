@@ -1,4 +1,5 @@
 import { Board } from "../datatypes/Board.ts";
+import { Color } from "../datatypes/Color.ts";
 import { GameStatus } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import { spaceGetColor } from "../datatypes/Space.ts";
@@ -38,8 +39,10 @@ export type MoveResults = {
 export function moveAndCheckResults(board: Board, move: Move) {
   board.save();
 
+  const moveColor = spaceGetColor(move.what);
+
   performMove(board, move);
-  const out: MoveResults = checkMoveResults(board, move);
+  const out: MoveResults = checkMoveResults(board, moveColor);
 
   board.restore();
 
@@ -52,9 +55,8 @@ export function moveAndCheckResults(board: Board, move: Move) {
  * @param board
  * @param move
  */
-export function checkMoveResults(board: Board, move: Move): MoveResults {
-  const color = spaceGetColor(move.what);
-  const enemy = 1 - color;
+export function checkMoveResults(board: Board, moveColor: Color): MoveResults {
+  const enemy = 1 - moveColor;
 
   const enemyInCheck = kingInDanger(board, enemy);
 

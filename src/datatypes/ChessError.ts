@@ -29,5 +29,4 @@ export class ChessNeedsPromotion extends ChessError {
 }
 
 export class ChessParseError extends ChessError {
-
 }
