@@ -19,58 +19,90 @@
     <div id="board" style="width: 400px"></div>
 
   <script>
+    $(function() {
 
-    var game = DenoChess.ChessGame.NewStandardGame();
+      var BEST_BLUE = "#4353FF";
 
-    var status = game.getStatus();
+      var game = DenoChess.ChessGame.NewStandardGame();
+      var status, moves;
+      var highlighted = [];
 
-    var board = Chessboard('board', {
-      draggable: true,
-      position: 'start',
-      onDragStart: onDragStart,
-      onDrop: onDrop,
-      onSnapEnd: onSnapEnd
+      refreshState();
+
+      var board = Chessboard('board', {
+        draggable: true,
+        position: 'start',
+        dropOffBoard: 'snapback',
+        showNotation: true,
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onSnapEnd: onSnapEnd
+      });
+
+      function onDragStart (source, piece, position, orientation) {
+
+        highlight(
+          moves
+            .filter(move => move.startsWith(source))
+            .map(move => move.slice(2))
+        );
+        
+        // do not pick up pieces if the game is over
+        if (game.isGameOver()) { return false; }
+
+        // only pick up pieces for the side to move
+        if ((status.turn === 'white' && piece.startsWith("b")) ||
+            (status.turn === 'black' && piece.startsWith("w"))) {
+          return false
+        }
+      }
+
+      function onDrop (source, target) {
+        
+        clearHighlights();
+
+        if (target === "offboard" || source === target) {
+          return "snapback";
+        }
+        
+        try {
+          var move = game.move(source + target, 'Q');
+          refreshState();
+
+        } catch (ex) {
+          console.error(ex.message);
+          return 'snapback';
+        }
+      }
+
+      // update the board position after the piece snap
+      // for castling, en passant, pawn promotion
+      function onSnapEnd () {
+        board.position(game.toFENString())
+      }
+
+      function refreshState() {
+        status = game.getStatus();
+        moves = game.allMoves();
+      }
+
+      function highlight(squares) {
+        squares.forEach(pos => {
+          $("#board .square-" + pos)
+            .css("box-sizing", "border-box")
+            .css("box-shadow", "inset 0 0 3px 3px " + BEST_BLUE);
+          highlighted.push(pos);
+        })
+      }
+
+      function clearHighlights() {
+        highlighted.forEach(pos => {
+          $("#board .square-" + pos)
+            .css("box-shadow", "none");
+        });
+        highlighted.length = 0;
+      }
     });
-
-
-    // var board1 = Chessboard('board', 'start')
-
-    // var board = null
-    // var game = new Chess()
-    // var $status = $('#status')
-    // var $fen = $('#fen')
-    // var $pgn = $('#pgn')
-
-    function onDragStart (source, piece, position, orientation) {
-      // do not pick up pieces if the game is over
-      if (game.isGameOver()) { return false; }
-
-      // only pick up pieces for the side to move
-      if ((status.turn === 'white' && piece.search(/^b/) !== -1) ||
-          (status.turn === 'black' && piece.search(/^w/) !== -1)) {
-        return false
-      }
-    }
-
-    function onDrop (source, target) {
-      // see if the move is legal
-      try {
-        var move = game.move(source + target, 'Q');
-
-      } catch (ex) {
-        console.error(ex);
-        return 'snapback';
-      }
-
-      status = game.getStatus();
-    }
-
-    // update the board position after the piece snap
-    // for castling, en passant, pawn promotion
-    function onSnapEnd () {
-      board.position(game.toFENString())
-    }
-
   </script>
   </body>
 </html>
