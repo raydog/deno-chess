@@ -1,7 +1,7 @@
 import { Board } from "../src/datatypes/Board.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
 import { createFullMove, createSimpleMove } from "../src/datatypes/Move.ts";
-import { PieceType } from "../src/datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_KNIGHT, PIECETYPE_PAWN } from "../src/datatypes/PieceType.ts";
 import {
   spaceGetType,
   spaceHasMoved,
@@ -39,7 +39,7 @@ Deno.test("Perform Move > Réti Opening", function () {
   );
 
   asserts.assertEquals(spaceIsEmpty(b.get(an("g1"))), true);
-  asserts.assertEquals(spaceGetType(b.get(an("f3"))), PieceType.Knight);
+  asserts.assertEquals(spaceGetType(b.get(an("f3"))), PIECETYPE_KNIGHT);
   asserts.assertEquals(spaceHasMoved(b.get(an("f3"))), true);
 
   performMove(
@@ -48,7 +48,7 @@ Deno.test("Perform Move > Réti Opening", function () {
   );
 
   asserts.assertEquals(spaceIsEmpty(b.get(an("d7"))), true);
-  asserts.assertEquals(spaceGetType(b.get(an("d5"))), PieceType.Pawn);
+  asserts.assertEquals(spaceGetType(b.get(an("d5"))), PIECETYPE_PAWN);
   asserts.assertEquals(spaceHasMoved(b.get(an("d5"))), true);
   asserts.assertEquals(b.getEnPassant(), an("d6"));
 
@@ -58,7 +58,7 @@ Deno.test("Perform Move > Réti Opening", function () {
   );
 
   asserts.assertEquals(spaceIsEmpty(b.get(an("c2"))), true);
-  asserts.assertEquals(spaceGetType(b.get(an("c4"))), PieceType.Pawn);
+  asserts.assertEquals(spaceGetType(b.get(an("c4"))), PIECETYPE_PAWN);
   asserts.assertEquals(spaceHasMoved(b.get(an("c4"))), true);
   asserts.assertEquals(b.getEnPassant(), an("c3"));
 
@@ -74,7 +74,7 @@ Deno.test("Perform Move > Sicilian defense", function () {
   );
 
   asserts.assertEquals(spaceIsEmpty(b.get(an("e2"))), true);
-  asserts.assertEquals(spaceGetType(b.get(an("e4"))), PieceType.Pawn);
+  asserts.assertEquals(spaceGetType(b.get(an("e4"))), PIECETYPE_PAWN);
   asserts.assertEquals(spaceHasMoved(b.get(an("e4"))), true);
   asserts.assertEquals(b.getEnPassant(), an("e3"));
 
@@ -84,7 +84,7 @@ Deno.test("Perform Move > Sicilian defense", function () {
   );
 
   asserts.assertEquals(spaceIsEmpty(b.get(an("c7"))), true);
-  asserts.assertEquals(spaceGetType(b.get(an("c5"))), PieceType.Pawn);
+  asserts.assertEquals(spaceGetType(b.get(an("c5"))), PIECETYPE_PAWN);
   asserts.assertEquals(spaceHasMoved(b.get(an("c5"))), true);
   asserts.assertEquals(b.getEnPassant(), an("c6"));
 
@@ -95,7 +95,7 @@ Deno.test("Perform Move > Sicilian defense", function () {
 
   asserts.assertEquals(b.getEnPassant(), 0x88);
   asserts.assertEquals(spaceIsEmpty(b.get(an("g1"))), true);
-  asserts.assertEquals(spaceGetType(b.get(an("f3"))), PieceType.Knight);
+  asserts.assertEquals(spaceGetType(b.get(an("f3"))), PIECETYPE_KNIGHT);
   asserts.assertEquals(spaceHasMoved(b.get(an("f3"))), true);
 
   // console.log("\n\n" + debugBoard(b, []));

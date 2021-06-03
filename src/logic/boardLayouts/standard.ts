@@ -2,21 +2,21 @@ import { Board } from "../../datatypes/Board.ts";
 import { buildCastleMap } from "../../datatypes/CastleMap.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
 import { Coord } from "../../datatypes/Coord.ts";
-import { PieceType } from "../../datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../../datatypes/PieceType.ts";
 import { encodePieceSpace } from "../../datatypes/Space.ts";
 import { hashBoard } from "../hashBoard.ts";
 
 const BACK_ROW = [
-  PieceType.Rook,
-  PieceType.Knight,
-  PieceType.Bishop,
-  PieceType.Queen,
-  PieceType.King,
-  PieceType.Bishop,
-  PieceType.Knight,
-  PieceType.Rook,
+  PIECETYPE_ROOK,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_BISHOP,
+  PIECETYPE_QUEEN,
+  PIECETYPE_KING,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_ROOK,
 ];
-const PAWN_ROW = Array(8).fill(PieceType.Pawn);
+const PAWN_ROW = Array(8).fill(PIECETYPE_PAWN);
 
 /**
  * Create a new Chess board, in the standard starting position.

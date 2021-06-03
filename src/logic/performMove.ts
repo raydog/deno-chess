@@ -4,7 +4,7 @@ import {
   castleMapRookMoved,
 } from "../datatypes/CastleMap.ts";
 import { Move } from "../datatypes/Move.ts";
-import { PieceType } from "../datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_KING, PIECETYPE_PAWN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceGetColor,
@@ -33,12 +33,12 @@ export function performMove(
 
   // If this is a king, remove all castle eligibility, either because it's castling NOW, or because it's otherwise
   // moving.
-  if (type === PieceType.King) {
+  if (type === PIECETYPE_KING) {
     b.setCastles(castleMapKingMoved(b.getCastles(), color));
   }
 
   // If this is a rook that hasn't moved before, mark it as ineligible for castles:
-  if (type === PieceType.Rook && !spaceHasMoved(move.what)) {
+  if (type === PIECETYPE_ROOK && !spaceHasMoved(move.what)) {
     b.setCastles(castleMapRookMoved(b.getCastles(), move.from));
   }
 
@@ -73,7 +73,7 @@ export function performMove(
   }
 
   // If a capture or pawn move, reset the clock. Else increment.
-  if (spaceGetType(space) === PieceType.Pawn || move.capture) {
+  if (spaceGetType(space) === PIECETYPE_PAWN || move.capture) {
     b.setClock(0);
   } else {
     b.incrClock();

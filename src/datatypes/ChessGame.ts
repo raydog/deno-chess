@@ -19,7 +19,7 @@ import { Color, COLOR_WHITE } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
-import { PieceType } from "./PieceType.ts";
+import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KNIGHT, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "./PieceType.ts";
 import { spaceGetColor, spaceIsEmpty } from "./Space.ts";
 import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
 
@@ -286,13 +286,13 @@ function _gameStatusString(status: GameStatus): Status["state"] {
 function _pieceTypeForString(str: PromotePiece): PieceType {
   switch (str) {
     case "B":
-      return PieceType.Bishop;
+      return PIECETYPE_BISHOP;
     case "N":
-      return PieceType.Knight;
+      return PIECETYPE_KNIGHT;
     case "R":
-      return PieceType.Rook;
+      return PIECETYPE_ROOK;
     case "Q":
-      return PieceType.Queen;
+      return PIECETYPE_QUEEN;
   }
   throw new ChessError("Invalid promotion string: " + str);
 }

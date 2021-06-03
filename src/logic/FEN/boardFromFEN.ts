@@ -3,7 +3,7 @@ import { buildCastleMap, CastleMap } from "../../datatypes/CastleMap.ts";
 import { ChessParseError } from "../../datatypes/ChessError.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
 import { coordFromAN } from "../../datatypes/Coord.ts";
-import { PieceType } from "../../datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../../datatypes/PieceType.ts";
 import { encodePieceSpace, Space } from "../../datatypes/Space.ts";
 import { checkMoveResults } from "../moveResults.ts";
 
@@ -90,17 +90,17 @@ export function boardFromFEN(fen: string): Board {
 function _getPieceType(fen: string): PieceType {
   switch (fen.toLowerCase()) {
     case "p":
-      return PieceType.Pawn;
+      return PIECETYPE_PAWN;
     case "b":
-      return PieceType.Bishop;
+      return PIECETYPE_BISHOP;
     case "n":
-      return PieceType.Knight;
+      return PIECETYPE_KNIGHT;
     case "r":
-      return PieceType.Rook;
+      return PIECETYPE_ROOK;
     case "q":
-      return PieceType.Queen;
+      return PIECETYPE_QUEEN;
     case "k":
-      return PieceType.King;
+      return PIECETYPE_KING;
   }
   throw new ChessParseError("Bad FEN string: Unknown piece: " + fen);
 }
@@ -151,7 +151,7 @@ function _parseCastles(fen: string): CastleMap {
 
 function _spaceBuilder(color: Color, type: PieceType, rank: number): Space {
   // HasMoved needs to be accurate for pawns, since it governs their ability to double-open:
-  if (type === PieceType.Pawn) {
+  if (type === PIECETYPE_PAWN) {
     const onStart = (rank === 1 && color === COLOR_WHITE) ||
       (rank === 6 && color === COLOR_BLACK);
     return encodePieceSpace(type, color, !onStart);

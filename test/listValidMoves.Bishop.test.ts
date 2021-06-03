@@ -1,6 +1,6 @@
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
-import { PieceType } from "../src/datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
 import { listValidMoves } from "../src/logic/listValidMoves.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";
@@ -8,7 +8,7 @@ import { boardLayout } from "./testUtils/boardLayout.ts";
 
 Deno.test("List Valid Moves > Bishop > Center movements", function () {
   const b = boardLayout({
-    d5: encodePieceSpace(PieceType.Bishop, COLOR_WHITE, true),
+    d5: encodePieceSpace(PIECETYPE_BISHOP, COLOR_WHITE, true),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("d5")), [
     "Bc4",
@@ -29,9 +29,9 @@ Deno.test("List Valid Moves > Bishop > Center movements", function () {
 
 Deno.test("List Valid Moves > Bishop > Handles blocks", function () {
   const b = boardLayout({
-    h3: encodePieceSpace(PieceType.Bishop, COLOR_WHITE, true),
-    f1: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
-    e6: encodePieceSpace(PieceType.Knight, COLOR_WHITE, true),
+    h3: encodePieceSpace(PIECETYPE_BISHOP, COLOR_WHITE, true),
+    f1: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE, true),
+    e6: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_WHITE, true),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("h3")), [
     "Bg2",
@@ -42,8 +42,8 @@ Deno.test("List Valid Moves > Bishop > Handles blocks", function () {
 
 Deno.test("List Valid Moves > Bishop > Handles captures", function () {
   const b = boardLayout({
-    d7: encodePieceSpace(PieceType.Bishop, COLOR_WHITE, true),
-    f5: encodePieceSpace(PieceType.Rook, COLOR_BLACK, true),
+    d7: encodePieceSpace(PIECETYPE_BISHOP, COLOR_WHITE, true),
+    f5: encodePieceSpace(PIECETYPE_ROOK, COLOR_BLACK, true),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("d7")), [
     "Bc8",
@@ -58,9 +58,9 @@ Deno.test("List Valid Moves > Bishop > Handles captures", function () {
 
 Deno.test("List Valid Moves > Bishop > Blocks check", function () {
   const b = boardLayout({
-    e3: encodePieceSpace(PieceType.Bishop, COLOR_WHITE, true),
-    b2: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
-    e5: encodePieceSpace(PieceType.Queen, COLOR_BLACK, true),
+    e3: encodePieceSpace(PIECETYPE_BISHOP, COLOR_WHITE, true),
+    b2: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE, true),
+    e5: encodePieceSpace(PIECETYPE_QUEEN, COLOR_BLACK, true),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("e3")), [
     "Bd4",
@@ -69,9 +69,9 @@ Deno.test("List Valid Moves > Bishop > Blocks check", function () {
 
 Deno.test("List Valid Moves > Bishop > Ends check by capture", function () {
   const b = boardLayout({
-    h2: encodePieceSpace(PieceType.Bishop, COLOR_WHITE, true),
-    b2: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
-    e5: encodePieceSpace(PieceType.Queen, COLOR_BLACK, true),
+    h2: encodePieceSpace(PIECETYPE_BISHOP, COLOR_WHITE, true),
+    b2: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE, true),
+    e5: encodePieceSpace(PIECETYPE_QUEEN, COLOR_BLACK, true),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("h2")), [
     "Bxe5",
@@ -80,9 +80,9 @@ Deno.test("List Valid Moves > Bishop > Ends check by capture", function () {
 
 Deno.test("List Valid Moves > Bishop > Pinned", function () {
   const b = boardLayout({
-    c4: encodePieceSpace(PieceType.Bishop, COLOR_WHITE, true),
-    c1: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
-    c7: encodePieceSpace(PieceType.Queen, COLOR_BLACK, true),
+    c4: encodePieceSpace(PIECETYPE_BISHOP, COLOR_WHITE, true),
+    c1: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE, true),
+    c7: encodePieceSpace(PIECETYPE_QUEEN, COLOR_BLACK, true),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("c4")), []);
 });

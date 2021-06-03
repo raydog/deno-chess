@@ -1,6 +1,6 @@
 import { Board } from "../datatypes/Board.ts";
 import { spaceGetType, spaceIsEmpty } from "../datatypes/Space.ts";
-import { PieceType } from "../datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
 
 /**
  * Returns true if there just isn't enough material on the board for there to be a checkmate. We can't catch all of
@@ -35,8 +35,8 @@ export function boardLacksMaterial(b: Board): boolean {
       // Queens and rooks are strong enough that we can bail early if we encounter them. Pawns too, since none of the
       // FIDE reasons for draw include pawns.
       if (
-        type === PieceType.Pawn || type === PieceType.Rook ||
-        type === PieceType.Queen
+        type === PIECETYPE_PAWN || type === PIECETYPE_ROOK ||
+        type === PIECETYPE_QUEEN
       ) {
         return false;
       }
@@ -44,7 +44,7 @@ export function boardLacksMaterial(b: Board): boolean {
       count++;
 
       // If a Bishop, we want to keep track of what tile color they're on:
-      if (type === PieceType.Bishop) {
+      if (type === PIECETYPE_BISHOP) {
         const diag = ((idx >>> 4) ^ idx) & 1;
         // Hack: We add all squares into the bishopDiag accumulator. We only care if all bishops are on the same color,
         // so that variable will either be 0 or equal to the number of bishops.
@@ -62,8 +62,8 @@ export function boardLacksMaterial(b: Board): boolean {
   }
 
   // King vs King with a bishop or a knight:
-  const nBishops = counts[PieceType.Bishop];
-  const nKnights = counts[PieceType.Knight];
+  const nBishops = counts[PIECETYPE_BISHOP];
+  const nKnights = counts[PIECETYPE_KNIGHT];
   if (count === 3 && (nBishops === 1 || nKnights === 1)) {
     return true;
   }

@@ -1,6 +1,6 @@
 import { coordToAN, parseCoord } from "../../datatypes/Coord.ts";
 import { Move } from "../../datatypes/Move.ts";
-import { PieceType } from "../../datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../../datatypes/PieceType.ts";
 import { spaceGetType } from "../../datatypes/Space.ts";
 import { MoveResults } from "../moveResults.ts";
 
@@ -44,7 +44,7 @@ function _getDeparture(moves: Move[], move: Move): string {
   const full = coordToAN(move.from);
 
   // Pawn captures always report the file of departure:
-  if (spaceGetType(move.what) === PieceType.Pawn && move.capture) {
+  if (spaceGetType(move.what) === PIECETYPE_PAWN && move.capture) {
     return full[0];
   }
 
@@ -74,15 +74,15 @@ function _getDeparture(moves: Move[], move: Move): string {
 // Annotate the piece type:
 function _anPieceType(t: PieceType): string {
   switch (t) {
-    case PieceType.Bishop:
+    case PIECETYPE_BISHOP:
       return "B";
-    case PieceType.Knight:
+    case PIECETYPE_KNIGHT:
       return "N";
-    case PieceType.Rook:
+    case PIECETYPE_ROOK:
       return "R";
-    case PieceType.Queen:
+    case PIECETYPE_QUEEN:
       return "Q";
-    case PieceType.King:
+    case PIECETYPE_KING:
       return "K";
     default: // << Pawns don't get a char. :'-(
       return "";

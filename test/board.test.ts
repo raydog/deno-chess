@@ -1,7 +1,7 @@
 import { Board } from "../src/datatypes/Board.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { buildCoord } from "../src/datatypes/Coord.ts";
-import { PieceType } from "../src/datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../src/datatypes/PieceType.ts";
 import {
   encodePieceSpace,
   Space,
@@ -14,9 +14,9 @@ Deno.test("Board > Can set pieces", function () {
   const b = new Board();
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Rook, COLOR_WHITE, false),
+    encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE, false),
   );
-  _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, COLOR_WHITE);
+  _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
 });
 
 Deno.test("Board > Can add overlays", function () {
@@ -24,16 +24,16 @@ Deno.test("Board > Can add overlays", function () {
 
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Rook, COLOR_WHITE, false),
+    encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE, false),
   );
-  _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, COLOR_WHITE);
+  _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
 
   b.save();
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Queen, COLOR_BLACK, false),
+    encodePieceSpace(PIECETYPE_QUEEN, COLOR_BLACK, false),
   );
-  _assertSpace(b.get(buildCoord(2, 2)), PieceType.Queen, COLOR_BLACK);
+  _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_QUEEN, COLOR_BLACK);
 });
 
 Deno.test("Board > Can remove overlays", function () {
@@ -41,16 +41,16 @@ Deno.test("Board > Can remove overlays", function () {
 
   b.set(
     buildCoord(2, 2),
-    encodePieceSpace(PieceType.Rook, COLOR_WHITE, false),
+    encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE, false),
   );
-  _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, COLOR_WHITE);
+  _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
 
   b.save();
   b.set(buildCoord(2, 2), 0);
   asserts.equal(b.get(buildCoord(2, 2)), 0);
 
   b.restore();
-  _assertSpace(b.get(buildCoord(2, 2)), PieceType.Rook, COLOR_WHITE);
+  _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
 });
 
 function _assertSpace(sp: Space, t: PieceType, c: Color) {

@@ -9,7 +9,7 @@ import {
   spaceIsEmpty,
 } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
-import { PieceType } from "../datatypes/PieceType.ts";
+import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
 import { Coord } from "../datatypes/Coord.ts";
 import {
   createCastle,
@@ -70,7 +70,7 @@ export function listAllValidMoves(
  * or moves will be restricted if king is currently in check.
  *
  * If a move would result in a promotion (a Pawn reached its final rank) the move will include a Promote property equal
- * to PieceType.Queen. If a different piece is desired, just update the property before performing that move.
+ * to PIECETYPE_QUEEN. If a different piece is desired, just update the property before performing that move.
  */
 export function listValidMoves(
   b: Board,
@@ -83,25 +83,27 @@ export function listValidMoves(
   switch (spaceGetType(sp)) {
     // Slidey pieces:
 
-    case PieceType.Bishop:
+    case PIECETYPE_BISHOP:
       return _findMoves(b, sp, idx, BISHOP_DIRS, 8);
-    case PieceType.Rook:
+    case PIECETYPE_ROOK:
       return _findMoves(b, sp, idx, ROOK_DIRS, 8);
-    case PieceType.Queen:
+    case PIECETYPE_QUEEN:
       return _findMoves(b, sp, idx, QUEEN_DIRS, 8);
 
     // Steppy pieces:
 
-    case PieceType.Knight:
+    case PIECETYPE_KNIGHT:
       return _findMoves(b, sp, idx, KNIGHT_DIRS, 1);
-    case PieceType.King:
+    case PIECETYPE_KING:
       return _findMoves(b, sp, idx, KING_DIRS, 1);
 
     // Other:
 
-    case PieceType.Pawn:
+    case PIECETYPE_PAWN:
       return _pawnMoves(b, sp, idx);
   }
+
+  return [];
 }
 
 // Util to extract find legit moves:
@@ -147,7 +149,7 @@ function _findMoves(
 
   // Special-case, if King, and king hasn't moved yet, check the same rank for Rooks that haven't moved, and then maybe
   // try castling:
-  if (spaceGetType(sp) === PieceType.King && !spaceHasMoved(sp)) {
+  if (spaceGetType(sp) === PIECETYPE_KING && !spaceHasMoved(sp)) {
     const castles = b.getCastles();
     const kRank = castleMapGetFile(castles, color, true);
     const qRank = castleMapGetFile(castles, color, false);
@@ -198,7 +200,7 @@ function _pawnMoves(
   if (oneUp & 0x88) return out;
 
   // One up being ok, but two up being bad means oneUp is the last rank:
-  const promote = (twoUp & 0x88) ? PieceType.Queen : 0;
+  const promote = (twoUp & 0x88) ? PIECETYPE_QUEEN : 0;
 
   // Try to move one up:
   if (spaceIsEmpty(b.get(oneUp))) {
