@@ -1,4 +1,4 @@
-import { Color } from "../src/datatypes/Color.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
 import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";
@@ -9,7 +9,7 @@ import { boardLayout } from "./testUtils/boardLayout.ts";
 
 Deno.test("List All Valid Moves > Standard opening", function () {
   const b = buildStandardBoard();
-  const m = listAllValidMoves(b, Color.White);
+  const m = listAllValidMoves(b, COLOR_WHITE);
   // 20 moves: 8 pawns * 2 moves (1 or 2 steps) + 2 knights * 2 directions (left and right)
   asserts.assertEquals(m.length, 20);
   assertMoves(b, m, [
@@ -38,13 +38,13 @@ Deno.test("List All Valid Moves > Standard opening", function () {
 
 Deno.test("List All Valid Moves > Sparse endgame", function () {
   const b = boardLayout({
-    c4: encodePieceSpace(PieceType.Knight, Color.Black, true),
-    b8: encodePieceSpace(PieceType.King, Color.Black, true),
-    b7: encodePieceSpace(PieceType.Pawn, Color.Black, false),
-    g1: encodePieceSpace(PieceType.King, Color.White, true),
-    h1: encodePieceSpace(PieceType.Queen, Color.White, true),
+    c4: encodePieceSpace(PieceType.Knight, COLOR_BLACK, true),
+    b8: encodePieceSpace(PieceType.King, COLOR_BLACK, true),
+    b7: encodePieceSpace(PieceType.Pawn, COLOR_BLACK, false),
+    g1: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
+    h1: encodePieceSpace(PieceType.Queen, COLOR_WHITE, true),
   });
-  const m = listAllValidMoves(b, Color.White);
+  const m = listAllValidMoves(b, COLOR_WHITE);
   assertMoves(b, m, [
     "Kf1",
     "Kg2",
@@ -68,16 +68,16 @@ Deno.test("List All Valid Moves > Sparse endgame", function () {
 
 Deno.test("List All Valid Moves > Detects a checkmate", function () {
   const b = boardLayout({
-    a1: encodePieceSpace(PieceType.Rook, Color.White, false),
-    b1: encodePieceSpace(PieceType.King, Color.White, true),
-    a2: encodePieceSpace(PieceType.Pawn, Color.White, false),
-    b2: encodePieceSpace(PieceType.Pawn, Color.White, false),
-    c2: encodePieceSpace(PieceType.Pawn, Color.White, false),
+    a1: encodePieceSpace(PieceType.Rook, COLOR_WHITE, false),
+    b1: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
+    a2: encodePieceSpace(PieceType.Pawn, COLOR_WHITE, false),
+    b2: encodePieceSpace(PieceType.Pawn, COLOR_WHITE, false),
+    c2: encodePieceSpace(PieceType.Pawn, COLOR_WHITE, false),
 
-    a7: encodePieceSpace(PieceType.Queen, Color.Black, true),
-    a8: encodePieceSpace(PieceType.King, Color.Black, true),
+    a7: encodePieceSpace(PieceType.Queen, COLOR_BLACK, true),
+    a8: encodePieceSpace(PieceType.King, COLOR_BLACK, true),
   });
-  const m = listAllValidMoves(b, Color.Black);
+  const m = listAllValidMoves(b, COLOR_BLACK);
   assertMoves(b, m, [
     "Kb7",
     "Kb8",
@@ -105,15 +105,15 @@ Deno.test("List All Valid Moves > Detects a checkmate", function () {
 
 Deno.test("List All Valid Moves > Kingside castle that delivers check", function () {
   const b = boardLayout({
-    a8: encodePieceSpace(PieceType.Rook, Color.Black),
-    h8: encodePieceSpace(PieceType.Rook, Color.Black),
-    e8: encodePieceSpace(PieceType.King, Color.Black),
-    a7: encodePieceSpace(PieceType.Pawn, Color.Black),
-    h7: encodePieceSpace(PieceType.Pawn, Color.Black),
+    a8: encodePieceSpace(PieceType.Rook, COLOR_BLACK),
+    h8: encodePieceSpace(PieceType.Rook, COLOR_BLACK),
+    e8: encodePieceSpace(PieceType.King, COLOR_BLACK),
+    a7: encodePieceSpace(PieceType.Pawn, COLOR_BLACK),
+    h7: encodePieceSpace(PieceType.Pawn, COLOR_BLACK),
 
-    f1: encodePieceSpace(PieceType.King, Color.White, true),
+    f1: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
   });
-  const m = listAllValidMoves(b, Color.Black);
+  const m = listAllValidMoves(b, COLOR_BLACK);
   assertMoves(b, m, [
     "Kd7",
     "Kd8",
@@ -136,19 +136,19 @@ Deno.test("List All Valid Moves > Kingside castle that delivers check", function
 
 Deno.test("List All Valid Moves > Queenside castle that delivers checkmate", function () {
   const b = boardLayout({
-    a8: encodePieceSpace(PieceType.Rook, Color.Black),
-    h8: encodePieceSpace(PieceType.Rook, Color.Black),
-    e8: encodePieceSpace(PieceType.King, Color.Black),
-    a7: encodePieceSpace(PieceType.Pawn, Color.Black),
-    h7: encodePieceSpace(PieceType.Pawn, Color.Black),
+    a8: encodePieceSpace(PieceType.Rook, COLOR_BLACK),
+    h8: encodePieceSpace(PieceType.Rook, COLOR_BLACK),
+    e8: encodePieceSpace(PieceType.King, COLOR_BLACK),
+    a7: encodePieceSpace(PieceType.Pawn, COLOR_BLACK),
+    h7: encodePieceSpace(PieceType.Pawn, COLOR_BLACK),
 
-    d1: encodePieceSpace(PieceType.King, Color.White, true),
-    c2: encodePieceSpace(PieceType.Pawn, Color.White, true),
-    e2: encodePieceSpace(PieceType.Pawn, Color.White, true),
-    c1: encodePieceSpace(PieceType.Rook, Color.White, true),
-    e1: encodePieceSpace(PieceType.Rook, Color.White, true),
+    d1: encodePieceSpace(PieceType.King, COLOR_WHITE, true),
+    c2: encodePieceSpace(PieceType.Pawn, COLOR_WHITE, true),
+    e2: encodePieceSpace(PieceType.Pawn, COLOR_WHITE, true),
+    c1: encodePieceSpace(PieceType.Rook, COLOR_WHITE, true),
+    e1: encodePieceSpace(PieceType.Rook, COLOR_WHITE, true),
   });
-  const m = listAllValidMoves(b, Color.Black);
+  const m = listAllValidMoves(b, COLOR_BLACK);
   assertMoves(b, m, [
     "Kd7",
     "Kd8",

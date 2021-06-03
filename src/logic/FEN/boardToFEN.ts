@@ -1,6 +1,6 @@
 import { Board } from "../../datatypes/Board.ts";
 import { CastleMap, castleMapGetFile } from "../../datatypes/CastleMap.ts";
-import { Color } from "../../datatypes/Color.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
 import { coordToAN } from "../../datatypes/Coord.ts";
 import {
   // spaceEnPassant,
@@ -46,7 +46,7 @@ export function boardToFEN(board: Board): string {
   }
 
   // Field 2: Turn
-  out += (board.getTurn() === Color.White) ? " w" : " b";
+  out += (board.getTurn() === COLOR_WHITE) ? " w" : " b";
 
   // Field 3: Castle availability
   const castles = board.getCastles();
@@ -67,9 +67,9 @@ export function boardToFEN(board: Board): string {
 
 function _castleAvailability(castles: CastleMap): string {
   let out = "";
-  out += (castleMapGetFile(castles, Color.White, true) & 0x8) ? "" : "K";
-  out += (castleMapGetFile(castles, Color.White, false) & 0x8) ? "" : "Q";
-  out += (castleMapGetFile(castles, Color.Black, true) & 0x8) ? "" : "k";
-  out += (castleMapGetFile(castles, Color.Black, false) & 0x8) ? "" : "q";
+  out += (castleMapGetFile(castles, COLOR_WHITE, true) & 0x8) ? "" : "K";
+  out += (castleMapGetFile(castles, COLOR_WHITE, false) & 0x8) ? "" : "Q";
+  out += (castleMapGetFile(castles, COLOR_BLACK, true) & 0x8) ? "" : "k";
+  out += (castleMapGetFile(castles, COLOR_BLACK, false) & 0x8) ? "" : "q";
   return out || "-";
 }

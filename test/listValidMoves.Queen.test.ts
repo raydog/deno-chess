@@ -1,4 +1,4 @@
-import { Color } from "../src/datatypes/Color.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
 import { PieceType } from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
@@ -8,7 +8,7 @@ import { boardLayout } from "./testUtils/boardLayout.ts";
 
 Deno.test("List Valid Moves > Queen > Center movements", function () {
   const b = boardLayout({
-    d5: encodePieceSpace(PieceType.Queen, Color.White),
+    d5: encodePieceSpace(PieceType.Queen, COLOR_WHITE),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("d5")), [
     "Qa2",
@@ -43,10 +43,10 @@ Deno.test("List Valid Moves > Queen > Center movements", function () {
 
 Deno.test("List Valid Moves > Queen > Handles blocks", function () {
   const b = boardLayout({
-    h7: encodePieceSpace(PieceType.Queen, Color.White),
-    e7: encodePieceSpace(PieceType.King, Color.White),
-    h4: encodePieceSpace(PieceType.Knight, Color.White),
-    d3: encodePieceSpace(PieceType.Pawn, Color.White),
+    h7: encodePieceSpace(PieceType.Queen, COLOR_WHITE),
+    e7: encodePieceSpace(PieceType.King, COLOR_WHITE),
+    h4: encodePieceSpace(PieceType.Knight, COLOR_WHITE),
+    d3: encodePieceSpace(PieceType.Pawn, COLOR_WHITE),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("h7")), [
     "Qh8",
@@ -63,10 +63,10 @@ Deno.test("List Valid Moves > Queen > Handles blocks", function () {
 
 Deno.test("List Valid Moves > Queen > Handles captures", function () {
   const b = boardLayout({
-    d7: encodePieceSpace(PieceType.Queen, Color.White),
-    d5: encodePieceSpace(PieceType.Pawn, Color.Black),
-    b7: encodePieceSpace(PieceType.Rook, Color.Black),
-    e7: encodePieceSpace(PieceType.Queen, Color.Black),
+    d7: encodePieceSpace(PieceType.Queen, COLOR_WHITE),
+    d5: encodePieceSpace(PieceType.Pawn, COLOR_BLACK),
+    b7: encodePieceSpace(PieceType.Rook, COLOR_BLACK),
+    e7: encodePieceSpace(PieceType.Queen, COLOR_BLACK),
   });
   assertMoves(b, listValidMoves(b, coordFromAN("d7")), [
     "Qa4",

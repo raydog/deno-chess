@@ -15,7 +15,7 @@ import {
   ChessGameOver,
   ChessNeedsPromotion,
 } from "./ChessError.ts";
-import { Color } from "./Color.ts";
+import { Color, COLOR_WHITE } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
@@ -92,7 +92,7 @@ export class ChessGame {
 
   /**
    * Start a new chess game, using the input FEN string as the starting state.
-   * 
+   *
    * @param fen The starting state, in FEN format.
    * @returns The new ChessGame.
    */
@@ -131,7 +131,7 @@ export class ChessGame {
   getStatus(): Status {
     return {
       state: _gameStatusString(this.#board.getStatus()),
-      turn: (this.#board.getTurn() === Color.White) ? "white" : "black",
+      turn: (this.#board.getTurn() === COLOR_WHITE) ? "white" : "black",
     };
   }
 

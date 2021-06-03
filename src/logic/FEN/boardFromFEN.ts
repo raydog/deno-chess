@@ -1,7 +1,7 @@
 import { Board } from "../../datatypes/Board.ts";
 import { buildCastleMap, CastleMap } from "../../datatypes/CastleMap.ts";
 import { ChessParseError } from "../../datatypes/ChessError.ts";
-import { Color } from "../../datatypes/Color.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
 import { coordFromAN } from "../../datatypes/Coord.ts";
 import { PieceType } from "../../datatypes/PieceType.ts";
 import { encodePieceSpace, Space } from "../../datatypes/Space.ts";
@@ -47,10 +47,10 @@ export function boardFromFEN(fen: string): Board {
         file += parseInt(ch, 10) - 1;
       } else if (WHITE_PIECE_RE.test(ch)) {
         const type = _getPieceType(ch);
-        out.set(idx, _spaceBuilder(Color.White, type, rank));
+        out.set(idx, _spaceBuilder(COLOR_WHITE, type, rank));
       } else if (BLACK_PIECE_RE.test(ch)) {
         const type = _getPieceType(ch);
-        out.set(idx, _spaceBuilder(Color.Black, type, rank));
+        out.set(idx, _spaceBuilder(COLOR_BLACK, type, rank));
       }
     }
     if (dataIdx < data.length) {
@@ -108,9 +108,9 @@ function _getPieceType(fen: string): PieceType {
 function _parseTurn(fen: string): Color {
   switch (fen) {
     case "w":
-      return Color.White;
+      return COLOR_WHITE;
     case "b":
-      return Color.Black;
+      return COLOR_BLACK;
   }
   throw new ChessParseError("Bad FEN string: Invalid turn: " + fen);
 }
@@ -152,8 +152,8 @@ function _parseCastles(fen: string): CastleMap {
 function _spaceBuilder(color: Color, type: PieceType, rank: number): Space {
   // HasMoved needs to be accurate for pawns, since it governs their ability to double-open:
   if (type === PieceType.Pawn) {
-    const onStart = (rank === 1 && color === Color.White) ||
-      (rank === 6 && color === Color.Black);
+    const onStart = (rank === 1 && color === COLOR_WHITE) ||
+      (rank === 6 && color === COLOR_BLACK);
     return encodePieceSpace(type, color, !onStart);
   }
   // Else, we don't REALLY care, so they haven't moved. Why not?

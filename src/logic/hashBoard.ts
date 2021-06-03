@@ -1,6 +1,6 @@
 import { Board } from "../datatypes/Board.ts";
 import { castleMapGetFile } from "../datatypes/CastleMap.ts";
-import { Color } from "../datatypes/Color.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
 import { spaceIsEmpty } from "../datatypes/Space.ts";
 
 const PIECE_STRINGS = " PBNRQK  pbnrqk";
@@ -41,10 +41,10 @@ export function hashBoard(b: Board): string {
   // Castle eligibility:
   out += ";";
   const castles = b.getCastles();
-  out += fileStr(castleMapGetFile(castles, Color.White, true));
-  out += fileStr(castleMapGetFile(castles, Color.White, false));
-  out += fileStr(castleMapGetFile(castles, Color.Black, true));
-  out += fileStr(castleMapGetFile(castles, Color.Black, false));
+  out += fileStr(castleMapGetFile(castles, COLOR_WHITE, true));
+  out += fileStr(castleMapGetFile(castles, COLOR_WHITE, false));
+  out += fileStr(castleMapGetFile(castles, COLOR_BLACK, true));
+  out += fileStr(castleMapGetFile(castles, COLOR_BLACK, false));
 
   // EP file, if that's a thing:
   // Note: EP is 0 when null:

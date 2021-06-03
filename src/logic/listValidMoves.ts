@@ -1,5 +1,5 @@
 import { Board } from "../datatypes/Board.ts";
-import { Color } from "../datatypes/Color.ts";
+import { Color, COLOR_WHITE } from "../datatypes/Color.ts";
 import {
   Space,
   SPACE_EMPTY,
@@ -188,7 +188,7 @@ function _pawnMoves(
   const color = spaceGetColor(sp);
   const enemy = 1 - color;
 
-  const dir = color === Color.White ? 1 : -1;
+  const dir = color === COLOR_WHITE ? 1 : -1;
   const out: Move[] = [];
 
   const oneUp = idx + 16 * dir;

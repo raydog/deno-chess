@@ -273,7 +273,9 @@ Deno.test("ChessGame Public API > FEN Output > Stalemate", function () {
 });
 
 Deno.test("ChessGame Public API > FEN Input > Game of the Century", function () {
-  const game = ChessGame.NewFromFEN("1Q6/5pk1/2p3p1/1p2N2p/1b5P/1bn5/2r3P1/2K5 w - - 16 42");
+  const game = ChessGame.NewFromFEN(
+    "1Q6/5pk1/2p3p1/1p2N2p/1b5P/1bn5/2r3P1/2K5 w - - 16 42",
+  );
   asserts.assertEquals(
     game.toString(false).split("\n"),
     [

@@ -1,7 +1,7 @@
 import { asserts } from "../testDeps.ts";
 import { boardFromFEN } from "../src/logic/FEN/boardFromFEN.ts";
 import { boardRenderASCII } from "../src/logic/boardRenderASCII.ts";
-import { Color } from "../src/datatypes/Color.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { castleMapGetFile } from "../src/datatypes/CastleMap.ts";
 import { GameStatus } from "../src/datatypes/GameStatus.ts";
 
@@ -53,12 +53,12 @@ Deno.test("FEN > Input > Removes castling ability correctly", function () {
       "     a  b  c  d  e  f  g  h    ",
     ],
   );
-  asserts.assertEquals(b.getTurn(), Color.Black);
+  asserts.assertEquals(b.getTurn(), COLOR_BLACK);
   const castles = b.getCastles();
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, false), 0);
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, true), 0x8); // << Moved
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, false), 0);
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, true), 7);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, false), 0);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, true), 0x8); // << Moved
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, false), 0);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, true), 7);
 });
 
 Deno.test("FEN > Input > Supports no castles available", function () {
@@ -82,12 +82,12 @@ Deno.test("FEN > Input > Supports no castles available", function () {
       "     a  b  c  d  e  f  g  h    ",
     ],
   );
-  asserts.assertEquals(b.getTurn(), Color.White);
+  asserts.assertEquals(b.getTurn(), COLOR_WHITE);
   const castles = b.getCastles();
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, false), 0x8);
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, true), 0x8);
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, false), 0x8);
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, true), 0x8);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, false), 0x8);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, true), 0x8);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, false), 0x8);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, true), 0x8);
 });
 
 Deno.test("FEN > Input > Initializes a checkmate", function () {
@@ -111,12 +111,12 @@ Deno.test("FEN > Input > Initializes a checkmate", function () {
       "     a  b  c  d  e  f  g  h    ",
     ],
   );
-  asserts.assertEquals(b.getTurn(), Color.Black);
+  asserts.assertEquals(b.getTurn(), COLOR_BLACK);
   const castles = b.getCastles();
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, false), 0);
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, true), 7);
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, false), 0);
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, true), 7);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, false), 0);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, true), 7);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, false), 0);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, true), 7);
   asserts.assertEquals(b.getStatus(), GameStatus.Checkmate);
 });
 
@@ -142,11 +142,11 @@ Deno.test("FEN > Input > Initializes a stalemate", function () {
       "     a  b  c  d  e  f  g  h    ",
     ],
   );
-  asserts.assertEquals(b.getTurn(), Color.Black);
+  asserts.assertEquals(b.getTurn(), COLOR_BLACK);
   const castles = b.getCastles();
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, false), 0);
-  asserts.assertEquals(castleMapGetFile(castles, Color.White, true), 7);
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, false), 0x8);
-  asserts.assertEquals(castleMapGetFile(castles, Color.Black, true), 0x8);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, false), 0);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_WHITE, true), 7);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, false), 0x8);
+  asserts.assertEquals(castleMapGetFile(castles, COLOR_BLACK, true), 0x8);
   asserts.assertEquals(b.getStatus(), GameStatus.DrawStalemate);
 });

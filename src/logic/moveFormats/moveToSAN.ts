@@ -95,7 +95,7 @@ function _checksAndMates(results: MoveResults): string {
   // if (!results.enemyCanMove) {
   //   // End of game has happened. Either checkmate or stalemate:
   //   return results.enemyInCheck
-  //     ? "# " + (spaceGetColor(move.what) === Color.White ? "1-0" : "0-1")
+  //     ? "# " + (spaceGetColor(move.what) === COLOR_WHITE ? "1-0" : "0-1")
   //     : " ½-½";
   // }
   // return results.enemyInCheck ? "+" : "";

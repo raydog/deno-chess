@@ -1,5 +1,5 @@
 import { Board } from "../datatypes/Board.ts";
-import { Color } from "../datatypes/Color.ts";
+import { Color, COLOR_WHITE } from "../datatypes/Color.ts";
 import { buildCoord, Coord } from "../datatypes/Coord.ts";
 import {
   Space,
@@ -62,7 +62,7 @@ function _formatSpace(style: StyleObj, idx: Coord, sp: Space): string {
     str = style.dim("   ");
   } else {
     const fen = " " + spaceGetFENString(sp) + " ";
-    str = (spaceGetColor(sp) === Color.White) ? fen : style.black(fen);
+    str = (spaceGetColor(sp) === COLOR_WHITE) ? fen : style.black(fen);
   }
 
   // MaGiC!

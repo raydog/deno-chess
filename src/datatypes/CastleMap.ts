@@ -1,4 +1,4 @@
-import { Color } from "./Color.ts";
+import { Color, COLOR_WHITE } from "./Color.ts";
 import { Coord } from "./Coord.ts";
 
 /**
@@ -42,7 +42,7 @@ export function buildCastleMap(
  * @returns
  */
 export function castleMapKingMoved(map: CastleMap, color: Color): CastleMap {
-  return (color === Color.White)
+  return (color === COLOR_WHITE)
     ? (map & 0xff00) | 0x0088
     : (map & 0x00ff) | 0x8800;
 }

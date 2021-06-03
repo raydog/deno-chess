@@ -3,7 +3,7 @@ import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { GameStatus } from "./GameStatus.ts";
 import { CastleMap } from "./CastleMap.ts";
-import { Color } from "./Color.ts";
+import { Color, COLOR_WHITE } from "./Color.ts";
 
 // Uses the 0x88 strategy:
 const BOARD_SIZE = 8 * 8 * 2;
@@ -212,7 +212,7 @@ function newLayer(): Layer {
     moveNum: 1,
     ep: 0x88,
     status: GameStatus.Active,
-    turn: Color.White,
+    turn: COLOR_WHITE,
     seen: {},
     castles: 0,
   };
