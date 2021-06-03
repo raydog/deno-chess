@@ -231,7 +231,7 @@ Deno.test("ChessGame Public API > Stalemate", function () {
   asserts.assertThrows(() => game.move("a2a4"), ChessGameOver, "Game is over");
 });
 
-Deno.test("ChessGame Public API > FEN > Standard opening", function () {
+Deno.test("ChessGame Public API > FEN Output > Standard opening", function () {
   const game = ChessGame.NewStandardGame();
 
   asserts.assertEquals(
@@ -240,7 +240,7 @@ Deno.test("ChessGame Public API > FEN > Standard opening", function () {
   );
 });
 
-Deno.test("ChessGame Public API > FEN > Checkmate", function () {
+Deno.test("ChessGame Public API > FEN Output > Checkmate", function () {
   const game = ChessGame.NewStandardGame();
 
   game.move("f2f3").move("e7e5");
@@ -252,7 +252,7 @@ Deno.test("ChessGame Public API > FEN > Checkmate", function () {
   );
 });
 
-Deno.test("ChessGame Public API > FEN > Stalemate", function () {
+Deno.test("ChessGame Public API > FEN Output > Stalemate", function () {
   const game = ChessGame.NewStandardGame();
 
   game.move("e2e3").move("a7a5");
@@ -270,4 +270,29 @@ Deno.test("ChessGame Public API > FEN > Stalemate", function () {
     game.toFENString(),
     "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10",
   );
+});
+
+Deno.test("ChessGame Public API > FEN Input > Game of the Century", function () {
+  const game = ChessGame.NewFromFEN("1Q6/5pk1/2p3p1/1p2N2p/1b5P/1bn5/2r3P1/2K5 w - - 16 42");
+  asserts.assertEquals(
+    game.toString(false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |    Q                   | 8",
+      " 7 |                p  k    | 7",
+      " 6 |       p           p    | 6",
+      " 5 |    p        N        p | 5",
+      " 4 |    b                 P | 4",
+      " 3 |    b  n                | 3",
+      " 2 |       r           P    | 2",
+      " 1 |       K                | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
+  asserts.assertObjectMatch(game.getStatus(), {
+    state: "checkmate",
+    turn: "white",
+  });
 });

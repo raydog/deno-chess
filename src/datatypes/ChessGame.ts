@@ -21,6 +21,7 @@ import { GameStatus } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
 import { PieceType } from "./PieceType.ts";
 import { spaceGetColor, spaceIsEmpty } from "./Space.ts";
+import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
 
 const MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/i;
 
@@ -87,6 +88,16 @@ export class ChessGame {
    */
   public static NewStandardGame(): ChessGame {
     return new ChessGame(buildStandardBoard());
+  }
+
+  /**
+   * Start a new chess game, using the input FEN string as the starting state.
+   * 
+   * @param fen The starting state, in FEN format.
+   * @returns The new ChessGame.
+   */
+  public static NewFromFEN(fen: string): ChessGame {
+    return new ChessGame(boardFromFEN(fen));
   }
 
   /**
