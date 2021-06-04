@@ -24,6 +24,8 @@
       var BEST_BLUE = "#4353FF";
 
       var game = DenoChess.ChessGame.NewStandardGame();
+      var ai = DenoChess.BeginnerAI.NewForGame(game, "black");
+
       var status, moves;
       var highlighted = [];
 
@@ -72,6 +74,15 @@
         } catch (ex) {
           console.error(ex.message);
           return 'snapback';
+        }
+
+        // Let AI take a turn:
+        try {
+          ai.takeTurn();
+          refreshState();
+
+        } catch (ex) {
+          console.error("AI Error", ex.message);
         }
       }
 

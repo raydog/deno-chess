@@ -4,7 +4,7 @@ import { ChessParseError } from "../../datatypes/ChessError.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
 import { coordFromAN } from "../../datatypes/Coord.ts";
 import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../../datatypes/PieceType.ts";
-import { encodePieceSpace, Space } from "../../datatypes/Space.ts";
+import { encodePieceSpace, Space, SPACE_EMPTY } from "../../datatypes/Space.ts";
 import { checkMoveResults } from "../moveResults.ts";
 
 const DIGIT_RE = /[1-8]/;
@@ -14,10 +14,11 @@ const BLACK_PIECE_RE = /[pbnrqk]/;
 /**
  * Builds a new Board from a FEN string.
  *
- * @param board
+ * @param fen The FEN string
+ * @param board An existing board to reuse, if we're avoiding allocations
  */
-export function boardFromFEN(fen: string): Board {
-  const out = new Board();
+export function boardFromFEN(fen: string, board?: Board): Board {
+  const out = board || new Board();
 
   fen = fen.trim();
 
@@ -44,7 +45,11 @@ export function boardFromFEN(fen: string): Board {
       }
       const ch = data[dataIdx++];
       if (DIGIT_RE.test(ch)) {
-        file += parseInt(ch, 10) - 1;
+        const num = parseInt(ch, 10);
+        for (let n=0; n<num; n++) {
+          out.set(idx + n, SPACE_EMPTY);
+        }
+        file += num - 1;
       } else if (WHITE_PIECE_RE.test(ch)) {
         const type = _getPieceType(ch);
         out.set(idx, _spaceBuilder(COLOR_WHITE, type, rank));
