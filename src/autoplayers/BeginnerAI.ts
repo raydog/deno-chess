@@ -4,7 +4,15 @@ import { Color, COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
 import { coordToAN } from "../datatypes/Coord.ts";
 import { GAMESTATUS_CHECKMATE } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
-import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KING,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_PAWN,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../datatypes/PieceType.ts";
 import { spaceGetColor, spaceGetType } from "../datatypes/Space.ts";
 import { spaceIsEmpty } from "../datatypes/Space.ts";
 import { boardRenderASCII } from "../logic/boardRenderASCII.ts";
@@ -12,7 +20,10 @@ import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
 import { listAllValidMoves } from "../logic/listValidMoves.ts";
 import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
-import { mateScore, MiniMaxScore, moveScore, scoreCompare, scoreToString } from "./utils/miniMaxScore.ts";
+import {
+  scoreToString,
+} from "./utils/gameScore.ts";
+import { searchBestMoves } from "./utils/miniMax.ts";
 
 type TurnColor = "white" | "black";
 
@@ -21,7 +32,6 @@ function _parseTurnColor(color: TurnColor): Color {
 }
 
 export class BeginnerAI {
-  
   // Game is what we use to interface with the user's game.
   #game: ChessGame;
 
@@ -56,103 +66,37 @@ export class BeginnerAI {
     const fen = this.#game.toFENString();
     boardFromFEN(fen, board);
 
+    // console.log("FEN", fen)
+
     // console.log(boardRenderASCII(board, false));
     const start = Date.now();
 
-    const best = (turn === COLOR_WHITE)
-      ? descendWhite(board, 2)
-      : descendBlack(board, 2);
-    
-    if (!best.bestMoves) { throw new Error("Need move list"); }
-    
-    const move = best.bestMoves[Math.floor(Math.random() * best.bestMoves.length)];
-    
+    const best = searchBestMoves(board, turn, 2, rateMoves, rateBoard);
+
+    // const best = (turn === COLOR_WHITE)
+    //   ? descendWhite(board, 2)
+    //   : descendBlack(board, 2);
+
+    if (!best.move) throw new Error("Need move list");
+
+    const move = coordToAN(best.move.from) + coordToAN(best.move.dest);
+
     console.log(
-      "Best (%s) Num Moves (%d) in %d ms: %s",
+      "Best Move (%s) = [%s] in %d ms",
       scoreToString(best.score),
-      best.bestMoves.length,
+      move,
       Date.now() - start,
-      coordToAN(move.from) + coordToAN(move.dest),
     );
 
-    this.#game.move(coordToAN(move.from) + coordToAN(move.dest), "Q");
+    this.#game.move(move, "Q");
   }
 }
 
-
-type MinMaxResult = { score: MiniMaxScore, bestMoves?: Move[] };
-
-
-
-// White tries to maximize the score:
-function descendWhite(board: Board, maxDepth: number, curDepth = 0): MinMaxResult {
-
-  const res = checkMoveResults(board, COLOR_BLACK);
-  if (res.newGameStatus === GAMESTATUS_CHECKMATE) {
-    return { score: mateScore(-curDepth) };
-  }
-
-  if (curDepth >= maxDepth) { return { score: moveScore(rateBoard(board)) }; }
-
-  let best: MiniMaxScore = mateScore(-1);
-  let bestMoves: Move[] = [];
-
-  for (const move of listAllValidMoves(board, COLOR_WHITE)) {
-    board.save();
-
-    performMove(board, move);
-    
-    const { score } = descendBlack(board, maxDepth, curDepth + 1);
-    const compare = scoreCompare(best, score);
-
-    if (compare > 0) {
-      best = score;
-      bestMoves = [move];
-
-    } else if (compare === 0) {
-      bestMoves.push(move);
-    }
-
-    board.restore();
-  }
-
-  return curDepth ? { score: best, } : { score: best, bestMoves };
+// Rate a move. Basically, prio captures first
+function rateMoves(a: Move, b: Move): number {
+  return spaceGetType(b.capture) - spaceGetType(a.capture);
 }
 
-// Black tries to minimize the score:
-function descendBlack(board: Board, maxDepth: number, curDepth = 0): MinMaxResult {
-
-  const res = checkMoveResults(board, COLOR_WHITE);
-  if (res.newGameStatus === GAMESTATUS_CHECKMATE) {
-    return { score: mateScore(curDepth) };
-  }
-
-  if (curDepth >= maxDepth) { return { score: moveScore(rateBoard(board)) }; }
-
-  let best = mateScore(1);
-  let bestMoves: Move[] = [];
-
-  for (const move of listAllValidMoves(board, COLOR_BLACK)) {
-    board.save();
-
-    performMove(board, move);
-
-    const { score } = descendWhite(board, maxDepth, curDepth + 1);
-    const compare = scoreCompare(best, score);
-
-    if (compare < 0) {
-      best = score;
-      bestMoves = [move];
-
-    } else if (compare === 0) {
-      bestMoves.push(move);
-    }
-
-    board.restore();
-  }
-
-  return curDepth ? { score: best, } : { score: best, bestMoves };
-}
 
 // Rate a board. + benefits white. - benefits black.
 function rateBoard(board: Board): number {
@@ -167,11 +111,10 @@ function _countMaterial(board: Board) {
 
   for (let rank = 0; rank < 0x80; rank += 0x10) {
     for (let file = 0; file < 0x8; file++) {
-      
       const idx = rank | file;
       const spot = board.get(idx);
 
-      if (spaceIsEmpty(spot)) { continue; }
+      if (spaceIsEmpty(spot)) continue;
 
       const value = _pieceValue(spaceGetType(spot));
       if (spaceGetColor(spot) === COLOR_WHITE) {
@@ -179,7 +122,6 @@ function _countMaterial(board: Board) {
       } else {
         net -= value;
       }
-
     }
   }
 
@@ -187,17 +129,25 @@ function _countMaterial(board: Board) {
 }
 
 function _countMobility(board: Board) {
-  return listAllValidMoves(board, COLOR_WHITE).length - listAllValidMoves(board, COLOR_BLACK).length;
+  return listAllValidMoves(board, COLOR_WHITE).length -
+    listAllValidMoves(board, COLOR_BLACK).length;
 }
 
 function _pieceValue(type: PieceType): number {
   switch (type) {
-    case PIECETYPE_PAWN: return 1;
-    case PIECETYPE_KNIGHT: return 3;
-    case PIECETYPE_BISHOP: return 3;
-    case PIECETYPE_ROOK: return 5;
-    case PIECETYPE_QUEEN: return 9;
-    case PIECETYPE_KING: return 200;
-    default: return 0;
+    case PIECETYPE_PAWN:
+      return 1;
+    case PIECETYPE_KNIGHT:
+      return 3;
+    case PIECETYPE_BISHOP:
+      return 3;
+    case PIECETYPE_ROOK:
+      return 5;
+    case PIECETYPE_QUEEN:
+      return 9;
+    case PIECETYPE_KING:
+      return 200;
+    default:
+      return 0;
   }
 }
