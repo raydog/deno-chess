@@ -17,9 +17,24 @@ import {
 } from "./ChessError.ts";
 import { Color, COLOR_WHITE } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
-import { GameStatus, GAMESTATUS_ACTIVE, GAMESTATUS_CHECKMATE, GAMESTATUS_DRAW, GAMESTATUS_DRAW_FIFTYMOVES, GAMESTATUS_DRAW_NOMATERIAL, GAMESTATUS_DRAW_REPETITION, GAMESTATUS_DRAW_STALEMATE } from "./GameStatus.ts";
+import {
+  GameStatus,
+  GAMESTATUS_ACTIVE,
+  GAMESTATUS_CHECKMATE,
+  GAMESTATUS_DRAW,
+  GAMESTATUS_DRAW_FIFTYMOVES,
+  GAMESTATUS_DRAW_NOMATERIAL,
+  GAMESTATUS_DRAW_REPETITION,
+  GAMESTATUS_DRAW_STALEMATE,
+} from "./GameStatus.ts";
 import { Move } from "./Move.ts";
-import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KNIGHT, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "./PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "./PieceType.ts";
 import { spaceGetColor, spaceIsEmpty } from "./Space.ts";
 import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
 

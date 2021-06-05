@@ -3,7 +3,15 @@ import { buildCastleMap, CastleMap } from "../../datatypes/CastleMap.ts";
 import { ChessParseError } from "../../datatypes/ChessError.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
 import { coordFromAN } from "../../datatypes/Coord.ts";
-import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../../datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KING,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_PAWN,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../../datatypes/PieceType.ts";
 import { encodePieceSpace, Space, SPACE_EMPTY } from "../../datatypes/Space.ts";
 import { checkMoveResults } from "../moveResults.ts";
 
@@ -18,6 +26,8 @@ const BLACK_PIECE_RE = /[pbnrqk]/;
  * @param board An existing board to reuse, if we're avoiding allocations
  */
 export function boardFromFEN(fen: string, board?: Board): Board {
+  if (board) board.reset();
+
   const out = board || new Board();
 
   fen = fen.trim();
@@ -46,7 +56,7 @@ export function boardFromFEN(fen: string, board?: Board): Board {
       const ch = data[dataIdx++];
       if (DIGIT_RE.test(ch)) {
         const num = parseInt(ch, 10);
-        for (let n=0; n<num; n++) {
+        for (let n = 0; n < num; n++) {
           out.set(idx + n, SPACE_EMPTY);
         }
         file += num - 1;

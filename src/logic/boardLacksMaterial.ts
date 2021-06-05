@@ -1,6 +1,13 @@
 import { Board } from "../datatypes/Board.ts";
 import { spaceGetType, spaceIsEmpty } from "../datatypes/Space.ts";
-import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_PAWN,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../datatypes/PieceType.ts";
 
 /**
  * Returns true if there just isn't enough material on the board for there to be a checkmate. We can't catch all of

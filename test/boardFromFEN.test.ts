@@ -3,7 +3,11 @@ import { boardFromFEN } from "../src/logic/FEN/boardFromFEN.ts";
 import { boardRenderASCII } from "../src/logic/boardRenderASCII.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { castleMapGetFile } from "../src/datatypes/CastleMap.ts";
-import { GameStatus, GAMESTATUS_CHECKMATE, GAMESTATUS_DRAW_STALEMATE } from "../src/datatypes/GameStatus.ts";
+import {
+  GameStatus,
+  GAMESTATUS_CHECKMATE,
+  GAMESTATUS_DRAW_STALEMATE,
+} from "../src/datatypes/GameStatus.ts";
 
 // Note: These tests seem arbitrary, but they're the literal examples shown in the spec, so may as well
 

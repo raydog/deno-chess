@@ -46,7 +46,7 @@ export const GAMESTATUS_DRAW_REPETITION = 22;
 export const GAMESTATUS_DRAW_FIFTYMOVES = 23;
 export const GAMESTATUS_DRAW_NOMATERIAL = 24;
 
-export type GameStatus = 
+export type GameStatus =
   | typeof GAMESTATUS_ACTIVE
   | typeof GAMESTATUS_CHECKMATE
   | typeof GAMESTATUS_DRAW

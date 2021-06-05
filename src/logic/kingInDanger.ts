@@ -5,7 +5,15 @@ import {
   spaceGetType,
   spaceIsEmpty,
 } from "../datatypes/Space.ts";
-import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KING,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_PAWN,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../datatypes/PieceType.ts";
 
 type MoveInfo = [step: number, mask: number];
 

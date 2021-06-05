@@ -4,7 +4,11 @@ import {
   castleMapRookMoved,
 } from "../datatypes/CastleMap.ts";
 import { Move } from "../datatypes/Move.ts";
-import { PieceType, PIECETYPE_KING, PIECETYPE_PAWN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
+import {
+  PIECETYPE_KING,
+  PIECETYPE_PAWN,
+  PIECETYPE_ROOK,
+} from "../datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceGetColor,

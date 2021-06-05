@@ -1,4 +1,8 @@
-import { mateScore, moveScore, scoreToString } from "../src/autoplayers/utils/gameScore.ts";
+import {
+  mateScore,
+  moveScore,
+  scoreToString,
+} from "../src/autoplayers/utils/gameScore.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("Game Score > White mate encoding", function () {
@@ -32,8 +36,8 @@ Deno.test("Game Score > Standard score encoding", function () {
   asserts.assertEquals(scoreToString(moveScore(4294967295)), "4294967295");
   asserts.assertEquals(scoreToString(moveScore(-4294967295)), "-4294967295");
   asserts.assertThrows(() => moveScore(NaN));
-  asserts.assertThrows(() => moveScore(2**32));
-  asserts.assertThrows(() => moveScore(-(2**32)));
+  asserts.assertThrows(() => moveScore(2 ** 32));
+  asserts.assertThrows(() => moveScore(-(2 ** 32)));
 });
 
 Deno.test("Game Score > Score comparisons", function () {

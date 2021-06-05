@@ -1,6 +1,11 @@
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
-import { PieceType, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_ROOK } from "../src/datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_KING,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_ROOK,
+} from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
 import { listValidMoves } from "../src/logic/listValidMoves.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";

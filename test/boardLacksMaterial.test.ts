@@ -1,5 +1,13 @@
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
-import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../src/datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KING,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_PAWN,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../src/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/datatypes/Space.ts";
 import { boardLacksMaterial } from "../src/logic/boardLacksMaterial.ts";
 import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";

@@ -1,6 +1,7 @@
 import { ChessGame } from "../../src/datatypes/ChessGame.ts";
 import { bench, runBenchmarks } from "../../testDeps.ts";
 
+// deno-fmt-ignore
 const MOVES = [
   "e2e4", "e7e5", "g1f3", "d8f6", "d2d4", "f8b4", "c2c3", "g8h6", "c3b4", "h6g4",
   "h2h3", "g4f2", "e1f2", "b7b6", "d1a4", "b6b5", "a4b5", "h8f8", "c1g5", "f6g5",
@@ -26,6 +27,5 @@ bench({
     b.stop();
   },
 });
-
 
 runBenchmarks();

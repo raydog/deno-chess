@@ -9,7 +9,15 @@ import {
   spaceIsEmpty,
 } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
-import { PieceType, PIECETYPE_BISHOP, PIECETYPE_KING, PIECETYPE_KNIGHT, PIECETYPE_PAWN, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_BISHOP,
+  PIECETYPE_KING,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_PAWN,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../datatypes/PieceType.ts";
 import { Coord } from "../datatypes/Coord.ts";
 import {
   createCastle,

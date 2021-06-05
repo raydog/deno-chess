@@ -1,7 +1,11 @@
 import { Board } from "../src/datatypes/Board.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
 import { buildCoord } from "../src/datatypes/Coord.ts";
-import { PieceType, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../src/datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../src/datatypes/PieceType.ts";
 import {
   encodePieceSpace,
   Space,

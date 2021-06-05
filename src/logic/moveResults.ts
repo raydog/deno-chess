@@ -1,6 +1,13 @@
 import { Board } from "../datatypes/Board.ts";
 import { Color } from "../datatypes/Color.ts";
-import { GameStatus, GAMESTATUS_CHECKMATE, GAMESTATUS_DRAW_FIFTYMOVES, GAMESTATUS_DRAW_NOMATERIAL, GAMESTATUS_DRAW_REPETITION, GAMESTATUS_DRAW_STALEMATE } from "../datatypes/GameStatus.ts";
+import {
+  GameStatus,
+  GAMESTATUS_CHECKMATE,
+  GAMESTATUS_DRAW_FIFTYMOVES,
+  GAMESTATUS_DRAW_NOMATERIAL,
+  GAMESTATUS_DRAW_REPETITION,
+  GAMESTATUS_DRAW_STALEMATE,
+} from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import { spaceGetColor } from "../datatypes/Space.ts";
 import { boardLacksMaterial } from "./boardLacksMaterial.ts";

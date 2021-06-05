@@ -1,7 +1,11 @@
 import { Board } from "../../src/datatypes/Board.ts";
 import { buildCastleMap } from "../../src/datatypes/CastleMap.ts";
 import { Coord, coordFromAN } from "../../src/datatypes/Coord.ts";
-import { PieceType, PIECETYPE_KING, PIECETYPE_ROOK } from "../../src/datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_KING,
+  PIECETYPE_ROOK,
+} from "../../src/datatypes/PieceType.ts";
 import {
   Space,
   spaceGetType,

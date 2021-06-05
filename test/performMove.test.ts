@@ -1,7 +1,11 @@
 import { Board } from "../src/datatypes/Board.ts";
 import { coordFromAN } from "../src/datatypes/Coord.ts";
 import { createFullMove, createSimpleMove } from "../src/datatypes/Move.ts";
-import { PieceType, PIECETYPE_KNIGHT, PIECETYPE_PAWN } from "../src/datatypes/PieceType.ts";
+import {
+  PieceType,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_PAWN,
+} from "../src/datatypes/PieceType.ts";
 import {
   spaceGetType,
   spaceHasMoved,

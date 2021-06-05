@@ -20,9 +20,7 @@ import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
 import { listAllValidMoves } from "../logic/listValidMoves.ts";
 import { checkMoveResults } from "../logic/moveResults.ts";
 import { performMove } from "../logic/performMove.ts";
-import {
-  scoreToString,
-} from "./utils/gameScore.ts";
+import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
 
 type TurnColor = "white" | "black";
@@ -96,7 +94,6 @@ export class BeginnerAI {
 function rateMoves(a: Move, b: Move): number {
   return spaceGetType(b.capture) - spaceGetType(a.capture);
 }
-
 
 // Rate a board. + benefits white. - benefits black.
 function rateBoard(board: Board): number {

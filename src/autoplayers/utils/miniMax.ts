@@ -87,13 +87,13 @@ function miniMax(
     );
 
     board.restore();
-    
+
     // Easy case: Whether minimizing or maximizing: we've seen this literal score before, so
     // we can just store it as an alternative: it shouldn't cause alpha or beta bailouts:
     if (score === best) {
       bestMoves.push(move);
-    
-    // Maximizer
+
+      // Maximizer
     } else if (color === COLOR_WHITE) {
       if (score > best) {
         best = score;
@@ -105,8 +105,8 @@ function miniMax(
       if (alpha >= beta) {
         break;
       }
-    
-    // Minimizer
+
+      // Minimizer
     } else if (color === COLOR_BLACK) {
       if (score < best) {
         best = score;
