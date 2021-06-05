@@ -28,6 +28,20 @@ export class Board {
   #layers: Layer[] = [newLayer()];
   #current: Layer = this.#layers[0];
 
+  // Throw all local data away. Useful when re-using Boards
+  reset() {
+    this.#layerIdx = 0;
+    const current = this.#current = this.#layers[0];
+    current.board.fill(SPACE_EMPTY);
+    current.clock = 0;
+    current.moveNum = 0;
+    current.ep = 0x88;
+    current.status = GAMESTATUS_ACTIVE;
+    current.turn = COLOR_WHITE;
+    current.seen = {};
+    current.castles = 0;
+  }
+
   /**
    * Set a single space in the board.
    *
