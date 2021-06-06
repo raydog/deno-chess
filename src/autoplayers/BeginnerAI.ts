@@ -69,7 +69,7 @@ export class BeginnerAI {
     // console.log(boardRenderASCII(board, false));
     const start = Date.now();
 
-    const best = searchBestMoves(board, turn, 2, rateMoves, rateBoard);
+    const best = searchBestMoves(board, turn, 3, rateMoves, rateBoard);
 
     // const best = (turn === COLOR_WHITE)
     //   ? descendWhite(board, 2)
