@@ -10,10 +10,13 @@ import {
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
 } from "../datatypes/PieceType.ts";
-import { spaceIsEmpty } from "../datatypes/Space.ts";
+import { spaceIsEmpty, SPACE_EMPTY } from "../datatypes/Space.ts";
 
-const ATTACK_STEPS = 0b00;
-const ATTACK_SLIDE = 0b01;
+// Color is packed into the upper bit of the 0x88 coord's rank. Slide vs steps is packed into the upper bit of the 0x88
+// coord's file. This is to simplify the bit math for generating lookup indexes, while still allowing for 0x88 out-of-
+// bounds validation.
+const ATTACK_STEPS = 0b0000;
+const ATTACK_SLIDE = 0b1000;
 
 // Directions are defined like:
 // N E S W, NE SE SW NW
@@ -24,11 +27,10 @@ const PAWN = [[15, 17], [-15, -17]];
 
 export function attackMapIsAttacked(b: Board, idx: Coord, byColor: Color) {
   const attacks = b.current.attacks;
-  const bBase = idx << 2;
-  const bColor = byColor << 1;
+  const bColor = byColor << 7;
   return Boolean(
-    attacks[bBase | bColor | ATTACK_SLIDE] ||
-      attacks[bBase | bColor | ATTACK_STEPS],
+    attacks[idx | bColor | ATTACK_SLIDE] ||
+      attacks[idx | bColor | ATTACK_STEPS],
   );
 }
 
@@ -38,41 +40,44 @@ export function attackMapRemovePiece(
   color: Color,
   type: PieceType,
 ) {
+  const bufAttack = b.current.attacks;
+  const bufBoard = b.current.board;
+
   // Remove our contribution to the board:
   switch (type) {
     case PIECETYPE_PAWN:
       for (const offset of PAWN[color]) {
-        tryUpdateStep(b, idx + offset, color, -1);
+        tryUpdateStep(bufAttack, idx + offset, color, -1);
       }
       break;
 
     case PIECETYPE_KNIGHT:
       for (const offset of KNIGHT) {
-        tryUpdateStep(b, idx + offset, color, -1);
+        tryUpdateStep(bufAttack, idx + offset, color, -1);
       }
       break;
 
     case PIECETYPE_KING:
       for (const offset of DIRS) {
-        tryUpdateStep(b, idx + offset, color, -1);
+        tryUpdateStep(bufAttack, idx + offset, color, -1);
       }
       break;
 
     case PIECETYPE_BISHOP:
       for (let dir = 4; dir < 8; dir++) {
-        castRay(b, idx, color, dir, 0);
+        castRay(bufAttack, bufBoard, idx, color, dir, 0);
       }
       break;
 
     case PIECETYPE_ROOK:
       for (let dir = 0; dir < 4; dir++) {
-        castRay(b, idx, color, dir, 0);
+        castRay(bufAttack, bufBoard, idx, color, dir, 0);
       }
       break;
 
     case PIECETYPE_QUEEN:
       for (let dir = 0; dir < 8; dir++) {
-        castRay(b, idx, color, dir, 0);
+        castRay(bufAttack, bufBoard, idx, color, dir, 0);
       }
       break;
   }
@@ -87,6 +92,9 @@ export function attackMapAddPiece(
   color: Color,
   type: PieceType,
 ) {
+  const bufAttack = b.current.attacks;
+  const bufBoard = b.current.board;
+
   // This space is now an obstacle, so recast rays to remove their contribution:
   recastUnderlyingRays(b, idx, 0);
 
@@ -94,37 +102,37 @@ export function attackMapAddPiece(
   switch (type) {
     case PIECETYPE_PAWN:
       for (const offset of PAWN[color]) {
-        tryUpdateStep(b, idx + offset, color, 1);
+        tryUpdateStep(bufAttack, idx + offset, color, 1);
       }
       break;
 
     case PIECETYPE_KNIGHT:
       for (const offset of KNIGHT) {
-        tryUpdateStep(b, idx + offset, color, 1);
+        tryUpdateStep(bufAttack, idx + offset, color, 1);
       }
       break;
 
     case PIECETYPE_KING:
       for (const offset of DIRS) {
-        tryUpdateStep(b, idx + offset, color, 1);
+        tryUpdateStep(bufAttack, idx + offset, color, 1);
       }
       break;
 
     case PIECETYPE_BISHOP:
       for (let dir = 4; dir < 8; dir++) {
-        castRay(b, idx, color, dir, 1);
+        castRay(bufAttack, bufBoard, idx, color, dir, 1);
       }
       break;
 
     case PIECETYPE_ROOK:
       for (let dir = 0; dir < 4; dir++) {
-        castRay(b, idx, color, dir, 1);
+        castRay(bufAttack, bufBoard, idx, color, dir, 1);
       }
       break;
 
     case PIECETYPE_QUEEN:
       for (let dir = 0; dir < 8; dir++) {
-        castRay(b, idx, color, dir, 1);
+        castRay(bufAttack, bufBoard, idx, color, dir, 1);
       }
       break;
   }
@@ -139,17 +147,17 @@ export function attackMapDebug(b: Board): string {
     for (let file = 0; file < 8; file++) {
       const idx = rank | file;
 
-      let white = attacks[(idx << 2) | ATTACK_STEPS];
-      let black = attacks[(idx << 2) | 2 | ATTACK_STEPS];
+      let white = attacks[idx | (COLOR_WHITE << 7) | ATTACK_STEPS];
+      let black = attacks[idx | (COLOR_BLACK << 7) | ATTACK_STEPS];
 
-      const wSlide = attacks[(idx << 2) | (COLOR_WHITE << 1) | ATTACK_SLIDE];
+      const wSlide = attacks[idx | (COLOR_WHITE << 7) | ATTACK_SLIDE];
       for (let dir = 0; dir < 8; dir++) {
         if (wSlide & (1 << dir)) {
           white++;
         }
       }
 
-      const bSlide = attacks[(idx << 2) | (COLOR_BLACK << 1) | ATTACK_SLIDE];
+      const bSlide = attacks[idx | (COLOR_BLACK << 7) | ATTACK_SLIDE];
       for (let dir = 0; dir < 8; dir++) {
         if (bSlide & (1 << dir)) {
           black++;
@@ -175,30 +183,32 @@ export function attackMapDebug(b: Board): string {
 
 // Will recast rays stored under a given piece. Used to handle blocking pieces being added / removed:
 function recastUnderlyingRays(b: Board, idx: Coord, bit: 0 | 1) {
-  const attacks = b.current.attacks;
-  const bBase = idx << 2;
+  const bufAttack = b.current.attacks;
+  const bufBoard = b.current.board;
 
   for (let color = 0; color < 2; color++) {
-    const bColor = color << 1;
-    const here = attacks[bBase | bColor | ATTACK_SLIDE];
+    const bColor = color << 7;
+    const here = bufAttack[idx | bColor | ATTACK_SLIDE];
     for (let dir = 0; dir < 8; dir++) {
       if (here & (1 << dir)) {
-        castRay(b, idx, color, dir, bit);
+        castRay(bufAttack, bufBoard, idx, color, dir, bit);
       }
     }
   }
 }
 
 // Will cast a ray in a direction until another piece or the board's edge. Will **NOT** include start.
-function castRay(b: Board, idx: Coord, color: Color, dir: number, bit: 0 | 1) {
+function castRay(bufAttack: Uint8Array, bufBoard: Uint8Array, idx: Coord, color: Color, dir: number, bit: 0 | 1) {
   const step = DIRS[dir];
 
   while (((idx += step) & 0x88) === 0) {
     // Note: While we don't want to set bits out-of-bounds, we *DO* want to clear the bits on the first obstacle:
-    setSlide(b, idx, color, dir, bit);
+    setSlide(bufAttack, idx, color, dir, bit);
 
     // If there's a piece here, stop.
-    if (!spaceIsEmpty(b.get(idx))) {
+    // HACK: This directly references the board's buffer. This is mainly for perf, both so we can avoid doing a get
+    // call, and also to avoid the board -> current -> board prop lookups.
+    if (bufBoard[idx] !== SPACE_EMPTY) {
       break;
     }
   }
@@ -206,21 +216,17 @@ function castRay(b: Board, idx: Coord, color: Color, dir: number, bit: 0 | 1) {
 
 // Utils to set values in the bitmaps:
 
-function tryUpdateStep(b: Board, idx: Coord, color: Color, delta: number) {
+function tryUpdateStep(bufAttack: Uint8Array, idx: Coord, color: Color, delta: number) {
   if (idx & 0x88) return;
-  const attacks = b.current.attacks;
-  const bBase = idx << 2;
-  const bColor = color << 1;
-  attacks[bBase | bColor | ATTACK_STEPS] += delta;
+  const bColor = color << 7;
+  bufAttack[idx | bColor | ATTACK_STEPS] += delta;
 }
 
-function setSlide(b: Board, idx: Coord, color: Color, dir: number, bit: 0 | 1) {
-  const attacks = b.current.attacks;
-  const bBase = idx << 2;
-  const bColor = color << 1;
+function setSlide(bufAttack: Uint8Array, idx: Coord, color: Color, dir: number, bit: 0 | 1) {
+  const bColor = color << 7;
   if (bit) {
-    attacks[bBase | bColor | ATTACK_SLIDE] |= 1 << dir;
+    bufAttack[idx | bColor | ATTACK_SLIDE] |= 1 << dir;
   } else {
-    attacks[bBase | bColor | ATTACK_SLIDE] &= ~(1 << dir);
+    bufAttack[idx | bColor | ATTACK_SLIDE] &= ~(1 << dir);
   }
 }

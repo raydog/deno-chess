@@ -141,7 +141,7 @@ export class Board {
 function newLayer(): Layer {
   return {
     board: new Uint8Array(BOARD_SIZE).fill(SPACE_EMPTY),
-    attacks: new Uint8Array(BOARD_SIZE * 4).fill(0),
+    attacks: new Uint8Array(BOARD_SIZE * 2).fill(0),
     clock: 0,
     moveNum: 1,
     ep: 0x88,
