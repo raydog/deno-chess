@@ -52,23 +52,43 @@ Deno.test("Find Move by SAN > Bishops > Normal Move", function () {
 Deno.test("Find Move by SAN > Bishops > Ambiguous (Rank) Moves", function () {
   const board = boardFromFEN("8/5pk1/1B6/8/8/8/1B6/6K1 w - - 0 1");
   const moves = listAllValidMoves(board, COLOR_WHITE);
-  asserts.assertThrows(() => findMoveBySAN(moves, "Bd4"), ChessBadMove, "ambiguous");
+  asserts.assertThrows(
+    () => findMoveBySAN(moves, "Bd4"),
+    ChessBadMove,
+    "ambiguous",
+  );
   asserts.assert(findMoveBySAN(moves, "B2d4"));
 });
 
 Deno.test("Find Move by SAN > Bishops > Ambiguous (File) Moves", function () {
   const board = boardFromFEN("6k1/3p4/8/8/1B3B2/8/8/3K4 w - - 0 1");
   const moves = listAllValidMoves(board, COLOR_WHITE);
-  asserts.assertThrows(() => findMoveBySAN(moves, "Bd6"), ChessBadMove, "ambiguous");
+  asserts.assertThrows(
+    () => findMoveBySAN(moves, "Bd6"),
+    ChessBadMove,
+    "ambiguous",
+  );
   asserts.assert(findMoveBySAN(moves, "Bfd6"));
 });
 
 Deno.test("Find Move by SAN > Bishops > Ambiguous (Full) Moves", function () {
   const board = boardFromFEN("1B4k1/3p4/8/8/1B3B2/8/8/3K4 w - - 0 1");
   const moves = listAllValidMoves(board, COLOR_WHITE);
-  asserts.assertThrows(() => findMoveBySAN(moves, "Bd6"), ChessBadMove, "ambiguous");
-  asserts.assertThrows(() => findMoveBySAN(moves, "Bbd6"), ChessBadMove, "ambiguous");
-  asserts.assertThrows(() => findMoveBySAN(moves, "B4d6"), ChessBadMove, "ambiguous");
+  asserts.assertThrows(
+    () => findMoveBySAN(moves, "Bd6"),
+    ChessBadMove,
+    "ambiguous",
+  );
+  asserts.assertThrows(
+    () => findMoveBySAN(moves, "Bbd6"),
+    ChessBadMove,
+    "ambiguous",
+  );
+  asserts.assertThrows(
+    () => findMoveBySAN(moves, "B4d6"),
+    ChessBadMove,
+    "ambiguous",
+  );
   asserts.assert(findMoveBySAN(moves, "Bb4d6"));
 });
 
