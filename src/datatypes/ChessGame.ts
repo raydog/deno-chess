@@ -84,6 +84,17 @@ export interface Status {
  */
 type PromotePiece = "B" | "R" | "N" | "Q";
 
+// Map used to convert internal status into external ones:
+const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
+  [GAMESTATUS_ACTIVE]: "active",
+  [GAMESTATUS_CHECKMATE]: "checkmate",
+  [GAMESTATUS_DRAW]: "draw-other",
+  [GAMESTATUS_DRAW_STALEMATE]: "draw-stalemate",
+  [GAMESTATUS_DRAW_REPETITION]: "draw-repetition",
+  [GAMESTATUS_DRAW_FIFTYMOVES]: "draw-fifty-moves",
+  [GAMESTATUS_DRAW_NOMATERIAL]: "draw-no-material",
+}
+
 /**
  * A single chess game.
  */
@@ -144,9 +155,10 @@ export class ChessGame {
    * @returns A status string.
    */
   getStatus(): Status {
+    const current = this.#board.current;
     return {
-      state: _gameStatusString(this.#board.current.status),
-      turn: (this.#board.current.turn === COLOR_WHITE) ? "white" : "black",
+      state: GAMESTATUS_MAP[current.status],
+      turn: (current.turn === COLOR_WHITE) ? "white" : "black",
     };
   }
 
@@ -275,28 +287,6 @@ export class ChessGame {
   }
 }
 
-// Convert our own status enum into an externally-available string:
-function _gameStatusString(status: GameStatus): Status["state"] {
-  switch (status) {
-    case GAMESTATUS_ACTIVE:
-      return "active";
-    case GAMESTATUS_CHECKMATE:
-      return "checkmate";
-    case GAMESTATUS_DRAW:
-      return "draw-other";
-    case GAMESTATUS_DRAW_STALEMATE:
-      return "draw-stalemate";
-    case GAMESTATUS_DRAW_REPETITION:
-      return "draw-repetition";
-    case GAMESTATUS_DRAW_FIFTYMOVES:
-      return "draw-fifty-moves";
-    case GAMESTATUS_DRAW_NOMATERIAL:
-      return "draw-no-material";
-    default:
-      // For some reason, Typescript isn't type-narrowing this:
-      throw new ChessError("Bad status code: " + status);
-  }
-}
 
 function _pieceTypeForString(str: PromotePiece): PieceType {
   switch (str) {
