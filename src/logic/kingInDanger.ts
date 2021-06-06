@@ -1,9 +1,9 @@
 import { Board } from "../datatypes/Board.ts";
 import { Color } from "../datatypes/Color.ts";
 import {
+  SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
-  spaceIsEmpty,
 } from "../datatypes/Space.ts";
 import { PIECETYPE_KING } from "../datatypes/PieceType.ts";
 import { attackMapIsAttacked } from "./attackMap.ts";
@@ -16,7 +16,7 @@ export function kingInDanger(b: Board, kingColor: Color): boolean {
 
       const spot = b.get(idx);
       if (
-        spaceIsEmpty(spot) || spaceGetType(spot) !== PIECETYPE_KING ||
+        spot === SPACE_EMPTY || spaceGetType(spot) !== PIECETYPE_KING ||
         spaceGetColor(spot) !== kingColor
       ) {
         continue;

@@ -1,11 +1,11 @@
 import { Board } from "../datatypes/Board.ts";
-import { Color, COLOR_WHITE } from "../datatypes/Color.ts";
+import { COLOR_WHITE } from "../datatypes/Color.ts";
 import { buildCoord, Coord } from "../datatypes/Coord.ts";
 import {
   Space,
+  SPACE_EMPTY,
   spaceGetColor,
   spaceGetFENString,
-  spaceIsEmpty,
 } from "../datatypes/Space.ts";
 
 const BAR = "   +------------------------+  \n";
@@ -58,7 +58,7 @@ export function boardRenderASCII(b: Board, color: boolean): string {
 function _formatSpace(style: StyleObj, idx: Coord, sp: Space): string {
   let str: string;
 
-  if (spaceIsEmpty(sp)) {
+  if (sp === SPACE_EMPTY) {
     str = style.dim("   ");
   } else {
     const fen = " " + spaceGetFENString(sp) + " ";

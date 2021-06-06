@@ -1,12 +1,8 @@
 import { Board } from "../../datatypes/Board.ts";
 import { CastleMap, castleMapGetFile } from "../../datatypes/CastleMap.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
 import { coordToAN } from "../../datatypes/Coord.ts";
-import {
-  // spaceEnPassant,
-  spaceGetFENString,
-  spaceIsEmpty,
-} from "../../datatypes/Space.ts";
+import { SPACE_EMPTY, spaceGetFENString } from "../../datatypes/Space.ts";
 
 /**
  * Render a chess board into FEN format.
@@ -23,7 +19,7 @@ export function boardToFEN(board: Board): string {
       const idx = rank | file;
       const spot = board.get(idx);
 
-      if (spaceIsEmpty(spot)) {
+      if (spot === SPACE_EMPTY) {
         empty++;
         continue;
       }

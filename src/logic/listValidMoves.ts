@@ -6,11 +6,9 @@ import {
   spaceGetColor,
   spaceGetType,
   spaceHasMoved,
-  spaceIsEmpty,
 } from "../datatypes/Space.ts";
 import { assert } from "./assert.ts";
 import {
-  PieceType,
   PIECETYPE_BISHOP,
   PIECETYPE_KING,
   PIECETYPE_KNIGHT,
@@ -51,7 +49,7 @@ export function listAllValidMoves(
     for (let file = 0; file < 0x8; file++) {
       const idx = rank | file;
       const sp = b.get(idx);
-      if (!spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
+      if (sp !== SPACE_EMPTY && spaceGetColor(sp) === color) {
         listValidMoves(b, idx, out);
       }
     }
@@ -75,7 +73,7 @@ export function listValidMoves(
 ): Move[] {
   const sp = b.get(idx);
 
-  assert(!spaceIsEmpty(sp), "Listing moves of empty space");
+  assert(sp !== SPACE_EMPTY, "Listing moves of empty space");
 
   switch (spaceGetType(sp)) {
     // Slidey pieces:
@@ -123,6 +121,7 @@ function _findMoves(
   out: Move[],
 ) {
   const color = spaceGetColor(sp);
+  const enemy = 1 - color;
 
   for (let dirIdx = dirsLow; dirIdx < dirsHigh; dirIdx++) {
     const step = dirs[dirIdx];
@@ -132,17 +131,15 @@ function _findMoves(
       newIdx += step, n++
     ) {
       const newSp = b.get(newIdx);
-      const spotEmpty = spaceIsEmpty(newSp);
-      const spotColor = spaceGetColor(newSp);
 
       // If empty, we could either stop here or continue:
-      if (spotEmpty) {
+      if (newSp === SPACE_EMPTY) {
         _tryPushMove(b, out, createSimpleMove(sp, idx, newIdx));
         continue;
       }
 
       // If an enemy, then we can capture. But no matter what, we can't keep going in this direction:
-      if (spotColor === 1 - color) {
+      if (spaceGetColor(newSp) === enemy) {
         _tryPushMove(
           b,
           out,
@@ -211,7 +208,7 @@ function _pawnMoves(
   const promote = (twoUp & 0x88) ? PIECETYPE_QUEEN : 0;
 
   // Try to move one up:
-  if (spaceIsEmpty(b.get(oneUp))) {
+  if (b.get(oneUp) === SPACE_EMPTY) {
     _tryPushMove(
       b,
       out,
@@ -221,7 +218,7 @@ function _pawnMoves(
     // If we haven't moved before, we can attempt 2 up:
     if (
       !spaceHasMoved(sp) && (twoUp & 0x88) === 0 &&
-      spaceIsEmpty(b.get(twoUp))
+      b.get(twoUp) === SPACE_EMPTY
     ) {
       _tryPushMove(
         b,
@@ -247,7 +244,7 @@ function _pawnMoves(
         out,
         createFullMove(sp, idx, coord, epSpot, epCoord, 0, 0, 0, promote, 0),
       );
-    } else if (!spaceIsEmpty(spot) && spaceGetColor(spot) === enemy) {
+    } else if (spot !== SPACE_EMPTY && spaceGetColor(spot) === enemy) {
       _tryPushMove(
         b,
         out,
@@ -296,7 +293,7 @@ function _tryCastle(b: Board, out: Move[], move: Move) {
       continue;
     }
     const sp = b.get(idx);
-    if (!spaceIsEmpty(sp)) {
+    if (sp !== SPACE_EMPTY) {
       return;
     }
   }

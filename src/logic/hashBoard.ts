@@ -1,7 +1,7 @@
 import { Board } from "../datatypes/Board.ts";
 import { castleMapGetFile } from "../datatypes/CastleMap.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
-import { spaceIsEmpty } from "../datatypes/Space.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
+import { SPACE_EMPTY } from "../datatypes/Space.ts";
 
 const PIECE_STRINGS = " PBNRQK  pbnrqk";
 
@@ -19,7 +19,7 @@ export function hashBoard(b: Board): string {
       const idx = rank | file;
 
       const sp = b.get(idx);
-      if (spaceIsEmpty(sp)) {
+      if (sp === SPACE_EMPTY) {
         spaces++;
         continue;
       }

@@ -1,10 +1,4 @@
-import {
-  Space,
-  SPACE_EMPTY,
-  spaceGetColor,
-  spaceGetType,
-  spaceIsEmpty,
-} from "./Space.ts";
+import { Space, SPACE_EMPTY, spaceGetColor, spaceGetType } from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { GameStatus, GAMESTATUS_ACTIVE } from "./GameStatus.ts";
@@ -64,7 +58,7 @@ export class Board {
     assert((idx & 0x88) === 0, "Invalid set() coord");
 
     const prior = this.current.board[idx];
-    if (!spaceIsEmpty(prior)) {
+    if (prior !== SPACE_EMPTY) {
       const color = spaceGetColor(prior);
       const type = spaceGetType(prior);
       attackMapRemovePiece(this, idx, color, type);
@@ -72,7 +66,7 @@ export class Board {
 
     this.current.board[idx] = space;
 
-    if (!spaceIsEmpty(space)) {
+    if (space !== SPACE_EMPTY) {
       const color = spaceGetColor(space);
       const type = spaceGetType(space);
       attackMapAddPiece(this, idx, color, type);

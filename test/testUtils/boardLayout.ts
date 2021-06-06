@@ -2,15 +2,14 @@ import { Board } from "../../src/datatypes/Board.ts";
 import { buildCastleMap } from "../../src/datatypes/CastleMap.ts";
 import { Coord, coordFromAN } from "../../src/datatypes/Coord.ts";
 import {
-  PieceType,
   PIECETYPE_KING,
   PIECETYPE_ROOK,
 } from "../../src/datatypes/PieceType.ts";
 import {
   Space,
+  SPACE_EMPTY,
   spaceGetType,
   spaceHasMoved,
-  spaceIsEmpty,
 } from "../../src/datatypes/Space.ts";
 
 type BoardLayout = {
@@ -46,12 +45,12 @@ export function boardLayout(layout: BoardLayout): Board {
 function _coordIfValid(b: Board, king: Coord, rook: Coord): Coord {
   const k = b.get(king), r = b.get(rook);
   if (
-    spaceIsEmpty(k) || spaceHasMoved(k) || spaceGetType(k) !== PIECETYPE_KING
+    k === SPACE_EMPTY || spaceHasMoved(k) || spaceGetType(k) !== PIECETYPE_KING
   ) {
     return 0x88;
   }
   if (
-    spaceIsEmpty(r) || spaceHasMoved(r) || spaceGetType(r) !== PIECETYPE_ROOK
+    r === SPACE_EMPTY || spaceHasMoved(r) || spaceGetType(r) !== PIECETYPE_ROOK
   ) {
     return 0x88;
   }

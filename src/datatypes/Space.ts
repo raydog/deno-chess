@@ -48,10 +48,6 @@ export type Space = number;
 
 export const SPACE_EMPTY = 0;
 
-export function spaceIsEmpty(sp: Space): boolean {
-  return sp === SPACE_EMPTY;
-}
-
 export function spaceGetType(sp: Space): PieceType {
   return sp & 0x7;
 }
@@ -83,14 +79,14 @@ export const encodePieceSpace = (
 
 export function spaceGetFENString(sp: Space): string {
   // Technically not valid, as FEN collapses these, but w/e
-  if (spaceIsEmpty(sp)) return " ";
+  if (sp === SPACE_EMPTY) return " ";
 
   const hash = _hashPiece(spaceGetColor(sp), spaceGetType(sp));
   return FEN_MAP[hash];
 }
 
 export function spaceGetUnicodeString(sp: Space): string {
-  if (spaceIsEmpty(sp)) return " ";
+  if (sp === SPACE_EMPTY) return " ";
 
   const hash = _hashPiece(spaceGetColor(sp), spaceGetType(sp));
   return UNICODE_MAP[hash];

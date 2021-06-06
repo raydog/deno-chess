@@ -10,7 +10,7 @@ import {
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
 } from "../datatypes/PieceType.ts";
-import { SPACE_EMPTY, spaceIsEmpty } from "../datatypes/Space.ts";
+import { SPACE_EMPTY } from "../datatypes/Space.ts";
 
 // Color is packed into the upper bit of the 0x88 coord's rank. Slide vs steps is packed into the upper bit of the 0x88
 // coord's file. This is to simplify the bit math for generating lookup indexes, while still allowing for 0x88 out-of-
@@ -168,7 +168,7 @@ export function attackMapDebug(b: Board): string {
         out += " ";
       }
 
-      if (spaceIsEmpty(b.get(idx))) {
+      if (b.get(idx) === SPACE_EMPTY) {
         out += ` ${white},${black} `;
       } else {
         out += `[${white},${black}]`;

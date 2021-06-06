@@ -1,7 +1,6 @@
 import { Board } from "../datatypes/Board.ts";
-import { spaceGetType, spaceIsEmpty } from "../datatypes/Space.ts";
+import { SPACE_EMPTY, spaceGetType } from "../datatypes/Space.ts";
 import {
-  PieceType,
   PIECETYPE_BISHOP,
   PIECETYPE_KNIGHT,
   PIECETYPE_PAWN,
@@ -35,7 +34,7 @@ export function boardLacksMaterial(b: Board): boolean {
       const idx = rank | file;
 
       const spot = b.get(idx);
-      if (spaceIsEmpty(spot)) continue;
+      if (spot === SPACE_EMPTY) continue;
 
       const type = spaceGetType(spot);
 

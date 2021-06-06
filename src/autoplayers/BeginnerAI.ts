@@ -2,7 +2,6 @@ import { Board } from "../datatypes/Board.ts";
 import { ChessGame } from "../datatypes/ChessGame.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
 import { coordToAN } from "../datatypes/Coord.ts";
-import { GAMESTATUS_CHECKMATE } from "../datatypes/GameStatus.ts";
 import { Move } from "../datatypes/Move.ts";
 import {
   PieceType,
@@ -13,13 +12,13 @@ import {
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
 } from "../datatypes/PieceType.ts";
-import { spaceGetColor, spaceGetType } from "../datatypes/Space.ts";
-import { spaceIsEmpty } from "../datatypes/Space.ts";
-import { boardRenderASCII } from "../logic/boardRenderASCII.ts";
+import {
+  SPACE_EMPTY,
+  spaceGetColor,
+  spaceGetType,
+} from "../datatypes/Space.ts";
 import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
 import { listAllValidMoves } from "../logic/listValidMoves.ts";
-import { checkMoveResults } from "../logic/moveResults.ts";
-import { performMove } from "../logic/performMove.ts";
 import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
 
@@ -111,7 +110,7 @@ function _countMaterial(board: Board) {
       const idx = rank | file;
       const spot = board.get(idx);
 
-      if (spaceIsEmpty(spot)) continue;
+      if (spot === SPACE_EMPTY) continue;
 
       const value = _pieceValue(spaceGetType(spot));
       if (spaceGetColor(spot) === COLOR_WHITE) {

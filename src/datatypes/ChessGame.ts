@@ -15,7 +15,7 @@ import {
   ChessGameOver,
   ChessNeedsPromotion,
 } from "./ChessError.ts";
-import { Color, COLOR_WHITE } from "./Color.ts";
+import { COLOR_WHITE } from "./Color.ts";
 import { coordFromAN, coordToAN } from "./Coord.ts";
 import {
   GameStatus,
@@ -35,7 +35,7 @@ import {
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
 } from "./PieceType.ts";
-import { spaceGetColor, spaceIsEmpty } from "./Space.ts";
+import { SPACE_EMPTY, spaceGetColor } from "./Space.ts";
 import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
 
 const MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/i;
@@ -187,7 +187,7 @@ export class ChessGame {
 
     // Sanity checks:
     const sp = this.#board.get(from);
-    if (spaceIsEmpty(sp)) {
+    if (sp === SPACE_EMPTY) {
       throw new ChessBadMove(
         `${move}: Departing square (${coordToAN(from)}) is empty`,
       );
@@ -252,7 +252,7 @@ export class ChessGame {
     } else {
       const idx = coordFromAN(coord);
       const sp = this.#board.get(idx);
-      if (spaceIsEmpty(sp) || spaceGetColor(sp) !== turn) {
+      if (sp === SPACE_EMPTY || spaceGetColor(sp) !== turn) {
         return [];
       }
       moves = listValidMoves(this.#board, idx);
