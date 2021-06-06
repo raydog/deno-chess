@@ -46,21 +46,21 @@ export function boardToFEN(board: Board): string {
   }
 
   // Field 2: Turn
-  out += (board.getTurn() === COLOR_WHITE) ? " w" : " b";
+  out += (board.current.turn === COLOR_WHITE) ? " w" : " b";
 
   // Field 3: Castle availability
-  const castles = board.getCastles();
+  const castles = board.current.castles;
   out += " " + _castleAvailability(castles);
 
   // Field 4: En Passant target
-  const enPassant = board.getEnPassant();
+  const enPassant = board.current.ep;
   out += (enPassant & 0x88) ? " -" : " " + coordToAN(enPassant);
 
   // Field 5: Half-move clock
-  out += " " + board.getClock();
+  out += " " + board.current.clock;
 
   // Field 6: Full-move number
-  out += " " + board.getMoveNum();
+  out += " " + board.current.moveNum;
 
   return out;
 }

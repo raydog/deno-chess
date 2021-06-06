@@ -40,7 +40,7 @@ export function hashBoard(b: Board): string {
 
   // Castle eligibility:
   out += ";";
-  const castles = b.getCastles();
+  const castles = b.current.castles;
   out += fileStr(castleMapGetFile(castles, COLOR_WHITE, true));
   out += fileStr(castleMapGetFile(castles, COLOR_WHITE, false));
   out += fileStr(castleMapGetFile(castles, COLOR_BLACK, true));
@@ -48,7 +48,7 @@ export function hashBoard(b: Board): string {
 
   // EP file, if that's a thing:
   // Note: EP is 0 when null:
-  out += ";" + fileStr((b.getEnPassant() || 0x88) & 0xf);
+  out += ";" + fileStr((b.current.ep || 0x88) & 0xf);
 
   return out;
 }

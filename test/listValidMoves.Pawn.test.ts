@@ -168,7 +168,7 @@ Deno.test("List Valid Moves > Pawn > White captures en passant on the left", fun
     e5: encodePieceSpace(PIECETYPE_PAWN, COLOR_WHITE, true),
     d5: encodePieceSpace(PIECETYPE_PAWN, COLOR_BLACK, true),
   });
-  b.setEnPassant(coordFromAN("d6"));
+  b.current.ep = coordFromAN("d6");
   assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["exd6", "e6"]);
 });
 
@@ -177,7 +177,7 @@ Deno.test("List Valid Moves > Pawn > White captures en passant on the right", fu
     e5: encodePieceSpace(PIECETYPE_PAWN, COLOR_WHITE, true),
     f5: encodePieceSpace(PIECETYPE_PAWN, COLOR_BLACK, true),
   });
-  b.setEnPassant(coordFromAN("f6"));
+  b.current.ep = coordFromAN("f6");
   assertMoves(b, listValidMoves(b, coordFromAN("e5")), ["e6", "exf6"]);
 });
 
@@ -186,7 +186,7 @@ Deno.test("List Valid Moves > Pawn > Black captures en passant on the left", fun
     e4: encodePieceSpace(PIECETYPE_PAWN, COLOR_BLACK, true),
     d4: encodePieceSpace(PIECETYPE_PAWN, COLOR_WHITE, true),
   });
-  b.setEnPassant(coordFromAN("d3"));
+  b.current.ep = coordFromAN("d3");
   assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["exd3", "e3"]);
 });
 
@@ -195,6 +195,6 @@ Deno.test("List Valid Moves > Pawn > Black captures en passant on the right", fu
     e4: encodePieceSpace(PIECETYPE_PAWN, COLOR_BLACK, true),
     f4: encodePieceSpace(PIECETYPE_PAWN, COLOR_WHITE, true),
   });
-  b.setEnPassant(coordFromAN("f3"));
+  b.current.ep = coordFromAN("f3");
   assertMoves(b, listValidMoves(b, coordFromAN("e4")), ["e3", "exf3"]);
 });

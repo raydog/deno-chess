@@ -92,7 +92,7 @@ function _nextState(
   enemyCanMove: boolean,
   timesMoveSeen: number,
 ): GameStatus {
-  const priorStatus = board.getStatus();
+  const priorStatus = board.current.status;
 
   // If no moves, this is DEFINITELY a terminal state.
   if (!enemyCanMove) {
@@ -105,7 +105,7 @@ function _nextState(
   }
 
   // Else, there are a few other situations that can trigger end-of-game:
-  if (board.getClock() >= 100) {
+  if (board.current.clock >= 100) {
     return GAMESTATUS_DRAW_FIFTYMOVES;
   }
 

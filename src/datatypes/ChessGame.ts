@@ -145,8 +145,8 @@ export class ChessGame {
    */
   getStatus(): Status {
     return {
-      state: _gameStatusString(this.#board.getStatus()),
-      turn: (this.#board.getTurn() === COLOR_WHITE) ? "white" : "black",
+      state: _gameStatusString(this.#board.current.status),
+      turn: (this.#board.current.turn === COLOR_WHITE) ? "white" : "black",
     };
   }
 
@@ -156,7 +156,7 @@ export class ChessGame {
    * @returns
    */
   isGameOver(): boolean {
-    return Boolean(this.#board.getStatus());
+    return Boolean(this.#board.current.status);
   }
 
   /**
@@ -196,7 +196,7 @@ export class ChessGame {
     // Get the full list of moves. We need the FULL list of moves (and not just the moves for this one piece) because
     // computing the SAN for a move needs to change how the origin is represented based on which moves are currently
     // available to the player:
-    const turn = this.#board.getTurn();
+    const turn = this.#board.current.turn;
     const moves = listAllValidMoves(this.#board, turn);
     const picked = moves.find((move) =>
       move.from === from && move.dest === dest
@@ -224,7 +224,7 @@ export class ChessGame {
       // san: al
     });
 
-    this.#board.setStatus(results.newGameStatus);
+    this.#board.current.status = results.newGameStatus;
 
     return this;
   }
@@ -244,7 +244,7 @@ export class ChessGame {
       return [];
     }
 
-    const turn = this.#board.getTurn();
+    const turn = this.#board.current.turn;
     let moves;
 
     if (coord == null) {

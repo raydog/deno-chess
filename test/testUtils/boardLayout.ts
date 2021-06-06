@@ -34,13 +34,11 @@ export function boardLayout(layout: BoardLayout): Board {
     out.set(coord, layout[key]);
   }
   // Note: This assumes a stardard board layout:
-  out.setCastles(
-    buildCastleMap(
-      _coordIfValid(out, 0x04, 0x00),
-      _coordIfValid(out, 0x04, 0x07),
-      _coordIfValid(out, 0x74, 0x70),
-      _coordIfValid(out, 0x74, 0x77),
-    ),
+  out.current.castles = buildCastleMap(
+    _coordIfValid(out, 0x04, 0x00),
+    _coordIfValid(out, 0x04, 0x07),
+    _coordIfValid(out, 0x74, 0x70),
+    _coordIfValid(out, 0x74, 0x77),
   );
   return out;
 }

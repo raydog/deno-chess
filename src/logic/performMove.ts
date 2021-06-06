@@ -28,7 +28,7 @@ export function performMove(
   move: Move,
 ) {
   // Clear all En Passant-marked pawns from this board:
-  b.setEnPassant(0x88);
+  b.current.ep = 0x88;
 
   // This piece just moved:
   let space = spaceMarkMoved(move.what);
@@ -38,17 +38,17 @@ export function performMove(
   // If this is a king, remove all castle eligibility, either because it's castling NOW, or because it's otherwise
   // moving.
   if (type === PIECETYPE_KING) {
-    b.setCastles(castleMapKingMoved(b.getCastles(), color));
+    b.current.castles = castleMapKingMoved(b.current.castles, color);
   }
 
   // If this is a rook that hasn't moved before, mark it as ineligible for castles:
   if (type === PIECETYPE_ROOK && !spaceHasMoved(move.what)) {
-    b.setCastles(castleMapRookMoved(b.getCastles(), move.from));
+    b.current.castles = castleMapRookMoved(b.current.castles, move.from);
   }
 
   // Mark as being vulnerable to En Passant if requested:
   if (move.markEnPassant) {
-    b.setEnPassant(move.markEnPassant);
+    b.current.ep = move.markEnPassant;
   }
 
   // If this pawn promoted, update the type before copying into the board:
@@ -73,16 +73,16 @@ export function performMove(
 
   // If this move is black's, then the turn number just increased:
   if (spaceGetColor(space)) {
-    b.incrMoveNum();
+    b.current.moveNum++;
   }
 
   // If a capture or pawn move, reset the clock. Else increment.
   if (spaceGetType(space) === PIECETYPE_PAWN || move.capture) {
-    b.setClock(0);
+    b.current.clock = 0;
   } else {
-    b.incrClock();
+    b.current.clock++;
   }
 
   // Toggle the active player:
-  b.setTurn(1 - b.getTurn());
+  b.current.turn = 1 - b.current.turn;
 }

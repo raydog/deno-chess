@@ -26,12 +26,15 @@ type Layer = {
 export class Board {
   #layerIdx = 0;
   #layers: Layer[] = [newLayer()];
-  #current: Layer = this.#layers[0];
+
+  // Current kept public, since everything else will be mutating these vals.
+  // Yeah, it's ugly. But it *IS* somewhat quicker...
+  current: Layer = this.#layers[0];
 
   // Throw all local data away. Useful when re-using Boards
   reset() {
     this.#layerIdx = 0;
-    const current = this.#current = this.#layers[0];
+    const current = this.current = this.#layers[0];
     current.board.fill(SPACE_EMPTY);
     current.clock = 0;
     current.moveNum = 0;
@@ -50,7 +53,7 @@ export class Board {
    */
   set(idx: Coord, space: Space) {
     assert((idx & 0x88) === 0, "Invalid set() coord");
-    this.#current.board[idx] = space;
+    this.current.board[idx] = space;
   }
 
   /**
@@ -61,114 +64,7 @@ export class Board {
    */
   get(idx: Coord): Space {
     assert((idx & 0x88) === 0, "Invalid get() coord");
-    return this.#current.board[idx];
-  }
-
-  /**
-   * Increments the half-move clock.
-   */
-  incrClock() {
-    this.#current.clock++;
-  }
-
-  /**
-   * Reset the half-move clock.
-   */
-  setClock(val: number) {
-    this.#current.clock = val;
-  }
-
-  /**
-   * Increment the current move number.
-   */
-  incrMoveNum() {
-    this.#current.moveNum++;
-  }
-
-  /**
-   * Increment the current move number.
-   */
-  setMoveNum(val: number) {
-    this.#current.moveNum = val;
-  }
-
-  /**
-   * Return the half-move clock.
-   *
-   * @returns
-   */
-  getClock(): number {
-    return this.#current.clock;
-  }
-
-  /**
-   * Return the current move number.
-   *
-   * @returns
-   */
-  getMoveNum(): number {
-    return this.#current.moveNum;
-  }
-
-  /**
-   * Get the current En Passant square. -1 if none.
-   * @returns
-   */
-  getEnPassant(): Coord {
-    return this.#current.ep;
-  }
-
-  /**
-   * Set the current En Passant square.
-   * @param idx
-   */
-  setEnPassant(idx: Coord) {
-    return this.#current.ep = idx;
-  }
-
-  /**
-   * Get the game status.
-   * @returns
-   */
-  getStatus(): GameStatus {
-    return this.#current.status;
-  }
-
-  /**
-   * Update the game status.
-   */
-  setStatus(s: GameStatus) {
-    this.#current.status = s;
-  }
-
-  /**
-   * Get the turn.
-   * @returns
-   */
-  getTurn(): Color {
-    return this.#current.turn;
-  }
-
-  /**
-   * Update the turn.
-   */
-  setTurn(t: Color) {
-    this.#current.turn = t;
-  }
-
-  /**
-    * Get the castle status.
-    * @returns
-    */
-  getCastles(): CastleMap {
-    return this.#current.castles;
-  }
-
-  /**
-   * Update the castle status.
-   */
-  setCastles(s: CastleMap) {
-    this.#current.castles = s;
+    return this.current.board[idx];
   }
 
   /**
@@ -185,13 +81,13 @@ export class Board {
       if (hash in this.#layers[idx].seen) {
         // Oh! this one! Add 1, copy forward, and return.
         const num = 1 + this.#layers[idx].seen[hash];
-        this.#current.seen[hash] = num;
+        this.current.seen[hash] = num;
         return num;
       }
     }
 
     // Else, not found:
-    this.#current.seen[hash] = 1;
+    this.current.seen[hash] = 1;
     return 1;
   }
 
@@ -204,8 +100,8 @@ export class Board {
     if (idx === this.#layers.length) {
       this.#layers.push(newLayer());
     }
-    this.#current = this.#layers[idx];
-    copyLayer(this.#layers[idx - 1], this.#current);
+    this.current = this.#layers[idx];
+    copyLayer(this.#layers[idx - 1], this.current);
   }
 
   /**
@@ -214,7 +110,7 @@ export class Board {
   restore() {
     if (this.#layerIdx > 0) {
       const idx = --this.#layerIdx;
-      this.#current = this.#layers[idx];
+      this.current = this.#layers[idx];
     }
   }
 }

@@ -77,27 +77,24 @@ export function boardFromFEN(fen: string, board?: Board): Board {
 
   // Field 2: Turn
   const turn = _parseTurn(fields[1]);
-  out.setTurn(turn);
+  out.current.turn = turn;
 
   // Field 3: Castle availability
-  out.setCastles(_parseCastles(fields[2]));
+  out.current.castles = _parseCastles(fields[2]);
 
   // Field 4: En Passant target
   if (fields[3] !== "-") {
-    out.setEnPassant(coordFromAN(fields[3]));
+    out.current.ep = coordFromAN(fields[3]);
   }
 
   // Field 5: Half-move clock
-  out.setClock(_parseIntField(fields[4]));
+  out.current.clock = _parseIntField(fields[4]);
 
   // Field 6: Full-move number
-  out.setMoveNum(_parseIntField(fields[5]));
+  out.current.moveNum = _parseIntField(fields[5]);
 
   const status = checkMoveResults(out, 1 - turn);
-  out.setStatus(status.newGameStatus);
-
-  // console.log();
-  // console.log(boardRenderASCII(out, true));
+  out.current.status = status.newGameStatus;
 
   return out;
 }

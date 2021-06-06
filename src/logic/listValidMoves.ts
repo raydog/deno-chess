@@ -158,7 +158,7 @@ function _findMoves(
   // Special-case, if King, and king hasn't moved yet, check the same rank for Rooks that haven't moved, and then maybe
   // try castling:
   if (spaceGetType(sp) === PIECETYPE_KING && !spaceHasMoved(sp)) {
-    const castles = b.getCastles();
+    const castles = b.current.castles;
     const kRank = castleMapGetFile(castles, color, true);
     const qRank = castleMapGetFile(castles, color, false);
     const rank = idx & 0xf0;
@@ -232,7 +232,7 @@ function _pawnMoves(
   }
 
   // Captures to the left and right. This includes en passants:
-  const ep = b.getEnPassant();
+  const ep = b.current.ep;
 
   for (const step of PAWN_CAPS) {
     const coord = oneUp + step;
