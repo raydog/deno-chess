@@ -10,7 +10,7 @@ import {
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
 } from "../datatypes/PieceType.ts";
-import { spaceIsEmpty, SPACE_EMPTY } from "../datatypes/Space.ts";
+import { SPACE_EMPTY, spaceIsEmpty } from "../datatypes/Space.ts";
 
 // Color is packed into the upper bit of the 0x88 coord's rank. Slide vs steps is packed into the upper bit of the 0x88
 // coord's file. This is to simplify the bit math for generating lookup indexes, while still allowing for 0x88 out-of-
@@ -198,7 +198,14 @@ function recastUnderlyingRays(b: Board, idx: Coord, bit: 0 | 1) {
 }
 
 // Will cast a ray in a direction until another piece or the board's edge. Will **NOT** include start.
-function castRay(bufAttack: Uint8Array, bufBoard: Uint8Array, idx: Coord, color: Color, dir: number, bit: 0 | 1) {
+function castRay(
+  bufAttack: Uint8Array,
+  bufBoard: Uint8Array,
+  idx: Coord,
+  color: Color,
+  dir: number,
+  bit: 0 | 1,
+) {
   const step = DIRS[dir];
 
   while (((idx += step) & 0x88) === 0) {
@@ -216,13 +223,24 @@ function castRay(bufAttack: Uint8Array, bufBoard: Uint8Array, idx: Coord, color:
 
 // Utils to set values in the bitmaps:
 
-function tryUpdateStep(bufAttack: Uint8Array, idx: Coord, color: Color, delta: number) {
+function tryUpdateStep(
+  bufAttack: Uint8Array,
+  idx: Coord,
+  color: Color,
+  delta: number,
+) {
   if (idx & 0x88) return;
   const bColor = color << 7;
   bufAttack[idx | bColor | ATTACK_STEPS] += delta;
 }
 
-function setSlide(bufAttack: Uint8Array, idx: Coord, color: Color, dir: number, bit: 0 | 1) {
+function setSlide(
+  bufAttack: Uint8Array,
+  idx: Coord,
+  color: Color,
+  dir: number,
+  bit: 0 | 1,
+) {
   const bColor = color << 7;
   if (bit) {
     bufAttack[idx | bColor | ATTACK_SLIDE] |= 1 << dir;
