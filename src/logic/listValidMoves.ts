@@ -31,20 +31,8 @@ import { kingInDanger } from "./kingInDanger.ts";
 import { castleMapGetFile } from "../datatypes/CastleMap.ts";
 
 // Pre-compiled lists of moves, since most moves are similar:
-const BISHOP_DIRS: number[] = [15, 17, -17, -15];
-const ROOK_DIRS: number[] = [16, -16, 1, -1];
-const QUEEN_DIRS: number[] = [...ROOK_DIRS, ...BISHOP_DIRS];
-const KING_DIRS: number[] = [...QUEEN_DIRS];
-const KNIGHT_DIRS: number[] = [
-  31,
-  33,
-  14,
-  18,
-  -18,
-  -14,
-  -33,
-  -31,
-];
+const DIRS = [16, 1, -16, -1, 17, -15, -17, 15];
+const KNIGHT = [31, 33, 14, 18, -18, -14, -33, -31];
 const PAWN_CAPS = [-1, 1];
 
 /**
@@ -64,7 +52,7 @@ export function listAllValidMoves(
       const idx = rank | file;
       const sp = b.get(idx);
       if (!spaceIsEmpty(sp) && spaceGetColor(sp) === color) {
-        out.push(...listValidMoves(b, idx));
+        listValidMoves(b, idx, out);
       }
     }
   }
@@ -83,6 +71,7 @@ export function listAllValidMoves(
 export function listValidMoves(
   b: Board,
   idx: Coord,
+  out: Move[] = [],
 ): Move[] {
   const sp = b.get(idx);
 
@@ -92,26 +81,34 @@ export function listValidMoves(
     // Slidey pieces:
 
     case PIECETYPE_BISHOP:
-      return _findMoves(b, sp, idx, BISHOP_DIRS, 8);
+      _findMoves(b, sp, idx, DIRS, 4, 8, 8, out);
+      break;
+
     case PIECETYPE_ROOK:
-      return _findMoves(b, sp, idx, ROOK_DIRS, 8);
+      _findMoves(b, sp, idx, DIRS, 0, 4, 8, out);
+      break;
+
     case PIECETYPE_QUEEN:
-      return _findMoves(b, sp, idx, QUEEN_DIRS, 8);
+      _findMoves(b, sp, idx, DIRS, 0, 8, 8, out);
+      break;
 
     // Steppy pieces:
 
     case PIECETYPE_KNIGHT:
-      return _findMoves(b, sp, idx, KNIGHT_DIRS, 1);
-    case PIECETYPE_KING:
-      return _findMoves(b, sp, idx, KING_DIRS, 1);
+      _findMoves(b, sp, idx, KNIGHT, 0, 8, 1, out);
+      break;
 
-    // Other:
+    case PIECETYPE_KING:
+      _findMoves(b, sp, idx, DIRS, 0, 8, 1, out);
+      _findKingCastles(b, sp, idx, out);
+      break;
 
     case PIECETYPE_PAWN:
-      return _pawnMoves(b, sp, idx);
+      _pawnMoves(b, sp, idx, out);
+      break;
   }
 
-  return [];
+  return out;
 }
 
 // Util to extract find legit moves:
@@ -120,13 +117,15 @@ function _findMoves(
   sp: Space,
   idx: number,
   dirs: number[],
+  dirsLow: number,
+  dirsHigh: number,
   maxDist: number,
-): Move[] {
-  const out: Move[] = [];
-
+  out: Move[],
+) {
   const color = spaceGetColor(sp);
 
-  for (const step of dirs) {
+  for (let dirIdx = dirsLow; dirIdx < dirsHigh; dirIdx++) {
+    const step = dirs[dirIdx];
     for (
       let newIdx = idx + step, n = 0;
       (newIdx & 0x88) === 0 && n < maxDist;
@@ -154,39 +153,40 @@ function _findMoves(
       break;
     }
   }
+}
 
+function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[]) {
   // Special-case, if King, and king hasn't moved yet, check the same rank for Rooks that haven't moved, and then maybe
   // try castling:
-  if (spaceGetType(sp) === PIECETYPE_KING && !spaceHasMoved(sp)) {
-    const castles = b.current.castles;
-    const kRank = castleMapGetFile(castles, color, true);
-    const qRank = castleMapGetFile(castles, color, false);
-    const rank = idx & 0xf0;
+  if (spaceHasMoved(sp)) return;
 
-    if ((kRank & 0x8) === 0) {
-      const kingDest = rank | 6;
-      const rookFrom = rank | kRank;
-      const rookDest = rank | 5;
-      _tryCastle(
-        b,
-        out,
-        createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
-      );
-    }
+  const color = spaceGetColor(sp);
+  const castles = b.current.castles;
+  const kRank = castleMapGetFile(castles, color, true);
+  const qRank = castleMapGetFile(castles, color, false);
+  const rank = idx & 0xf0;
 
-    if ((qRank & 0x8) === 0) {
-      const kingDest = rank | 2;
-      const rookFrom = rank | qRank;
-      const rookDest = rank | 3;
-      _tryCastle(
-        b,
-        out,
-        createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
-      );
-    }
+  if ((kRank & 0x8) === 0) {
+    const kingDest = rank | 6;
+    const rookFrom = rank | kRank;
+    const rookDest = rank | 5;
+    _tryCastle(
+      b,
+      out,
+      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
+    );
   }
 
-  return out;
+  if ((qRank & 0x8) === 0) {
+    const kingDest = rank | 2;
+    const rookFrom = rank | qRank;
+    const rookDest = rank | 3;
+    _tryCastle(
+      b,
+      out,
+      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
+    );
+  }
 }
 
 // Pawns are odd, so handle them separately:
@@ -194,12 +194,12 @@ function _pawnMoves(
   b: Board,
   sp: Space,
   idx: number,
-): Move[] {
+  out: Move[],
+) {
   const color = spaceGetColor(sp);
   const enemy = 1 - color;
 
   const dir = color === COLOR_WHITE ? 1 : -1;
-  const out: Move[] = [];
 
   const oneUp = idx + 16 * dir;
   const twoUp = idx + 32 * dir;
