@@ -1,15 +1,23 @@
-import { Space, SPACE_EMPTY } from "./Space.ts";
+import {
+  Space,
+  SPACE_EMPTY,
+  spaceGetColor,
+  spaceGetType,
+  spaceIsEmpty,
+} from "./Space.ts";
 import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { GameStatus, GAMESTATUS_ACTIVE } from "./GameStatus.ts";
 import { CastleMap } from "./CastleMap.ts";
 import { Color, COLOR_WHITE } from "./Color.ts";
+import { attackMapAddPiece, attackMapRemovePiece } from "../logic/attackMap.ts";
 
 // Uses the 0x88 strategy:
 const BOARD_SIZE = 8 * 8 * 2;
 
 type Layer = {
   board: Uint8Array;
+  attacks: Uint8Array;
   clock: number;
   moveNum: number;
   ep: Coord;
@@ -36,6 +44,7 @@ export class Board {
     this.#layerIdx = 0;
     const current = this.current = this.#layers[0];
     current.board.fill(SPACE_EMPTY);
+    current.attacks.fill(0);
     current.clock = 0;
     current.moveNum = 0;
     current.ep = 0x88;
@@ -46,14 +55,28 @@ export class Board {
   }
 
   /**
-   * Set a single space in the board.
+   * Set a single space in the board. Updates the attack map as well.
    *
    * @param idx
    * @param space
    */
   set(idx: Coord, space: Space) {
     assert((idx & 0x88) === 0, "Invalid set() coord");
+
+    const prior = this.current.board[idx];
+    if (!spaceIsEmpty(prior)) {
+      const color = spaceGetColor(prior);
+      const type = spaceGetType(prior);
+      attackMapRemovePiece(this, idx, color, type);
+    }
+
     this.current.board[idx] = space;
+
+    if (!spaceIsEmpty(space)) {
+      const color = spaceGetColor(space);
+      const type = spaceGetType(space);
+      attackMapAddPiece(this, idx, color, type);
+    }
   }
 
   /**
@@ -118,6 +141,7 @@ export class Board {
 function newLayer(): Layer {
   return {
     board: new Uint8Array(BOARD_SIZE).fill(SPACE_EMPTY),
+    attacks: new Uint8Array(BOARD_SIZE * 4).fill(0),
     clock: 0,
     moveNum: 1,
     ep: 0x88,
@@ -130,6 +154,7 @@ function newLayer(): Layer {
 
 function copyLayer(src: Layer, dest: Layer) {
   dest.board.set(src.board);
+  dest.attacks.set(src.attacks);
   dest.clock = src.clock;
   dest.moveNum = src.moveNum;
   dest.ep = src.ep;
