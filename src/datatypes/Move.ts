@@ -27,18 +27,7 @@ export type Move = {
 };
 
 export function createSimpleMove(what: Space, from: Coord, dest: Coord): Move {
-  return {
-    what,
-    from,
-    dest,
-    capture: 0,
-    captureCoord: 0,
-    castleRook: 0,
-    castleRookFrom: 0,
-    castleRookDest: 0,
-    promote: 0,
-    markEnPassant: 0,
-  };
+  return createFullMove(what, from, dest, 0, 0, 0, 0, 0, 0, 0);
 }
 
 export function createSimpleCapture(
@@ -48,18 +37,7 @@ export function createSimpleCapture(
   capture: Space,
   captureCoord: Coord,
 ): Move {
-  return {
-    what,
-    from,
-    dest,
-    capture,
-    captureCoord,
-    castleRook: 0,
-    castleRookFrom: 0,
-    castleRookDest: 0,
-    promote: 0,
-    markEnPassant: 0,
-  };
+  return createFullMove(what, from, dest, capture, captureCoord, 0, 0, 0, 0, 0);
 }
 
 export function createCastle(
@@ -70,18 +48,7 @@ export function createCastle(
   castleRookFrom: Coord,
   castleRookDest: Coord,
 ): Move {
-  return {
-    what,
-    from,
-    dest,
-    capture: 0,
-    captureCoord: 0,
-    castleRook,
-    castleRookFrom,
-    castleRookDest,
-    promote: 0,
-    markEnPassant: 0,
-  };
+  return createFullMove(what, from, dest, 0, 0, castleRook, castleRookFrom, castleRookDest, 0, 0);
 }
 
 export function createFullMove(
