@@ -1,5 +1,9 @@
 import { Board } from "../src/core/datatypes/Board.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
+import {
+  Color,
+  COLOR_BLACK,
+  COLOR_WHITE,
+} from "../src/core/datatypes/Color.ts";
 import { buildCoord } from "../src/core/datatypes/Coord.ts";
 import {
   PieceType,

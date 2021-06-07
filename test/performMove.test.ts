@@ -1,6 +1,9 @@
 import { Board } from "../src/core/datatypes/Board.ts";
 import { coordFromAN } from "../src/core/datatypes/Coord.ts";
-import { createFullMove, createSimpleMove } from "../src/core/datatypes/Move.ts";
+import {
+  createFullMove,
+  createSimpleMove,
+} from "../src/core/datatypes/Move.ts";
 import {
   PIECETYPE_KNIGHT,
   PIECETYPE_PAWN,

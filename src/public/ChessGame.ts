@@ -4,7 +4,10 @@ import { boardRenderASCII } from "../core/logic/boardRenderASCII.ts";
 import { boardToFEN } from "../core/logic/FEN/boardToFEN.ts";
 import { buildStandardBoard } from "../core/logic/boardLayouts/standard.ts";
 import { hashBoard } from "../core/logic/hashBoard.ts";
-import { listAllValidMoves, listValidMoves } from "../core/logic/listValidMoves.ts";
+import {
+  listAllValidMoves,
+  listValidMoves,
+} from "../core/logic/listValidMoves.ts";
 import { moveToSAN } from "../core/logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../core/logic/moveResults.ts";
 import { performMove } from "../core/logic/performMove.ts";
@@ -26,7 +29,7 @@ import {
   GAMESTATUS_DRAW_NOMATERIAL,
   GAMESTATUS_DRAW_REPETITION,
   GAMESTATUS_DRAW_STALEMATE,
-GAMESTATUS_RESIGNED,
+  GAMESTATUS_RESIGNED,
 } from "../core/datatypes/GameStatus.ts";
 import { Move } from "../core/datatypes/Move.ts";
 import {
@@ -89,7 +92,7 @@ export interface Status {
    * If this game was ended for a non-standard reason (either with a draw or a resignation,) this property could be
    * included to explain the situation.
    */
-  reason?: string,
+  reason?: string;
 }
 
 /**
@@ -107,16 +110,15 @@ const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
   [GAMESTATUS_DRAW_REPETITION]: "draw-repetition",
   [GAMESTATUS_DRAW_FIFTYMOVES]: "draw-fifty-moves",
   [GAMESTATUS_DRAW_NOMATERIAL]: "draw-no-material",
-}
+};
 
 /**
  * A single chess game.
  */
 export class ChessGame {
-
   #board: Board;
   #moves: AnnotatedMove[] = [];
-  
+
   #gameWinner: "white" | "black" | "draw" | null = null;
   #drawReason: string | null = null;
 
@@ -293,7 +295,7 @@ export class ChessGame {
 
   /**
    * Resigns the game for the given player. This means that the OTHER player won.
-   * 
+   *
    * @param player The player who resigned.
    */
   resignGame(player: "white" | "black") {
@@ -307,7 +309,7 @@ export class ChessGame {
 
   /**
    * Either both players agreed to a draw, or the game was drawn for some other reason.
-   * 
+   *
    * @param reason A string describing why the game was drawn. Optional.
    */
   drawGame(reason?: string) {
@@ -322,9 +324,12 @@ export class ChessGame {
 
   toString(fmt: "ascii" | "terminal" | "fen" = "ascii"): string {
     switch (fmt) {
-      case "ascii": return boardRenderASCII(this.#board, false);
-      case "terminal": return boardRenderASCII(this.#board, true);
-      case "fen": return boardToFEN(this.#board);
+      case "ascii":
+        return boardRenderASCII(this.#board, false);
+      case "terminal":
+        return boardRenderASCII(this.#board, true);
+      case "fen":
+        return boardToFEN(this.#board);
     }
   }
 
@@ -332,7 +337,6 @@ export class ChessGame {
     return hashBoard(this.#board);
   }
 }
-
 
 function _pieceTypeForString(str: PromotePiece): PieceType {
   switch (str) {

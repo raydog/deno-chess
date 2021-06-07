@@ -48,7 +48,18 @@ export function createCastle(
   castleRookFrom: Coord,
   castleRookDest: Coord,
 ): Move {
-  return createFullMove(what, from, dest, 0, 0, castleRook, castleRookFrom, castleRookDest, 0, 0);
+  return createFullMove(
+    what,
+    from,
+    dest,
+    0,
+    0,
+    castleRook,
+    castleRookFrom,
+    castleRookDest,
+    0,
+    0,
+  );
 }
 
 export function createFullMove(
