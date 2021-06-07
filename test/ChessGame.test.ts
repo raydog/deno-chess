@@ -80,7 +80,7 @@ Deno.test("ChessGame Public API > Can castle kingside", function () {
   game.move("g1f3").move("b8c6");
   game.move("f1c4").move("f8c5");
   game.move("e1g1");
-  asserts.assertEquals(game.history().reverse()[0].white, "O-O");
+  asserts.assertEquals(game.history().reverse()[0].san, "O-O");
   asserts.assertEquals(game.getStatus(), { state: "active", turn: "black" });
 });
 
@@ -92,7 +92,7 @@ Deno.test("ChessGame Public API > Can castle queenside", function () {
   game.move("d2d4").move("c8a6");
   game.move("d4d5").move("d8f6");
   game.move("d1d2").move("e8c8");
-  asserts.assertEquals(game.history().reverse()[0].black, "O-O-O");
+  asserts.assertEquals(game.history().reverse()[0].san, "O-O-O");
   asserts.assertEquals(game.getStatus(), { state: "active", turn: "white" });
 });
 
@@ -125,7 +125,7 @@ Deno.test("ChessGame Public API > Promote to Knight", function () {
   game.move("b5b6").move("a6c5");
   game.move("b6b7").move("c5e6");
   game.move("b7b8", "N");
-  asserts.assertEquals(game.history().reverse()[0].white, "b8=N");
+  asserts.assertEquals(game.history().reverse()[0].san, "b8=N");
 });
 
 Deno.test("ChessGame Public API > Promote to Queen after capture", function () {
@@ -135,7 +135,7 @@ Deno.test("ChessGame Public API > Promote to Queen after capture", function () {
   game.move("b5b6").move("a6c5");
   game.move("b6b7").move("c5e6");
   game.move("b7a8", "Q");
-  asserts.assertEquals(game.history().reverse()[0].white, "bxa8=Q");
+  asserts.assertEquals(game.history().reverse()[0].san, "bxa8=Q");
 });
 
 Deno.test("ChessGame Public API > Rejects moves after game over", function () {

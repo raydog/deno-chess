@@ -31,15 +31,6 @@ import { GameMove } from "./GameMove.ts";
 
 
 /**
- * A record of a single
- */
-export type HistoryEntry = {
-  num: number;
-  white: string;
-  black: string | null;
-};
-
-/**
  * The current game status.
  */
 export interface Status {
@@ -128,21 +119,9 @@ export class ChessGame {
    *
    * @returns
    */
-  history(): HistoryEntry[] {
-    return this.#moves
-      .reduce((acc, move, idx) => {
-        const isBlack = Boolean(idx & 1);
-        if (isBlack) {
-          acc[acc.length - 1].black = move.san;
-        } else {
-          acc.push({
-            num: (idx >> 1) + 1,
-            white: move.san,
-            black: null,
-          });
-        }
-        return acc;
-      }, [] as HistoryEntry[]);
+  history(): GameMove[] {
+    // Duplicate the structs, so client-side fiddling doesn't muck things up:
+    return this.#moves.map(move => ({ ...move }));
   }
 
   /**
