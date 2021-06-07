@@ -3,6 +3,12 @@
 import { readLines } from "https://deno.land/std@0.97.0/io/mod.ts";
 import { ChessGame, Status } from "../src/public/ChessGame.ts";
 
+type History = {
+  num: number,
+  white: string,
+  black: string,
+};
+
 // Quick class to handle user I/O:
 class ChessRepl {
   #te = new TextEncoder();
@@ -64,7 +70,20 @@ while (true) {
 // Print out a current game's state:
 function printGame(game: ChessGame) {
   const board = game.toString("terminal").split("\n");
-  const history = game.history().slice(-board.length);
+  const history: History[] = game.history()
+    .reduce((acc, move) => {
+      if (move.side === "white") {
+        acc.push({ num: move.num, white: move.san, black: "" });
+      } else {
+        if (!acc.length) {
+          acc.push({ num: move.num, white: "", black: move.san });
+        } else {
+          acc[acc.length-1].black = move.san
+        }
+      }
+      return acc;
+    }, [] as History[])
+    .slice(-board.length);
 
   for (let line = 0; line < board.length; line++) {
     let turnStr = "";
@@ -87,11 +106,10 @@ function _statusString(status: Status) {
     return `${turn} to play`;
   }
   if (status.state === "checkmate") {
-    const winner = (status.turn === "white") ? "Black" : "White";
-    return `Checkmate! ${winner} wins`;
+    return `Checkmate! ${status.winner} wins`;
   }
   if (status.state === "resigned") {
-    return `Resigned.`;
+    return `Resigned. ${status.winner} wins`;
   }
   if (status.state === "draw-stalemate") {
     const turn = (status.turn === "white") ? "White" : "Black";
