@@ -40,7 +40,7 @@ game.allMoves();
 game.toString();
 /*
     a  b  c  d  e  f  g  h
-+------------------------+
+  +------------------------+
 8 | r     b  q  k  b  n  r | 8
 7 | p  p  p  p  p  p  p  p | 7
 6 |       n                | 6
@@ -117,7 +117,7 @@ Most of the game features are provided by the ChessGame class.
 
 - **`game.getStatus()`**
 
-  Returns an object that describes the games status. Has these properties:
+  Returns an object that describes the game's status. Has these properties:
 
   - `state`: One of the following strings:
     - `"active"` - The game is still going
@@ -158,8 +158,8 @@ Most of the game features are provided by the ChessGame class.
   - `"ascii"` - A simple plain-text format.
 
     ```
-    a  b  c  d  e  f  g  h    
-      +------------------------+  
+        a  b  c  d  e  f  g  h
+      +------------------------+
     8 | r  n  b  q  k  b  n  r | 8
     7 | p  p  p  p  p  p  p  p | 7
     6 |                        | 6
@@ -168,7 +168,7 @@ Most of the game features are provided by the ChessGame class.
     3 |                        | 3
     2 | P  P  P  P  P  P  P  P | 2
     1 | R  N  B  Q  K  B  N  R | 1
-      +------------------------+  
+      +------------------------+
         a  b  c  d  e  f  g  h
     ```
 
