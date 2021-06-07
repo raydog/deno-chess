@@ -1,4 +1,4 @@
-import { ChessGame } from "../../src/core/datatypes/ChessGame.ts";
+import { ChessGame } from "../../src/public/ChessGame.ts";
 import { bench, runBenchmarks } from "../../testDeps.ts";
 
 bench({

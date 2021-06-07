@@ -1,5 +1,5 @@
 import { Board } from "../core/datatypes/Board.ts";
-import { ChessGame } from "../core/datatypes/ChessGame.ts";
+import { ChessGame } from "../public/ChessGame.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordToAN } from "../core/datatypes/Coord.ts";
 import { Move } from "../core/datatypes/Move.ts";

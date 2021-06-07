@@ -1,7 +1,7 @@
 // Play a quick game of chess!
 
 import { readLines } from "https://deno.land/std@0.97.0/io/mod.ts";
-import { ChessGame, Status } from "../src/core/datatypes/ChessGame.ts";
+import { ChessGame, Status } from "../src/public/ChessGame.ts";
 
 // Quick class to handle user I/O:
 class ChessRepl {

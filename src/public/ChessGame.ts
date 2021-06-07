@@ -1,22 +1,22 @@
 // Note: the class in this file serves as the external API.
 
-import { boardRenderASCII } from "../logic/boardRenderASCII.ts";
-import { boardToFEN } from "../logic/FEN/boardToFEN.ts";
-import { buildStandardBoard } from "../logic/boardLayouts/standard.ts";
-import { hashBoard } from "../logic/hashBoard.ts";
-import { listAllValidMoves, listValidMoves } from "../logic/listValidMoves.ts";
-import { moveToSAN } from "../logic/moveFormats/moveToSAN.ts";
-import { checkMoveResults } from "../logic/moveResults.ts";
-import { performMove } from "../logic/performMove.ts";
-import { Board } from "./Board.ts";
+import { boardRenderASCII } from "../core/logic/boardRenderASCII.ts";
+import { boardToFEN } from "../core/logic/FEN/boardToFEN.ts";
+import { buildStandardBoard } from "../core/logic/boardLayouts/standard.ts";
+import { hashBoard } from "../core/logic/hashBoard.ts";
+import { listAllValidMoves, listValidMoves } from "../core/logic/listValidMoves.ts";
+import { moveToSAN } from "../core/logic/moveFormats/moveToSAN.ts";
+import { checkMoveResults } from "../core/logic/moveResults.ts";
+import { performMove } from "../core/logic/performMove.ts";
+import { Board } from "../core/datatypes/Board.ts";
 import {
   ChessBadMove,
   ChessError,
   ChessGameOver,
   ChessNeedsPromotion,
-} from "./ChessError.ts";
-import { COLOR_WHITE } from "./Color.ts";
-import { coordFromAN, coordToAN } from "./Coord.ts";
+} from "../core/datatypes/ChessError.ts";
+import { COLOR_WHITE } from "../core/datatypes/Color.ts";
+import { coordFromAN, coordToAN } from "../core/datatypes/Coord.ts";
 import {
   GameStatus,
   GAMESTATUS_ACTIVE,
@@ -27,17 +27,17 @@ import {
   GAMESTATUS_DRAW_REPETITION,
   GAMESTATUS_DRAW_STALEMATE,
 GAMESTATUS_RESIGNED,
-} from "./GameStatus.ts";
-import { Move } from "./Move.ts";
+} from "../core/datatypes/GameStatus.ts";
+import { Move } from "../core/datatypes/Move.ts";
 import {
   PieceType,
   PIECETYPE_BISHOP,
   PIECETYPE_KNIGHT,
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
-} from "./PieceType.ts";
-import { SPACE_EMPTY, spaceGetColor } from "./Space.ts";
-import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
+} from "../core/datatypes/PieceType.ts";
+import { SPACE_EMPTY, spaceGetColor } from "../core/datatypes/Space.ts";
+import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 
 const MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/i;
 
