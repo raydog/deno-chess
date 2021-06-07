@@ -1,15 +1,14 @@
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
 import {
-  PieceType,
   PIECETYPE_BISHOP,
   PIECETYPE_KING,
   PIECETYPE_KNIGHT,
   PIECETYPE_PAWN,
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
-} from "../src/datatypes/PieceType.ts";
-import { encodePieceSpace } from "../src/datatypes/Space.ts";
-import { kingInDanger } from "../src/logic/kingInDanger.ts";
+} from "../src/core/datatypes/PieceType.ts";
+import { encodePieceSpace } from "../src/core/datatypes/Space.ts";
+import { kingInDanger } from "../src/core/logic/kingInDanger.ts";
 import { asserts } from "../testDeps.ts";
 import { boardLayout } from "./testUtils/boardLayout.ts";
 

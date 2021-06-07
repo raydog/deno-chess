@@ -1,15 +1,14 @@
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
 import {
-  PieceType,
   PIECETYPE_KING,
   PIECETYPE_KNIGHT,
   PIECETYPE_PAWN,
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
-} from "../src/datatypes/PieceType.ts";
-import { encodePieceSpace } from "../src/datatypes/Space.ts";
-import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";
-import { listAllValidMoves } from "../src/logic/listValidMoves.ts";
+} from "../src/core/datatypes/PieceType.ts";
+import { encodePieceSpace } from "../src/core/datatypes/Space.ts";
+import { buildStandardBoard } from "../src/core/logic/boardLayouts/standard.ts";
+import { listAllValidMoves } from "../src/core/logic/listValidMoves.ts";
 import { asserts } from "../testDeps.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";
 import { boardLayout } from "./testUtils/boardLayout.ts";

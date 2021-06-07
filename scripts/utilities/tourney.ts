@@ -1,5 +1,5 @@
 import { BeginnerAI } from "../../src/autoplayers/BeginnerAI.ts";
-import { ChessGame } from "../../src/datatypes/ChessGame.ts";
+import { ChessGame } from "../../src/core/datatypes/ChessGame.ts";
 
 // Chess openings to use as starting points. FENs from that CSV repository, so they lack counters:
 const OPENINGS: [name: string, fen: string][] = [

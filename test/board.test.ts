@@ -1,17 +1,17 @@
-import { Board } from "../src/datatypes/Board.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
-import { buildCoord } from "../src/datatypes/Coord.ts";
+import { Board } from "../src/core/datatypes/Board.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
+import { buildCoord } from "../src/core/datatypes/Coord.ts";
 import {
   PieceType,
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
-} from "../src/datatypes/PieceType.ts";
+} from "../src/core/datatypes/PieceType.ts";
 import {
   encodePieceSpace,
   Space,
   spaceGetColor,
   spaceGetType,
-} from "../src/datatypes/Space.ts";
+} from "../src/core/datatypes/Space.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("Board > Can set pieces", function () {

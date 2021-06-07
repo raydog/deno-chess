@@ -1,10 +1,9 @@
-import { ChessBadMove } from "../src/datatypes/ChessError.ts";
-import { COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
-import { PIECETYPE_QUEEN } from "../src/datatypes/PieceType.ts";
-import { boardFromFEN } from "../src/logic/FEN/boardFromFEN.ts";
-import { findMoveBySAN } from "../src/logic/findMoveBySAN.ts";
-import { listAllValidMoves } from "../src/logic/listValidMoves.ts";
-import { moveToSAN } from "../src/logic/moveFormats/moveToSAN.ts";
+import { ChessBadMove } from "../src/core/datatypes/ChessError.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
+import { PIECETYPE_QUEEN } from "../src/core/datatypes/PieceType.ts";
+import { boardFromFEN } from "../src/core/logic/FEN/boardFromFEN.ts";
+import { findMoveBySAN } from "../src/core/logic/findMoveBySAN.ts";
+import { listAllValidMoves } from "../src/core/logic/listValidMoves.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("Find Move by SAN > Pawn > Single", function () {

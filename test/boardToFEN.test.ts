@@ -1,7 +1,7 @@
-import { createFullMove } from "../src/datatypes/Move.ts";
-import { boardToFEN } from "../src/logic/FEN/boardToFEN.ts";
-import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";
-import { performMove } from "../src/logic/performMove.ts";
+import { createFullMove } from "../src/core/datatypes/Move.ts";
+import { boardToFEN } from "../src/core/logic/FEN/boardToFEN.ts";
+import { buildStandardBoard } from "../src/core/logic/boardLayouts/standard.ts";
+import { performMove } from "../src/core/logic/performMove.ts";
 import { asserts } from "../testDeps.ts";
 
 // Note: These tests seem arbitrary, but they're the literal examples shown in the spec, so may as well

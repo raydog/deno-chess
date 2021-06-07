@@ -1,17 +1,17 @@
-import { Board } from "../src/datatypes/Board.ts";
-import { coordFromAN } from "../src/datatypes/Coord.ts";
-import { createFullMove, createSimpleMove } from "../src/datatypes/Move.ts";
+import { Board } from "../src/core/datatypes/Board.ts";
+import { coordFromAN } from "../src/core/datatypes/Coord.ts";
+import { createFullMove, createSimpleMove } from "../src/core/datatypes/Move.ts";
 import {
   PIECETYPE_KNIGHT,
   PIECETYPE_PAWN,
-} from "../src/datatypes/PieceType.ts";
+} from "../src/core/datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceGetType,
   spaceHasMoved,
-} from "../src/datatypes/Space.ts";
-import { buildStandardBoard } from "../src/logic/boardLayouts/standard.ts";
-import { performMove } from "../src/logic/performMove.ts";
+} from "../src/core/datatypes/Space.ts";
+import { buildStandardBoard } from "../src/core/logic/boardLayouts/standard.ts";
+import { performMove } from "../src/core/logic/performMove.ts";
 import { asserts } from "../testDeps.ts";
 
 // Shorthand:

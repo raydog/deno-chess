@@ -1,5 +1,5 @@
 import { BeginnerAI } from "../../src/autoplayers/BeginnerAI.ts";
-import { ChessGame } from "../../src/datatypes/ChessGame.ts";
+import { ChessGame } from "../../src/core/datatypes/ChessGame.ts";
 import { bench, runBenchmarks } from "../../testDeps.ts";
 
 bench({

@@ -1,7 +1,7 @@
 // Play a quick game of chess!
 
 import { readLines } from "https://deno.land/std@0.97.0/io/mod.ts";
-import { ChessGame, Status } from "../src/datatypes/ChessGame.ts";
+import { ChessGame, Status } from "../src/core/datatypes/ChessGame.ts";
 
 // Quick class to handle user I/O:
 class ChessRepl {
@@ -63,7 +63,7 @@ while (true) {
 
 // Print out a current game's state:
 function printGame(game: ChessGame) {
-  const board = game.toString().split("\n");
+  const board = game.toString("terminal").split("\n");
   const history = game.history().slice(-board.length);
 
   for (let line = 0; line < board.length; line++) {
@@ -89,6 +89,9 @@ function _statusString(status: Status) {
   if (status.state === "checkmate") {
     const winner = (status.turn === "white") ? "Black" : "White";
     return `Checkmate! ${winner} wins`;
+  }
+  if (status.state === "resigned") {
+    return `Resigned.`;
   }
   if (status.state === "draw-stalemate") {
     const turn = (status.turn === "white") ? "White" : "Black";

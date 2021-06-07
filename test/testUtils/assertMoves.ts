@@ -1,7 +1,7 @@
-import { Board } from "../../src/datatypes/Board.ts";
-import { Move } from "../../src/datatypes/Move.ts";
-import { moveToSAN } from "../../src/logic/moveFormats/moveToSAN.ts";
-import { moveAndCheckResults } from "../../src/logic/moveResults.ts";
+import { Board } from "../../src/core/datatypes/Board.ts";
+import { Move } from "../../src/core/datatypes/Move.ts";
+import { moveToSAN } from "../../src/core/logic/moveFormats/moveToSAN.ts";
+import { moveAndCheckResults } from "../../src/core/logic/moveResults.ts";
 import { asserts } from "../../testDeps.ts";
 import { debugBoard } from "./debugBoard.ts";
 

@@ -1,16 +1,16 @@
-import { Board } from "../../src/datatypes/Board.ts";
-import { buildCastleMap } from "../../src/datatypes/CastleMap.ts";
-import { Coord, coordFromAN } from "../../src/datatypes/Coord.ts";
+import { Board } from "../../src/core/datatypes/Board.ts";
+import { buildCastleMap } from "../../src/core/datatypes/CastleMap.ts";
+import { Coord, coordFromAN } from "../../src/core/datatypes/Coord.ts";
 import {
   PIECETYPE_KING,
   PIECETYPE_ROOK,
-} from "../../src/datatypes/PieceType.ts";
+} from "../../src/core/datatypes/PieceType.ts";
 import {
   Space,
   SPACE_EMPTY,
   spaceGetType,
   spaceHasMoved,
-} from "../../src/datatypes/Space.ts";
+} from "../../src/core/datatypes/Space.ts";
 
 type BoardLayout = {
   [an: string]: Space;

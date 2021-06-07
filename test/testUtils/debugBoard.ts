@@ -1,8 +1,8 @@
-import { Board } from "../../src/datatypes/Board.ts";
-import { buildCoord } from "../../src/datatypes/Coord.ts";
-import { Move } from "../../src/datatypes/Move.ts";
-import { spaceGetFENString } from "../../src/datatypes/Space.ts";
-import { moveAndCheckResults } from "../../src/logic/moveResults.ts";
+import { Board } from "../../src/core/datatypes/Board.ts";
+import { buildCoord } from "../../src/core/datatypes/Coord.ts";
+import { Move } from "../../src/core/datatypes/Move.ts";
+import { spaceGetFENString } from "../../src/core/datatypes/Space.ts";
+import { moveAndCheckResults } from "../../src/core/logic/moveResults.ts";
 
 const FILES = "     A   B   C   D   E   F   G   H  \n";
 const HORIZ = "   +" + "---+".repeat(8) + "\n";

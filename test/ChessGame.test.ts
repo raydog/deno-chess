@@ -1,9 +1,9 @@
 import {
   ChessGameOver,
   ChessNeedsPromotion,
-} from "../src/datatypes/ChessError.ts";
-import { ChessGame } from "../src/datatypes/ChessGame.ts";
-import { coordToAN } from "../src/datatypes/Coord.ts";
+} from "../src/core/datatypes/ChessError.ts";
+import { ChessGame } from "../src/core/datatypes/ChessGame.ts";
+import { coordToAN } from "../src/core/datatypes/Coord.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("ChessGame Public API > Start new standard game", function () {

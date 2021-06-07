@@ -1,12 +1,12 @@
-import { Board } from "../src/datatypes/Board.ts";
-import { COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
+import { Board } from "../src/core/datatypes/Board.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
 import {
   PIECETYPE_KNIGHT,
   PIECETYPE_PAWN,
   PIECETYPE_ROOK,
-} from "../src/datatypes/PieceType.ts";
-import { encodePieceSpace, SPACE_EMPTY } from "../src/datatypes/Space.ts";
-import { attackMapDebug } from "../src/logic/attackMap.ts";
+} from "../src/core/datatypes/PieceType.ts";
+import { encodePieceSpace, SPACE_EMPTY } from "../src/core/datatypes/Space.ts";
+import { attackMapDebug } from "../src/core/logic/attackMap.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("Attack Map > Single Pawn", function () {

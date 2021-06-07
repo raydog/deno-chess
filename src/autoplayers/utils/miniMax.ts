@@ -7,13 +7,13 @@
  *   them.
  */
 
-import { Board } from "../../datatypes/Board.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
-import { GAMESTATUS_CHECKMATE } from "../../datatypes/GameStatus.ts";
-import { Move } from "../../datatypes/Move.ts";
-import { listAllValidMoves } from "../../logic/listValidMoves.ts";
-import { checkMoveResults } from "../../logic/moveResults.ts";
-import { performMove } from "../../logic/performMove.ts";
+import { Board } from "../../core/datatypes/Board.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../../core/datatypes/Color.ts";
+import { GAMESTATUS_CHECKMATE } from "../../core/datatypes/GameStatus.ts";
+import { Move } from "../../core/datatypes/Move.ts";
+import { listAllValidMoves } from "../../core/logic/listValidMoves.ts";
+import { checkMoveResults } from "../../core/logic/moveResults.ts";
+import { performMove } from "../../core/logic/performMove.ts";
 import { GameScore, moveScore } from "./gameScore.ts";
 import { mateScore } from "./gameScore.ts";
 

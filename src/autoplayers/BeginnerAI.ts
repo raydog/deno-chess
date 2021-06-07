@@ -1,8 +1,8 @@
-import { Board } from "../datatypes/Board.ts";
-import { ChessGame } from "../datatypes/ChessGame.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
-import { coordToAN } from "../datatypes/Coord.ts";
-import { Move } from "../datatypes/Move.ts";
+import { Board } from "../core/datatypes/Board.ts";
+import { ChessGame } from "../core/datatypes/ChessGame.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "../core/datatypes/Color.ts";
+import { coordToAN } from "../core/datatypes/Coord.ts";
+import { Move } from "../core/datatypes/Move.ts";
 import {
   PieceType,
   PIECETYPE_BISHOP,
@@ -11,14 +11,14 @@ import {
   PIECETYPE_PAWN,
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
-} from "../datatypes/PieceType.ts";
+} from "../core/datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
-} from "../datatypes/Space.ts";
-import { boardFromFEN } from "../logic/FEN/boardFromFEN.ts";
-import { listAllValidMoves } from "../logic/listValidMoves.ts";
+} from "../core/datatypes/Space.ts";
+import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
+import { listAllValidMoves } from "../core/logic/listValidMoves.ts";
 import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
 

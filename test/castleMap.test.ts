@@ -3,8 +3,8 @@ import {
   castleMapGetFile,
   castleMapKingMoved,
   castleMapRookMoved,
-} from "../src/datatypes/CastleMap.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../src/datatypes/Color.ts";
+} from "../src/core/datatypes/CastleMap.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("Castle Map > Initialize standard board", function () {
