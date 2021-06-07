@@ -26,6 +26,7 @@ import {
   GAMESTATUS_DRAW_NOMATERIAL,
   GAMESTATUS_DRAW_REPETITION,
   GAMESTATUS_DRAW_STALEMATE,
+GAMESTATUS_RESIGNED,
 } from "./GameStatus.ts";
 import { Move } from "./Move.ts";
 import {
@@ -64,6 +65,7 @@ export interface Status {
   state:
     | "active"
     | "checkmate"
+    | "resigned"
     | "draw-other"
     | "draw-stalemate"
     | "draw-repetition"
@@ -77,6 +79,17 @@ export interface Status {
    * the player who is currently checked, and has no available move. So the winner would be the OTHER player.
    */
   turn: "white" | "black";
+
+  /**
+   * If the game is over, this property will be set, and will describe who won the game.
+   */
+  winner?: "white" | "black" | "draw";
+
+  /**
+   * If this game was ended for a non-standard reason (either with a draw or a resignation,) this property could be
+   * included to explain the situation.
+   */
+  reason?: string,
 }
 
 /**
@@ -88,6 +101,7 @@ type PromotePiece = "B" | "R" | "N" | "Q";
 const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
   [GAMESTATUS_ACTIVE]: "active",
   [GAMESTATUS_CHECKMATE]: "checkmate",
+  [GAMESTATUS_RESIGNED]: "resigned",
   [GAMESTATUS_DRAW]: "draw-other",
   [GAMESTATUS_DRAW_STALEMATE]: "draw-stalemate",
   [GAMESTATUS_DRAW_REPETITION]: "draw-repetition",
@@ -99,9 +113,12 @@ const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
  * A single chess game.
  */
 export class ChessGame {
+
   #board: Board;
   #moves: AnnotatedMove[] = [];
-  #color: boolean = (typeof Deno !== "undefined" && Deno.noColor === false);
+  
+  #gameWinner: "white" | "black" | "draw" | null = null;
+  #drawReason: string | null = null;
 
   private constructor(b: Board) {
     this.#board = b;
@@ -274,12 +291,41 @@ export class ChessGame {
     );
   }
 
-  toString(color = this.#color): string {
-    return boardRenderASCII(this.#board, color);
+  /**
+   * Resigns the game for the given player. This means that the OTHER player won.
+   * 
+   * @param player The player who resigned.
+   */
+  resignGame(player: "white" | "black") {
+    if (this.isGameOver()) {
+      throw new ChessGameOver();
+    }
+
+    this.#board.current.status = GAMESTATUS_RESIGNED;
+    this.#gameWinner = (player === "white") ? "black" : "white";
   }
 
-  toFENString() {
-    return boardToFEN(this.#board);
+  /**
+   * Either both players agreed to a draw, or the game was drawn for some other reason.
+   * 
+   * @param reason A string describing why the game was drawn. Optional.
+   */
+  drawGame(reason?: string) {
+    if (this.isGameOver()) {
+      throw new ChessGameOver();
+    }
+    this.#board.current.status = GAMESTATUS_DRAW;
+    if (reason) {
+      this.#drawReason = reason;
+    }
+  }
+
+  toString(fmt: "ascii" | "terminal" | "fen" = "ascii"): string {
+    switch (fmt) {
+      case "ascii": return boardRenderASCII(this.#board, false);
+      case "terminal": return boardRenderASCII(this.#board, true);
+      case "fen": return boardToFEN(this.#board);
+    }
   }
 
   hash(): string {

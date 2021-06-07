@@ -14,7 +14,7 @@ Deno.test("ChessGame Public API > Start new standard game", function () {
 Deno.test("ChessGame Public API > String rendering", function () {
   const game = ChessGame.NewStandardGame();
   asserts.assertEquals(
-    game.toString(false).split("\n"),
+    game.toString().split("\n"),
     [
       "     a  b  c  d  e  f  g  h    ",
       "   +------------------------+  ",
@@ -235,7 +235,7 @@ Deno.test("ChessGame Public API > FEN Output > Standard opening", function () {
   const game = ChessGame.NewStandardGame();
 
   asserts.assertEquals(
-    game.toFENString(),
+    game.toString("fen"),
     "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   );
 });
@@ -247,7 +247,7 @@ Deno.test("ChessGame Public API > FEN Output > Checkmate", function () {
   game.move("g2g4").move("d8h4"); // Ouch!
 
   asserts.assertEquals(
-    game.toFENString(),
+    game.toString("fen"),
     "rnb1kbnr/pppp1ppp/8/4p3/6Pq/5P2/PPPPP2P/RNBQKBNR w KQkq - 1 3",
   );
 });
@@ -267,7 +267,7 @@ Deno.test("ChessGame Public API > FEN Output > Stalemate", function () {
   game.move("c8e6"); // Stalemate
 
   asserts.assertEquals(
-    game.toFENString(),
+    game.toString("fen"),
     "5bnr/4p1pq/4Qpkr/7p/7P/4P3/PPPP1PP1/RNB1KBNR b KQ - 2 10",
   );
 });
@@ -277,7 +277,7 @@ Deno.test("ChessGame Public API > FEN Input > Game of the Century", function () 
     "1Q6/5pk1/2p3p1/1p2N2p/1b5P/1bn5/2r3P1/2K5 w - - 16 42",
   );
   asserts.assertEquals(
-    game.toString(false).split("\n"),
+    game.toString().split("\n"),
     [
       "     a  b  c  d  e  f  g  h    ",
       "   +------------------------+  ",

@@ -60,7 +60,7 @@ export class BeginnerAI {
     }
 
     // TODO: Faster.
-    const fen = this.#game.toFENString();
+    const fen = this.#game.toString("fen");
     boardFromFEN(fen, board);
 
     // console.log("FEN", fen)
