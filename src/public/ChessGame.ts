@@ -3,20 +3,13 @@
 import { boardRenderASCII } from "../core/logic/boardRenderASCII.ts";
 import { boardToFEN } from "../core/logic/FEN/boardToFEN.ts";
 import { buildStandardBoard } from "../core/logic/boardLayouts/standard.ts";
-import { hashBoard } from "../core/logic/hashBoard.ts";
 import {
   listAllValidMoves,
   listValidMoves,
 } from "../core/logic/listValidMoves.ts";
-import { moveToSAN } from "../core/logic/moveFormats/moveToSAN.ts";
-import { checkMoveResults } from "../core/logic/moveResults.ts";
-import { performMove } from "../core/logic/performMove.ts";
 import { Board } from "../core/datatypes/Board.ts";
 import {
-  ChessBadMove,
-  ChessError,
   ChessGameOver,
-  ChessNeedsPromotion,
 } from "../core/datatypes/ChessError.ts";
 import { COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordFromAN, coordToAN } from "../core/datatypes/Coord.ts";
@@ -31,23 +24,11 @@ import {
   GAMESTATUS_DRAW_STALEMATE,
   GAMESTATUS_RESIGNED,
 } from "../core/datatypes/GameStatus.ts";
-import { Move } from "../core/datatypes/Move.ts";
-import {
-  PieceType,
-  PIECETYPE_BISHOP,
-  PIECETYPE_KNIGHT,
-  PIECETYPE_QUEEN,
-  PIECETYPE_ROOK,
-} from "../core/datatypes/PieceType.ts";
 import { SPACE_EMPTY, spaceGetColor } from "../core/datatypes/Space.ts";
 import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
+import { doGameMove } from "./doGameMove.ts";
+import { GameMove } from "./GameMove.ts";
 
-const MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/i;
-
-type AnnotatedMove = {
-  move: Move;
-  san: string;
-};
 
 /**
  * A record of a single
@@ -95,11 +76,6 @@ export interface Status {
   reason?: string;
 }
 
-/**
- * A piece that you can promote a Pawn to. (B)ishop, (R)ook, K(N)ight, or (Q)ueen
- */
-type PromotePiece = "B" | "R" | "N" | "Q";
-
 // Map used to convert internal status into external ones:
 const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
   [GAMESTATUS_ACTIVE]: "active",
@@ -117,7 +93,7 @@ const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
  */
 export class ChessGame {
   #board: Board;
-  #moves: AnnotatedMove[] = [];
+  #moves: GameMove[] = [];
 
   #gameWinner: "white" | "black" | "draw" | null = null;
   #drawReason: string | null = null;
@@ -142,7 +118,9 @@ export class ChessGame {
    * @returns The new ChessGame.
    */
   public static NewFromFEN(fen: string): ChessGame {
-    return new ChessGame(boardFromFEN(fen));
+    const game = new ChessGame(boardFromFEN(fen));
+    game.maybeRefreshWinner();
+    return game;
   }
 
   /**
@@ -175,10 +153,17 @@ export class ChessGame {
    */
   getStatus(): Status {
     const current = this.#board.current;
-    return {
+    const out: Status = {
       state: GAMESTATUS_MAP[current.status],
       turn: (current.turn === COLOR_WHITE) ? "white" : "black",
     };
+    if (this.#gameWinner) {
+      out.winner = this.#gameWinner;
+    }
+    if (this.#drawReason) {
+      out.reason = this.#drawReason;
+    }
+    return out;
   }
 
   /**
@@ -193,69 +178,32 @@ export class ChessGame {
   /**
    * Performs a chess move. The current player is assumed from the board state.
    *
-   * The format for the move is a short string in UCI format, with both the departing and destination cordinate right
-   * next to each other. (An optional hyphen can be included if you want.) For example, a classic King's opening would
-   * look like: "e2e4" or "e2-e4", if you opt to include the hyphen. This is not full algebraic notation, so don't add
-   * "x" to indicate capture, don't add "=Q" to indicate promotion, etc.
-   *
-   * This method has a promote property, that can be assigned to a string (like "Q" or "R" or "N") is this move involves
-   * a Pawn reaching its final rank. If a promotion piece is included when not necessary, it'll just be ignored.
-   * However, if this move NEEDS a promotion piece, and it isn't provided, this method will throw a ChessNeedsPromotion
-   * error.
-   *
-   * @param move A string like "b1c3", "d1-h5", etc.
+   * The "move" parameter can be in one or two formats:
+   * 
+   * 1. A short string in [UCI (Universal Chess Interface)](https://en.wikipedia.org/wiki/Universal_Chess_Interface)
+   *    format. These strings look like "e2e4", with both the departing and destination coordinates right next to each
+   *    other. (We allow a space or hyphen to separate the two coords, but they are not required.) To promote when using
+   *    this move format, provide the second "promote" parameter.
+   * 
+   * 2. A short string in [SAN (Standard Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
+   *    format. These strings look like "e4" to move the e-file pawn up, or "Raxa4" if the a-file rook captured
+   *    something on a4. When using this format, the promote property is always ignored: Instead, use "=" plus the
+   *    correct chess piece type (N, B, R, or Q) in the move string.
+   * 
+   * @param move A string like "b1c3", "d1-h5", "Nf3", or "axb8=Q".
    * @param promote Either "Q", "N", "R" or "B".
    */
-  public move(move: string, promote?: PromotePiece): ChessGame {
+  public move(move: string, promote?: "B" | "R" | "N" | "Q"): ChessGame {
     if (this.isGameOver()) {
       throw new ChessGameOver();
     }
 
-    const m = move.match(MOVE_RE);
-    if (!m) throw new ChessBadMove(`Unknown move format: ${move}`);
+    // This method handles both UCI and SAN:
+    const record = doGameMove(this.#board, move, promote);
+    this.#moves.push(record);
 
-    const from = coordFromAN(m[1]), dest = coordFromAN(m[2]);
-
-    // Sanity checks:
-    const sp = this.#board.get(from);
-    if (sp === SPACE_EMPTY) {
-      throw new ChessBadMove(
-        `${move}: Departing square (${coordToAN(from)}) is empty`,
-      );
-    }
-
-    // Get the full list of moves. We need the FULL list of moves (and not just the moves for this one piece) because
-    // computing the SAN for a move needs to change how the origin is represented based on which moves are currently
-    // available to the player:
-    const turn = this.#board.current.turn;
-    const moves = listAllValidMoves(this.#board, turn);
-    const picked = moves.find((move) =>
-      move.from === from && move.dest === dest
-    );
-    if (!picked) {
-      throw new ChessBadMove(`${move}: Invalid move`);
-    }
-
-    // Do we require a promotion?
-    if (picked.promote) {
-      if (promote == null) {
-        throw new ChessNeedsPromotion();
-      }
-      picked.promote = _pieceTypeForString(promote);
-    }
-
-    // Else, we have the correct move! Apply to to our own board:
-    performMove(this.#board, picked);
-
-    const results = checkMoveResults(this.#board, turn);
-
-    this.#moves.push({
-      move: picked,
-      san: moveToSAN(moves, picked, results),
-      // san: al
-    });
-
-    this.#board.current.status = results.newGameStatus;
+    // Did the move checkmate or draw the game? If so, update the winner accordingly:
+    this.maybeRefreshWinner();
 
     return this;
   }
@@ -333,21 +281,16 @@ export class ChessGame {
     }
   }
 
-  hash(): string {
-    return hashBoard(this.#board);
-  }
-}
+  private maybeRefreshWinner() {
+    const status = this.#board.current.status;
+    const turn = this.#board.current.turn;
 
-function _pieceTypeForString(str: PromotePiece): PieceType {
-  switch (str) {
-    case "B":
-      return PIECETYPE_BISHOP;
-    case "N":
-      return PIECETYPE_KNIGHT;
-    case "R":
-      return PIECETYPE_ROOK;
-    case "Q":
-      return PIECETYPE_QUEEN;
+    if (status === GAMESTATUS_CHECKMATE) {
+      // Winner is the person who ISN'T currently checkmated:
+      this.#gameWinner = (turn === COLOR_WHITE) ? "black": "white";
+    
+    } else if (status >= GAMESTATUS_DRAW) {
+      this.#gameWinner = "draw";
+    }
   }
-  throw new ChessError("Invalid promotion string: " + str);
 }

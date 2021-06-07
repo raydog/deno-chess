@@ -102,7 +102,7 @@ Deno.test("ChessGame Public API > Can checkmate", function () {
   game.move("f1c4").move("f8c5");
   game.move("d1f3").move("d7d6");
   game.move("f3f7");
-  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black" });
+  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black", winner: "white" });
 });
 
 Deno.test("ChessGame Public API > Promote requires a param", function () {
@@ -146,7 +146,7 @@ Deno.test("ChessGame Public API > Rejects moves after game over", function () {
     .move("d1f3").move("d7d6")
     .move("f3f7");
 
-  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black" });
+  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black", winner: "white" });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 
@@ -162,6 +162,7 @@ Deno.test("ChessGame Public API > Draws after 3 repeats", function () {
   asserts.assertEquals(game.getStatus(), {
     state: "draw-repetition",
     turn: "white",
+    winner: "draw",
   });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
@@ -206,6 +207,7 @@ Deno.test("ChessGame Public API > Draws after 50 moves", function () {
   asserts.assertEquals(game.getStatus(), {
     state: "draw-fifty-moves",
     turn: "white",
+    winner: "draw",
   });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
@@ -227,6 +229,7 @@ Deno.test("ChessGame Public API > Stalemate", function () {
   asserts.assertEquals(game.getStatus(), {
     state: "draw-stalemate",
     turn: "black",
+    winner: "draw",
   });
   asserts.assertThrows(() => game.move("a2a4"), ChessGameOver, "Game is over");
 });
@@ -296,5 +299,6 @@ Deno.test("ChessGame Public API > FEN Input > Game of the Century", function () 
   asserts.assertObjectMatch(game.getStatus(), {
     state: "checkmate",
     turn: "white",
+    winner: "black",
   });
 });
