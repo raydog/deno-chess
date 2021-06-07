@@ -8,9 +8,7 @@ import {
   listValidMoves,
 } from "../core/logic/listValidMoves.ts";
 import { Board } from "../core/datatypes/Board.ts";
-import {
-  ChessGameOver,
-} from "../core/datatypes/ChessError.ts";
+import { ChessGameOver } from "../core/datatypes/ChessError.ts";
 import { COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordFromAN, coordToAN } from "../core/datatypes/Coord.ts";
 import {
@@ -28,7 +26,6 @@ import { SPACE_EMPTY, spaceGetColor } from "../core/datatypes/Space.ts";
 import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { doGameMove } from "./doGameMove.ts";
 import { GameMove } from "./GameMove.ts";
-
 
 /**
  * The current game status.
@@ -121,7 +118,7 @@ export class ChessGame {
    */
   history(): GameMove[] {
     // Duplicate the structs, so client-side fiddling doesn't muck things up:
-    return this.#moves.map(move => ({ ...move }));
+    return this.#moves.map((move) => ({ ...move }));
   }
 
   /**
@@ -158,17 +155,17 @@ export class ChessGame {
    * Performs a chess move. The current player is assumed from the board state.
    *
    * The "move" parameter can be in one or two formats:
-   * 
+   *
    * 1. A short string in [UCI (Universal Chess Interface)](https://en.wikipedia.org/wiki/Universal_Chess_Interface)
    *    format. These strings look like "e2e4", with both the departing and destination coordinates right next to each
    *    other. (We allow a space or hyphen to separate the two coords, but they are not required.) To promote when using
    *    this move format, provide the second "promote" parameter.
-   * 
+   *
    * 2. A short string in [SAN (Standard Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
    *    format. These strings look like "e4" to move the e-file pawn up, or "Raxa4" if the a-file rook captured
    *    something on a4. When using this format, the promote property is always ignored: Instead, use "=" plus the
    *    correct chess piece type (N, B, R, or Q) in the move string.
-   * 
+   *
    * @param move A string like "b1c3", "d1-h5", "Nf3", or "axb8=Q".
    * @param promote Either "Q", "N", "R" or "B".
    */
@@ -266,8 +263,7 @@ export class ChessGame {
 
     if (status === GAMESTATUS_CHECKMATE) {
       // Winner is the person who ISN'T currently checkmated:
-      this.#gameWinner = (turn === COLOR_WHITE) ? "black": "white";
-    
+      this.#gameWinner = (turn === COLOR_WHITE) ? "black" : "white";
     } else if (status >= GAMESTATUS_DRAW) {
       this.#gameWinner = "draw";
     }

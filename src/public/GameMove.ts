@@ -16,7 +16,7 @@ export interface GameMove {
    * The departure square, in algebraic notation.
    */
   from: string;
-  
+
   /**
    * The destination square, in algebraic notation.
    */

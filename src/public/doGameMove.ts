@@ -1,8 +1,16 @@
 import { Board } from "../core/datatypes/Board.ts";
-import { ChessBadMove, ChessNeedsPromotion } from "../core/datatypes/ChessError.ts";
+import {
+  ChessBadMove,
+  ChessNeedsPromotion,
+} from "../core/datatypes/ChessError.ts";
 import { COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordFromAN, coordToAN } from "../core/datatypes/Coord.ts";
-import { PIECETYPE_BISHOP, PIECETYPE_KNIGHT, PIECETYPE_QUEEN, PIECETYPE_ROOK } from "../core/datatypes/PieceType.ts";
+import {
+  PIECETYPE_BISHOP,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+} from "../core/datatypes/PieceType.ts";
 import { SPACE_EMPTY } from "../core/datatypes/Space.ts";
 import { findMoveBySAN } from "../core/logic/findMoveBySAN.ts";
 import { listAllValidMoves } from "../core/logic/listValidMoves.ts";
@@ -21,7 +29,11 @@ const PROMOTE_MAP = {
 };
 
 // Applies a move from the user.
-export function doGameMove(board: Board, moveStr: string, promote: "B" | "R" | "N" | "Q" | undefined): GameMove {
+export function doGameMove(
+  board: Board,
+  moveStr: string,
+  promote: "B" | "R" | "N" | "Q" | undefined,
+): GameMove {
   const match = moveStr.match(UCI_MOVE_RE);
   if (match) {
     return _uciMove(board, match[1], match[2], promote);
@@ -31,8 +43,12 @@ export function doGameMove(board: Board, moveStr: string, promote: "B" | "R" | "
   return _sanMove(board, moveStr);
 }
 
-function _uciMove(board: Board, from: string, dest: string, promote: "B" | "R" | "N" | "Q" | undefined): GameMove {
-
+function _uciMove(
+  board: Board,
+  from: string,
+  dest: string,
+  promote: "B" | "R" | "N" | "Q" | undefined,
+): GameMove {
   const fromIdx = coordFromAN(from), destIdx = coordFromAN(dest);
 
   // Sanity checks:

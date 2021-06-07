@@ -102,7 +102,11 @@ Deno.test("ChessGame Public API > Can checkmate", function () {
   game.move("f1c4").move("f8c5");
   game.move("d1f3").move("d7d6");
   game.move("f3f7");
-  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black", winner: "white" });
+  asserts.assertEquals(game.getStatus(), {
+    state: "checkmate",
+    turn: "black",
+    winner: "white",
+  });
 });
 
 Deno.test("ChessGame Public API > Promote requires a param", function () {
@@ -146,7 +150,11 @@ Deno.test("ChessGame Public API > Rejects moves after game over", function () {
     .move("d1f3").move("d7d6")
     .move("f3f7");
 
-  asserts.assertEquals(game.getStatus(), { state: "checkmate", turn: "black", winner: "white" });
+  asserts.assertEquals(game.getStatus(), {
+    state: "checkmate",
+    turn: "black",
+    winner: "white",
+  });
   asserts.assertThrows(() => game.move("e8f7"), ChessGameOver, "Game is over");
 });
 

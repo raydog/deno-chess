@@ -4,9 +4,9 @@ import { readLines } from "https://deno.land/std@0.97.0/io/mod.ts";
 import { ChessGame, Status } from "../src/public/ChessGame.ts";
 
 type History = {
-  num: number,
-  white: string,
-  black: string,
+  num: number;
+  white: string;
+  black: string;
 };
 
 // Quick class to handle user I/O:
@@ -78,7 +78,7 @@ function printGame(game: ChessGame) {
         if (!acc.length) {
           acc.push({ num: move.num, white: "", black: move.san });
         } else {
-          acc[acc.length-1].black = move.san
+          acc[acc.length - 1].black = move.san;
         }
       }
       return acc;
