@@ -12,4 +12,4 @@ before_install:
 
 # Test script is easy:
 script: 
-  - deno test -A --unstable
+  - make test
