@@ -1,0 +1,15 @@
+os:
+  - linux
+dist: xenial
+
+# Deno not officially supported, so fall back on a generic image, and install ourselves:
+language: minimal
+before_install:
+  - pwd
+  - ./.ci/deno_install.sh
+  - export DENO_INSTALL="$HOME/.deno"
+  - export PATH="$DENO_INSTALL/bin:$PATH"
+
+# Test script is easy:
+script: 
+  - make test
