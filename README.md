@@ -1,4 +1,4 @@
-# Deno-Chess
+# Deno-Chess &nbsp; [![Build Status](https://travis-ci.com/raydog/deno-chess.svg?branch=main)](https://travis-ci.com/raydog/deno-chess)
 
 Deno-Chess is a speedy pure-Typescript chess engine. It is packaged for Deno, as
 well as for the browser. Features include:
