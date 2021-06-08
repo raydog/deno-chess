@@ -64,6 +64,27 @@ export interface Status {
   reason?: string;
 }
 
+/**
+ * Details on an available move.
+ */
+interface MoveDetails {
+  /**
+   * The departing square, in algebraic notation.
+   */
+  from: string;
+
+  /**
+   * The destination square, in algebraic notation.
+   */
+  dest: string;
+
+  /**
+   * True if this move represents a pawn reaching its final rank, and so the promotion parameter will be required when
+   * performing the move.
+   */
+  promotion: boolean;
+}
+
 // Map used to convert internal status into external ones:
 const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
   [GAMESTATUS_ACTIVE]: "active",
@@ -189,12 +210,11 @@ export class ChessGame {
    * will be returned. If that space is either empty, or holds a piece that belongs to the other player, an empty array
    * will be returned.
    *
-   * Moves will be returned in UCI format, with the departing and destination coordinates right next to each other. So,
-   * "e2e4" will be returned for the classic King's opening.
+   * Moves are described by objects, with 'from', 'dest', and 'promotion' properties.
    *
    * @param coord An optional coordinate, formatted in algebraic notation, so like "a5".
    */
-  allMoves(coord?: string): string[] {
+  allMoves(coord?: string): MoveDetails[] {
     if (this.isGameOver()) {
       return [];
     }
@@ -212,9 +232,11 @@ export class ChessGame {
       }
       moves = listValidMoves(this.#board, idx);
     }
-    return moves.map((move) =>
-      `${coordToAN(move.from)}${coordToAN(move.dest)}`
-    );
+    return moves.map((move) => ({
+      from: coordToAN(move.from),
+      dest: coordToAN(move.dest),
+      promotion: Boolean(move.promote),
+    }));
   }
 
   /**

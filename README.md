@@ -1,4 +1,4 @@
-# Deno-Chess &nbsp; [![Build Status](https://travis-ci.com/raydog/deno-chess.svg?branch=main)](https://travis-ci.com/raydog/deno-chess)
+# Deno-Chess [![Build Status](https://travis-ci.com/raydog/deno-chess.svg?branch=main)](https://travis-ci.com/raydog/deno-chess)
 
 Deno-Chess is a speedy pure-Typescript chess engine. It is packaged for Deno, as
 well as for the browser. Features include:
@@ -107,9 +107,12 @@ Most of the game features are provided by the ChessGame class.
   space is either empty, or holds a piece that belongs to the other player, an
   empty array will be returned.
 
-  Moves will be returned in UCI format, with the departing and destination
-  coordinates right next to each other. So, "e2e4" will be returned for the
-  classic King's opening.
+  Moves are described as objects with these properties:
+
+  - `from`: The departure coordinate, in algebraic notation.
+  - `dest`: The destination coordinate, in algebraic notation.
+  - `promotion`: True when this is a pawn promotion, and will require that
+    parameter when moving.
 
 - **`game.isGameOver()`**
 
@@ -158,7 +161,7 @@ Most of the game features are provided by the ChessGame class.
   - `"ascii"` - A simple plain-text format.
 
     ```
-        a  b  c  d  e  f  g  h
+    ____a  b  c  d  e  f  g  h
       +------------------------+
     8 | r  n  b  q  k  b  n  r | 8
     7 | p  p  p  p  p  p  p  p | 7

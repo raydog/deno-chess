@@ -34,37 +34,136 @@ Deno.test("ChessGame Public API > String rendering", function () {
 
 Deno.test("ChessGame Public API > List all moves", function () {
   const game = ChessGame.NewStandardGame();
-  const moves = game.allMoves().sort();
+  const moves = game.allMoves();
   asserts.assertEquals(moves, [
-    "a2a3",
-    "a2a4",
-    "b1a3",
-    "b1c3",
-    "b2b3",
-    "b2b4",
-    "c2c3",
-    "c2c4",
-    "d2d3",
-    "d2d4",
-    "e2e3",
-    "e2e4",
-    "f2f3",
-    "f2f4",
-    "g1f3",
-    "g1h3",
-    "g2g3",
-    "g2g4",
-    "h2h3",
-    "h2h4",
+    {
+      dest: "a3",
+      from: "b1",
+      promotion: false,
+    },
+    {
+      dest: "c3",
+      from: "b1",
+      promotion: false,
+    },
+    {
+      dest: "f3",
+      from: "g1",
+      promotion: false,
+    },
+    {
+      dest: "h3",
+      from: "g1",
+      promotion: false,
+    },
+    {
+      dest: "a3",
+      from: "a2",
+      promotion: false,
+    },
+    {
+      dest: "a4",
+      from: "a2",
+      promotion: false,
+    },
+    {
+      dest: "b3",
+      from: "b2",
+      promotion: false,
+    },
+    {
+      dest: "b4",
+      from: "b2",
+      promotion: false,
+    },
+    {
+      dest: "c3",
+      from: "c2",
+      promotion: false,
+    },
+    {
+      dest: "c4",
+      from: "c2",
+      promotion: false,
+    },
+    {
+      dest: "d3",
+      from: "d2",
+      promotion: false,
+    },
+    {
+      dest: "d4",
+      from: "d2",
+      promotion: false,
+    },
+    {
+      dest: "e3",
+      from: "e2",
+      promotion: false,
+    },
+    {
+      dest: "e4",
+      from: "e2",
+      promotion: false,
+    },
+    {
+      dest: "f3",
+      from: "f2",
+      promotion: false,
+    },
+    {
+      dest: "f4",
+      from: "f2",
+      promotion: false,
+    },
+    {
+      dest: "g3",
+      from: "g2",
+      promotion: false,
+    },
+    {
+      dest: "g4",
+      from: "g2",
+      promotion: false,
+    },
+    {
+      dest: "h3",
+      from: "h2",
+      promotion: false,
+    },
+    {
+      dest: "h4",
+      from: "h2",
+      promotion: false,
+    },
   ]);
 });
 
 Deno.test("ChessGame Public API > List single pawn moves", function () {
   const game = ChessGame.NewStandardGame();
-  const moves = game.allMoves("d2").sort();
+  const moves = game.allMoves("d2");
   asserts.assertEquals(moves, [
-    "d2d3",
-    "d2d4",
+    {
+      dest: "d3",
+      from: "d2",
+      promotion: false,
+    },
+    {
+      dest: "d4",
+      from: "d2",
+      promotion: false,
+    },
+  ]);
+});
+
+Deno.test("ChessGame Public API > List a promotion", function () {
+  const game = ChessGame.NewFromFEN("7q/P7/8/8/8/8/1p6/7Q w - - 0 1");
+  asserts.assertEquals(game.allMoves("a7"), [
+    {
+      dest: "a8",
+      from: "a7",
+      promotion: true,
+    }
   ]);
 });
 

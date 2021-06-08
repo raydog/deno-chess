@@ -45,8 +45,8 @@
 
         highlight(
           moves
-            .filter(move => move.startsWith(source))
-            .map(move => move.slice(2))
+            .filter(move => move.from === source)
+            .map(move => move.dest)
         );
         
         // do not pick up pieces if the game is over

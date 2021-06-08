@@ -52,7 +52,10 @@ while (true) {
       break mainLoop;
 
     case "?":
-      console.log("Moves:", game.allMoves().join(", "));
+      console.log(
+        "Moves:",
+        game.allMoves().map((move) => move.from + move.dest).join(", "),
+      );
       break;
 
     default: {
