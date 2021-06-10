@@ -8,7 +8,7 @@ import {
   listValidMoves,
 } from "../core/logic/listValidMoves.ts";
 import { Board } from "../core/datatypes/Board.ts";
-import { ChessGameOver } from "../core/datatypes/ChessError.ts";
+import { ChessBadInput, ChessGameOver } from "../core/datatypes/ChessError.ts";
 import { COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordFromAN, coordToAN } from "../core/datatypes/Coord.ts";
 import {
@@ -268,7 +268,25 @@ export class ChessGame {
     }
   }
 
-  toString(fmt: "ascii" | "terminal" | "fen" = "ascii"): string {
+  /**
+   * Render the game in a variety of formats. Default is "ascii", but other formats can be selected by passing in a
+   * string.
+   *
+   * - `"ascii"`: The board state, rendered as ASCII art.
+   * - `"terminal"`: The same as "ascii", but with ANSI color codes, giving color to the board and pieces. Useful when
+   *   console.log()-ing to a terminal.
+   * - `"fen"`: The board state, as a FEN string.
+   *
+   * @param fmt The format string
+   * @returns
+   */
+  toString(): string;
+  toString(fmt: "pgn", options: string): string;
+  toString(fmt: "ascii" | "terminal" | "fen"): string;
+  toString(
+    fmt: "pgn" | "ascii" | "terminal" | "fen" = "ascii",
+    options?: string,
+  ): string {
     switch (fmt) {
       case "ascii":
         return boardRenderASCII(this.#board, false);
@@ -276,6 +294,8 @@ export class ChessGame {
         return boardRenderASCII(this.#board, true);
       case "fen":
         return boardToFEN(this.#board);
+      default:
+        throw new ChessBadInput(fmt);
     }
   }
 

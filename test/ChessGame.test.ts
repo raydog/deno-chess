@@ -163,7 +163,7 @@ Deno.test("ChessGame Public API > List a promotion", function () {
       dest: "a8",
       from: "a7",
       promotion: true,
-    }
+    },
   ]);
 });
 

@@ -13,6 +13,12 @@ export class ChessGameOver extends ChessError {
   }
 }
 
+export class ChessBadInput extends ChessError {
+  constructor(msg: string) {
+    super(`Unexpected input: ${msg}`);
+  }
+}
+
 /**
  * A Chess move was either formatted incorrectly, or was otherwise invalid.
  */
