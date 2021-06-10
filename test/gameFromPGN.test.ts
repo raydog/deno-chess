@@ -258,29 +258,29 @@ Deno.test("Game From PGN > Parser > 50 move rule draw", function () {
 Deno.test("Game From PGN > Parser > Black checkmate", function () {
   // "Game of the Century." This is a SUPER annotated version of the game from lichess.org. Should exercise some of the
   // annotation-ignoring logic...
-  const result = gameFromPGN(`
-    [Event "Third Rosenwald Trophy"]
-    [Site "https://lichess.org/ZAMs9lOM"]
-    [Date "1956.10.17"]
-    [Round "8"]
-    [White "Donald Byrne (?)"]
-    [Black "Robert James Fischer (?)"]
-    [Result "0-1"]
-    [WhiteElo "?"]
-    [BlackElo "?"]
-    [Variant "Standard"]
-    [TimeControl "-"]
-    [ECO "A15"]
-    [Opening "English Opening: Anglo-Indian Defense, King's Indian Formation"]
-    [Termination "Normal"]
-    [Annotator "lichess.org"]
+  // const result = gameFromPGN(`
+  //   [Event "Third Rosenwald Trophy"]
+  //   [Site "https://lichess.org/ZAMs9lOM"]
+  //   [Date "1956.10.17"]
+  //   [Round "8"]
+  //   [White "Donald Byrne (?)"]
+  //   [Black "Robert James Fischer (?)"]
+  //   [Result "0-1"]
+  //   [WhiteElo "?"]
+  //   [BlackElo "?"]
+  //   [Variant "Standard"]
+  //   [TimeControl "-"]
+  //   [ECO "A15"]
+  //   [Opening "English Opening: Anglo-Indian Defense, King's Indian Formation"]
+  //   [Termination "Normal"]
+  //   [Annotator "lichess.org"]
     
-    1. Nf3 { [%eval 0.31] } 1... Nf6 { [%eval 0.26] } 2. c4 { [%eval 0.09] } 2... g6 { [%eval 0.54] } { A15 English Opening: Anglo-Indian Defense, King's Indian Formation } 3. Nc3 { [%eval 0.29] } 3... Bg7 { [%eval 0.47] } 4. d4 { [%eval 0.39] } 4... O-O { [%eval 0.64] } 5. Bf4 { [%eval 0.15] } 5... d5 { [%eval 0.22] } 6. Qb3 { [%eval -0.05] } 6... dxc4 { [%eval 0.22] } 7. Qxc4 { [%eval -0.02] } 7... c6?! { (-0.02 → 0.53) Inaccuracy. Be6 was best. } { [%eval 0.53] } (7... Be6 8. Qb5 Nc6 9. e3 Nd5 10. Nxd5 Qxd5 11. a3 Na5 12. Qxd5 Bxd5 13. Bxc7 Nb3 14. Rd1) 8. e4 { [%eval 0.42] } 8... Nbd7 { [%eval 0.63] } 9. Rd1 { [%eval 0.65] } 9... Nb6 { [%eval 0.65] } 10. Qc5 { [%eval 0.25] } 10... Bg4 { [%eval 0.35] } 11. Bg5?? { (0.35 → -1.47) Blunder. Be2 was best. } { [%eval -1.47] } (11. Be2 Nfd7 12. Qa3 Bxf3 13. Bxf3 e5 14. dxe5 Qc7 15. Qd6 Qxd6 16. exd6 f5 17. Be3 Nc4) 11... Na4 { [%eval -1.45] } 12. Qa3 { [%eval -1.48] } 12... Nxc3 { [%eval -1.33] } 13. bxc3 { [%eval -1.48] } 13... Nxe4 { [%eval -1.38] } 14. Bxe7 { [%eval -1.52] } 14... Qb6 { [%eval -1.35] } 15. Bc4 { [%eval -1.49] } 15... Nxc3 { [%eval -1.58] } 16. Bc5 { [%eval -2.08] } 16... Rfe8+ { [%eval -2.0] } 17. Kf1 { [%eval -1.84] } 17... Be6 { [%eval -1.79] } 18. Bxb6?? { (-1.79 → -6.59) Blunder. Qxc3 was best. } { [%eval -6.59] } (18. Qxc3 Qxc5) 18... Bxc4+ { [%eval -6.64] } 19. Kg1 { [%eval -6.63] } 19... Ne2+ { [%eval -6.59] } 20. Kf1 { [%eval -6.64] } 20... Nxd4+ { [%eval -6.58] } 21. Kg1 { [%eval -6.6] } 21... Ne2+ { [%eval -6.5] } 22. Kf1 { [%eval -6.54] } 22... Nc3+ { [%eval -6.49] } 23. Kg1 { [%eval -6.53] } 23... axb6 { [%eval -6.43] } 24. Qb4 { [%eval -6.38] } 24... Ra4 { [%eval -6.29] } 25. Qxb6 { [%eval -7.29] } 25... Nxd1 { [%eval -7.05] } 26. h3 { [%eval -8.47] } 26... Rxa2 { [%eval -8.29] } 27. Kh2 { [%eval -8.75] } 27... Nxf2 { [%eval -7.89] } 28. Re1 { [%eval -11.08] } 28... Rxe1 { [%eval -10.74] } 29. Qd8+ { [%eval -10.79] } 29... Bf8 { [%eval -10.52] } 30. Nxe1 { [%eval -10.56] } 30... Bd5 { [%eval -10.18] } 31. Nf3 { [%eval -10.52] } 31... Ne4 { [%eval -10.49] } 32. Qb8 { [%eval -10.39] } 32... b5 { [%eval -9.69] } 33. h4 { [%eval -10.4] } 33... h5 { [%eval -10.13] } 34. Ne5 { [%eval -53.37] } 34... Kg7 { [%eval -50.62] } 35. Kg1?! { (-50.62 → Mate in 16) Checkmate is now unavoidable. Nxf7 was best. } { [%eval #-16] } (35. Nxf7 Kxf7) 35... Bc5+ { [%eval #-16] } 36. Kf1 { [%eval #-5] } 36... Ng3+ { [%eval #-4] } 37. Ke1 { [%eval #-4] } 37... Bb4+ { [%eval #-4] } 38. Kd1 { [%eval #-4] } 38... Bb3+ { [%eval #-3] } 39. Kc1 { [%eval #-3] } 39... Ne2+ { [%eval #-2] } 40. Kb1 { [%eval #-2] } 40... Nc3+ { [%eval #-1] } 41. Kc1 { [%eval #-1] } 41... Rc2# { Black wins by checkmate. } 0-1
-  `);
-  console.log(result.winner);
-  console.log(result.board.current.status);
-  console.log(result.tags);
-  console.log(boardRenderASCII(result.board, true));
+  //   1. Nf3 { [%eval 0.31] } 1... Nf6 { [%eval 0.26] } 2. c4 { [%eval 0.09] } 2... g6 { [%eval 0.54] } { A15 English Opening: Anglo-Indian Defense, King's Indian Formation } 3. Nc3 { [%eval 0.29] } 3... Bg7 { [%eval 0.47] } 4. d4 { [%eval 0.39] } 4... O-O { [%eval 0.64] } 5. Bf4 { [%eval 0.15] } 5... d5 { [%eval 0.22] } 6. Qb3 { [%eval -0.05] } 6... dxc4 { [%eval 0.22] } 7. Qxc4 { [%eval -0.02] } 7... c6?! { (-0.02 → 0.53) Inaccuracy. Be6 was best. } { [%eval 0.53] } (7... Be6 8. Qb5 Nc6 9. e3 Nd5 10. Nxd5 Qxd5 11. a3 Na5 12. Qxd5 Bxd5 13. Bxc7 Nb3 14. Rd1) 8. e4 { [%eval 0.42] } 8... Nbd7 { [%eval 0.63] } 9. Rd1 { [%eval 0.65] } 9... Nb6 { [%eval 0.65] } 10. Qc5 { [%eval 0.25] } 10... Bg4 { [%eval 0.35] } 11. Bg5?? { (0.35 → -1.47) Blunder. Be2 was best. } { [%eval -1.47] } (11. Be2 Nfd7 12. Qa3 Bxf3 13. Bxf3 e5 14. dxe5 Qc7 15. Qd6 Qxd6 16. exd6 f5 17. Be3 Nc4) 11... Na4 { [%eval -1.45] } 12. Qa3 { [%eval -1.48] } 12... Nxc3 { [%eval -1.33] } 13. bxc3 { [%eval -1.48] } 13... Nxe4 { [%eval -1.38] } 14. Bxe7 { [%eval -1.52] } 14... Qb6 { [%eval -1.35] } 15. Bc4 { [%eval -1.49] } 15... Nxc3 { [%eval -1.58] } 16. Bc5 { [%eval -2.08] } 16... Rfe8+ { [%eval -2.0] } 17. Kf1 { [%eval -1.84] } 17... Be6 { [%eval -1.79] } 18. Bxb6?? { (-1.79 → -6.59) Blunder. Qxc3 was best. } { [%eval -6.59] } (18. Qxc3 Qxc5) 18... Bxc4+ { [%eval -6.64] } 19. Kg1 { [%eval -6.63] } 19... Ne2+ { [%eval -6.59] } 20. Kf1 { [%eval -6.64] } 20... Nxd4+ { [%eval -6.58] } 21. Kg1 { [%eval -6.6] } 21... Ne2+ { [%eval -6.5] } 22. Kf1 { [%eval -6.54] } 22... Nc3+ { [%eval -6.49] } 23. Kg1 { [%eval -6.53] } 23... axb6 { [%eval -6.43] } 24. Qb4 { [%eval -6.38] } 24... Ra4 { [%eval -6.29] } 25. Qxb6 { [%eval -7.29] } 25... Nxd1 { [%eval -7.05] } 26. h3 { [%eval -8.47] } 26... Rxa2 { [%eval -8.29] } 27. Kh2 { [%eval -8.75] } 27... Nxf2 { [%eval -7.89] } 28. Re1 { [%eval -11.08] } 28... Rxe1 { [%eval -10.74] } 29. Qd8+ { [%eval -10.79] } 29... Bf8 { [%eval -10.52] } 30. Nxe1 { [%eval -10.56] } 30... Bd5 { [%eval -10.18] } 31. Nf3 { [%eval -10.52] } 31... Ne4 { [%eval -10.49] } 32. Qb8 { [%eval -10.39] } 32... b5 { [%eval -9.69] } 33. h4 { [%eval -10.4] } 33... h5 { [%eval -10.13] } 34. Ne5 { [%eval -53.37] } 34... Kg7 { [%eval -50.62] } 35. Kg1?! { (-50.62 → Mate in 16) Checkmate is now unavoidable. Nxf7 was best. } { [%eval #-16] } (35. Nxf7 Kxf7) 35... Bc5+ { [%eval #-16] } 36. Kf1 { [%eval #-5] } 36... Ng3+ { [%eval #-4] } 37. Ke1 { [%eval #-4] } 37... Bb4+ { [%eval #-4] } 38. Kd1 { [%eval #-4] } 38... Bb3+ { [%eval #-3] } 39. Kc1 { [%eval #-3] } 39... Ne2+ { [%eval #-2] } 40. Kb1 { [%eval #-2] } 40... Nc3+ { [%eval #-1] } 41. Kc1 { [%eval #-1] } 41... Rc2# { Black wins by checkmate. } 0-1
+  // `);
+  // console.log(result.winner);
+  // console.log(result.board.current.status);
+  // console.log(result.tags);
+  // console.log(boardRenderASCII(result.board, true));
 });
 
 
