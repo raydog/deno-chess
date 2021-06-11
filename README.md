@@ -72,6 +72,10 @@ Most of the game features are provided by the ChessGame class.
 
   Create a new chess game, using the provided FEN string as a starting point.
 
+- **`ChessGame.NewFromPGN(pgn: string)`**
+
+  Create a new chess game, using the provided PGN game as a starting point.
+
 ### Playing a game
 
 - **`game.move(move: string, promotion?: string)`**
