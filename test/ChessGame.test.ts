@@ -477,3 +477,23 @@ Deno.test("ChessGame Public API > PGN Input > Game of the Century", function () 
     winner: "black",
   });
 });
+
+Deno.test("ChessGame Public API > PGN Output > Produces a parsable result", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("e2e4").move("e7e5");
+  game.move("f1c4").move("f8c5");
+  game.move("d1f3").move("d7d6");
+  game.move("f3f7");
+  asserts.assertEquals(game.getStatus(), {
+    state: "checkmate",
+    turn: "black",
+    winner: "white",
+  });
+  const pgn = game.toString("pgn");
+  const game2 = ChessGame.NewFromPGN(pgn);
+  asserts.assertEquals(game2.getStatus(), {
+    state: "checkmate",
+    turn: "black",
+    winner: "white",
+  });
+});

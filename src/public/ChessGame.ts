@@ -27,6 +27,7 @@ import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { doGameMove } from "./doGameMove.ts";
 import { GameMove, GameMoveInternal } from "./GameMove.ts";
 import { gameFromPGN } from "../core/logic/PGN/gameFromPGN.ts";
+import { gameToPGN } from "../core/logic/PGN/gameToPGN.ts";
 
 /**
  * The current game status.
@@ -84,6 +85,19 @@ interface MoveDetails {
    * performing the move.
    */
   promotion: boolean;
+}
+
+/**
+ * Settings for exporting a ChessGame in PGN format.
+ */
+interface PGNOptions {
+  /**
+   * Custom PGN tags.
+   * 
+   * - Each tag name must start with an uppercase letter (A-Z), and can only contain letters, numbers, and underscores.
+   * - Each value must only contain printable ASCII values.
+   */
+  tags?: { [name: string]: string },
 }
 
 // Map used to convert internal status into external ones:
@@ -314,11 +328,11 @@ export class ChessGame {
    * @returns
    */
   toString(): string;
-  toString(fmt: "pgn", options: string): string;
+  toString(fmt: "pgn", options?: PGNOptions): string;
   toString(fmt: "ascii" | "terminal" | "fen"): string;
   toString(
     fmt: "pgn" | "ascii" | "terminal" | "fen" = "ascii",
-    options?: string,
+    options?: PGNOptions,
   ): string {
     switch (fmt) {
       case "ascii":
@@ -327,6 +341,14 @@ export class ChessGame {
         return boardRenderASCII(this.#board, true);
       case "fen":
         return boardToFEN(this.#board);
+      case "pgn": {
+        return gameToPGN({
+          board: this.#board,
+          winner: this.#gameWinner,
+          moves: this.#moves,
+          tags: options?.tags ?? {},
+        });
+      }
       default:
         throw new ChessBadInput(fmt);
     }
