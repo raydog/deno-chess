@@ -1,5 +1,11 @@
 import { ChessParseError } from "../src/core/datatypes/ChessError.ts";
-import { GAMESTATUS_CHECKMATE, GAMESTATUS_DRAW, GAMESTATUS_DRAW_FIFTYMOVES, GAMESTATUS_DRAW_STALEMATE, GAMESTATUS_RESIGNED } from "../src/core/datatypes/GameStatus.ts";
+import {
+  GAMESTATUS_CHECKMATE,
+  GAMESTATUS_DRAW,
+  GAMESTATUS_DRAW_FIFTYMOVES,
+  GAMESTATUS_DRAW_STALEMATE,
+  GAMESTATUS_RESIGNED,
+} from "../src/core/datatypes/GameStatus.ts";
 import { boardRenderASCII } from "../src/core/logic/boardRenderASCII.ts";
 import { _lexer, gameFromPGN } from "../src/core/logic/PGN/gameFromPGN.ts";
 import { asserts } from "../testDeps.ts";

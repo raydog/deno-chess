@@ -17,7 +17,7 @@ import { listAllValidMoves } from "../core/logic/listValidMoves.ts";
 import { moveToSAN } from "../core/logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../core/logic/moveResults.ts";
 import { performMove } from "../core/logic/performMove.ts";
-import { GameMove } from "./GameMove.ts";
+import { GameMoveInternal } from "./GameMove.ts";
 
 const UCI_MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/;
 
@@ -33,7 +33,7 @@ export function doGameMove(
   board: Board,
   moveStr: string,
   promote: "B" | "R" | "N" | "Q" | undefined,
-): GameMove {
+): GameMoveInternal {
   const match = moveStr.match(UCI_MOVE_RE);
   if (match) {
     return _uciMove(board, match[1], match[2], promote);
@@ -48,7 +48,7 @@ function _uciMove(
   from: string,
   dest: string,
   promote: "B" | "R" | "N" | "Q" | undefined,
-): GameMove {
+): GameMoveInternal {
   const fromIdx = coordFromAN(from), destIdx = coordFromAN(dest);
 
   // Sanity checks:
@@ -95,10 +95,11 @@ function _uciMove(
     from,
     dest,
     san: moveToSAN(moves, picked, results),
+    move: picked,
   };
 }
 
-function _sanMove(board: Board, san: string): GameMove {
+function _sanMove(board: Board, san: string): GameMoveInternal {
   const turn = board.current.turn;
   const moves = listAllValidMoves(board, turn);
   const move = findMoveBySAN(moves, san);
@@ -115,5 +116,6 @@ function _sanMove(board: Board, san: string): GameMove {
     from: coordToAN(move.from),
     dest: coordToAN(move.dest),
     san: moveToSAN(moves, move, results),
+    move,
   };
 }

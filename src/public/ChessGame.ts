@@ -25,7 +25,8 @@ import {
 import { SPACE_EMPTY, spaceGetColor } from "../core/datatypes/Space.ts";
 import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { doGameMove } from "./doGameMove.ts";
-import { GameMove } from "./GameMove.ts";
+import { GameMove, GameMoveInternal } from "./GameMove.ts";
+import { gameFromPGN } from "../core/logic/PGN/gameFromPGN.ts";
 
 /**
  * The current game status.
@@ -102,7 +103,7 @@ const GAMESTATUS_MAP: { [status in GameStatus]: Status["state"] } = {
  */
 export class ChessGame {
   #board: Board;
-  #moves: GameMove[] = [];
+  #moves: GameMoveInternal[] = [];
 
   #gameWinner: "white" | "black" | "draw" | null = null;
   #drawReason: string | null = null;
@@ -133,13 +134,45 @@ export class ChessGame {
   }
 
   /**
+   * Start a new chess game, using the PGN game provided as a starting state.
+   *
+   * @param pgn The starting state, in PGN format.
+   * @returns The new ChessGame.
+   */
+  public static NewFromPGN(pgn: string): ChessGame {
+    const data = gameFromPGN(pgn);
+    const game = new ChessGame(data.board);
+    // TODO: What to do with TAGs??
+    game.#moves.push(...data.moves.map((move): GameMoveInternal => {
+      return {
+        num: move.num,
+        side: (move.turn === COLOR_WHITE) ? "white" : "black",
+        from: coordToAN(move.move.from),
+        dest: coordToAN(move.move.dest),
+        san: move.san,
+        move: move.move,
+      };
+    }));
+    if (data.winner) {
+      game.#gameWinner = data.winner;
+    }
+    return game;
+  }
+
+  /**
    * Return a list of all turns in the game.
    *
    * @returns
    */
   history(): GameMove[] {
     // Duplicate the structs, so client-side fiddling doesn't muck things up:
-    return this.#moves.map((move) => ({ ...move }));
+    return this.#moves.map((move) => ({
+      num: move.num,
+      side: move.side,
+      from: move.from,
+      dest: move.dest,
+      san: move.san,
+    }));
   }
 
   /**

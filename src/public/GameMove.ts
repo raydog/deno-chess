@@ -1,3 +1,5 @@
+import { Move } from "../core/datatypes/Move.ts";
+
 /**
  * A single game move.
  */
@@ -26,14 +28,6 @@ export interface GameMove {
    * The move, in Standard Algebraic Notation.
    */
   san: string;
-
-  /**
-   * One of: ?, ??, !, !!, !?, or ?!, if such an annotation is available for this move.
-   */
-  annotation?: string;
-
-  /**
-   * A short string describing, or giving context to the move.
-   */
-  comment?: string;
 }
+
+export type GameMoveInternal = GameMove & { move: Move };
