@@ -1,6 +1,6 @@
 ## 0.2.0 (WIP)
 
-- Basic PGN import support.
+- Basic PGN import & export support.
 - allMoves() now returns objects instead of strings.
 
 ## 0.1.0 (2021-06-07)

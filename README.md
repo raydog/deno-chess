@@ -190,6 +190,28 @@ Most of the game features are provided by the ChessGame class.
     rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
     ```
 
+  - `"pgn"` - Output in
+    [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) format. When
+    using this format, a second argument can be provided, to give custom Tags.
+
+    ```ts
+    game.toString("pgn", {
+      tags: { Event: 'Example game for "README.md"' },
+    });
+    ```
+
+    ```pgn
+    [Event "Example game for \"README.md\""]
+    [Site "?"]
+    [Date "????.??.??"]
+    [Round "?"]
+    [White "?"]
+    [Black "?"]
+    [Result "1-0"]
+
+    1. e4 e5 2. Bc4 Bc5 3. Qf3 d6 4. Qxf7# 1-0
+    ```
+
 ## Adding AI
 
 This project has a pretty easy (and kinda slow) AI, that is being casually
@@ -210,7 +232,6 @@ ai.takeTurn();
 
 Some things that I plan on getting to:
 
-- [ ] PGN import / export.
 - [ ] Slightly better AI.
 - [ ] Openings database. (Probably available as a separate module, to keep the
   main module size small.)

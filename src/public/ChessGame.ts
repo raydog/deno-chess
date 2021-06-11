@@ -93,11 +93,11 @@ interface MoveDetails {
 interface PGNOptions {
   /**
    * Custom PGN tags.
-   * 
+   *
    * - Each tag name must start with an uppercase letter (A-Z), and can only contain letters, numbers, and underscores.
    * - Each value must only contain printable ASCII values.
    */
-  tags?: { [name: string]: string },
+  tags?: { [name: string]: string };
 }
 
 // Map used to convert internal status into external ones:
