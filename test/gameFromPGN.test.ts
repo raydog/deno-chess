@@ -1,6 +1,7 @@
 import { ChessParseError } from "../src/core/datatypes/ChessError.ts";
+import { GAMESTATUS_CHECKMATE, GAMESTATUS_DRAW, GAMESTATUS_DRAW_FIFTYMOVES, GAMESTATUS_DRAW_STALEMATE, GAMESTATUS_RESIGNED } from "../src/core/datatypes/GameStatus.ts";
 import { boardRenderASCII } from "../src/core/logic/boardRenderASCII.ts";
-import { gameFromPGN, _lexer } from "../src/core/logic/PGN/gameFromPGN.ts";
+import { _lexer, gameFromPGN } from "../src/core/logic/PGN/gameFromPGN.ts";
 import { asserts } from "../testDeps.ts";
 
 Deno.test("Game From PGN > Lexer > Empty string", function () {
@@ -167,13 +168,40 @@ Deno.test("Game From PGN > Parser > Sample game from spec", function () {
     f3 Bc8 34. Kf2 Bf5 35. Ra7 g6 36. Ra6+ Kc5 37. Ke1 Nf4 38. g3 Nxh3 39. Kd2 Kb5
     40. Rd6 Kc5 41. Ra6 Nf2 42. g4 Bd3 43. Re6 1/2-1/2
   `);
-  console.log(result.winner);
-  console.log(result.board.current.status);
-  console.log(result.tags);
-  console.log(boardRenderASCII(result.board, true));
+  asserts.assertObjectMatch(result, {
+    winner: "draw",
+    tags: {
+      Event: "F/S Return Match",
+      Site: "Belgrade, Serbia JUG",
+      Date: "1992.11.04",
+      Round: "29",
+      White: "Fischer, Robert J.",
+      Black: "Spassky, Boris V.",
+      Result: "1/2-1/2",
+    },
+  });
+  asserts.assertEquals(result.board.current.status, GAMESTATUS_DRAW);
+  asserts.assertEquals(result.moves.length, 85);
+  asserts.assertEquals(
+    boardRenderASCII(result.board, false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |                        | 8",
+      " 7 |                        | 7",
+      " 6 |             R     p    | 6",
+      " 5 |       k           p    | 5",
+      " 4 |    p              P    | 4",
+      " 3 |    P     b     P       | 3",
+      " 2 |          K     n       | 2",
+      " 1 |                        | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
 });
 
-Deno.test("Game From PGN > Parser > Sample game from spec", function () {
+Deno.test("Game From PGN > Parser > Stalemate", function () {
   // One of (if not THE) longest games to have happened in a Chess championship. Apparently the two weren't on speaking
   // terms, and kept refusing earlier offers to draw, ultimately resulting in Stalemate.
   const result = gameFromPGN(`
@@ -217,10 +245,42 @@ Deno.test("Game From PGN > Parser > Sample game from spec", function () {
     119. Kf7 Kg5 120. Bb2 Kh6 121. Bc1+ Kh7 122. Bd2 Kh8 123. Bc3+
     Kh7 124. Bg7 1/2-1/2
   `);
-  console.log(result.winner);
-  console.log(result.board.current.status);
-  console.log(result.tags);
-  console.log(boardRenderASCII(result.board, true));
+  asserts.assertObjectMatch(result, {
+    winner: "draw",
+    tags: {
+      Event: "Karpov - Korchnoi World Championship Match",
+      Site: "City of Baguio PHI",
+      Date: "1978.07.27",
+      EventDate: "?",
+      Round: "5",
+      Result: "1/2-1/2",
+      White: "Viktor Korchnoi",
+      Black: "Anatoly Karpov",
+      ECO: "E42",
+      WhiteElo: "?",
+      BlackElo: "?",
+      PlyCount: "247",
+    },
+  });
+  asserts.assertEquals(result.board.current.status, GAMESTATUS_DRAW_STALEMATE);
+  asserts.assertEquals(result.moves.length, 247);
+  asserts.assertEquals(
+    boardRenderASCII(result.board, false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |                        | 8",
+      " 7 |                K  B  k | 7",
+      " 6 |                        | 6",
+      " 5 |                        | 5",
+      " 4 | p                      | 4",
+      " 3 | P                      | 3",
+      " 2 |                        | 2",
+      " 1 |                        | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
 });
 
 Deno.test("Game From PGN > Parser > 50 move rule draw", function () {
@@ -249,38 +309,213 @@ Deno.test("Game From PGN > Parser > 50 move rule draw", function () {
     58. Na3 Ra8 59. Nc4 Nh6 60. Na3 Nf7 61. Nf2 Rd8 62. Nc4 Rb8 63. Nh3 Bd8 64. Na3 Ra7 65. Qh1 Bc7 66. Qg2 Rd8
     67. Qh1 Nh6 68. Ng5 Nf7 69. Nh3 Qe8 70. Kh2 Rd7 {I claimed the draw because of the 50 move's rule.} 1/2-1/2
   `);
-  console.log(result.winner);
-  console.log(result.board.current.status);
-  console.log(result.tags);
-  console.log(boardRenderASCII(result.board, true));
+  asserts.assertObjectMatch(result, {
+    winner: "draw",
+    tags: {
+      Event: "Rubinstein Memorial 4th",
+      Site: "Polanica-Zdroj POL",
+      Date: "1966.08.25",
+      EventDate: "1966.??.??",
+      Round: "14",
+      Result: "1/2-1/2",
+      White: "Andrzej Filipowicz",
+      Black: "Petar Smederevac",
+      ECO: "A07",
+      WhiteElo: "?",
+      BlackElo: "?",
+      PlyCount: "140",
+    },
+  });
+  asserts.assertEquals(result.board.current.status, GAMESTATUS_DRAW_FIFTYMOVES);
+  asserts.assertEquals(result.moves.length, 140);
+  asserts.assertEquals(
+    boardRenderASCII(result.board, false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |             q          | 8",
+      " 7 | r     b  r     n  k    | 7",
+      " 6 |    p  b     p     p    | 6",
+      " 5 | p     p  n  P  p     p | 5",
+      " 4 | P        p     P     P | 4",
+      " 3 | N  P     P     B  P  N | 3",
+      " 2 |       P  B           K | 2",
+      " 1 | R           R        Q | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
+});
+
+Deno.test("Game From PGN > Parser > White wins by resignation", function () {
+  // A random game from the 1929 World Championship. Thanks, pngmentor.com!
+  // Their files have many games in them, but we only support single-game files, so I trimmed it down.
+  const result = gameFromPGN(
+    `[Event "World Championship 14th"]
+[Site "GER/NLD"]
+[Date "1929.??.??"]
+[Round "6"]
+[White "Bogoljubow, Efim"]
+[Black "Alekhine, Alexander"]
+[Result "1-0"]
+[WhiteElo ""]
+[BlackElo ""]
+[ECO "E22"]
+
+1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.Qb3 Qe7 5.a3 Bxc3+ 6.Qxc3 b6 7.f3 d5 8.cxd5 Nxd5
+9.Qc2 Qh4+ 10.g3 Qxd4 11.e4 Ne7 12.Bf4 Bd7 13.Rd1 Qa4 14.Qxc7 Qc6 15.Ne2 Qxc7
+16.Bxc7 Na6 17.Bd6 Bb5 18.Nc3 Bxf1 19.Rxf1 Nc8 20.Bf4 Ke7 21.Rf2 Rd8 22.Rxd8 Kxd8
+23.Rd2+ Ke8 24.Nb5 f6 25.b4 Ne7 26.Kd1 Ng6 27.Bc7 e5 28.Kc2 Nf8 29.Bd6 Ne6
+30.f4 exf4 31.gxf4 Rc8+ 32.Kb3 Ra8 33.h4 Kf7 34.f5 Nd8 35.Bf4 Ke7 36.Rg2 g6
+37.Rc2 gxf5 38.exf5 Nf7 39.Re2+ Kd7 40.Re6 Rg8 41.Rxf6 Ke7 42.Re6+ Kd7 43.Bd6 Nxd6
+44.Rxd6+ Ke8 45.Nxa7 Rg3+ 46.Ka4 Rg7 47.Nc6 Nc7 48.f6  1-0`,
+  );
+  asserts.assertObjectMatch(result, {
+    winner: "white",
+    tags: {
+      Event: "World Championship 14th",
+      Site: "GER/NLD",
+      Date: "1929.??.??",
+      Round: "6",
+      White: "Bogoljubow, Efim",
+      Black: "Alekhine, Alexander",
+      Result: "1-0",
+      WhiteElo: "",
+      BlackElo: "",
+      ECO: "E22",
+    },
+  });
+  asserts.assertEquals(result.board.current.status, GAMESTATUS_RESIGNED);
+  asserts.assertEquals(result.moves.length, 95);
+  asserts.assertEquals(
+    boardRenderASCII(result.board, false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |             k          | 8",
+      " 7 |       n           r  p | 7",
+      " 6 |    p  N  R     P       | 6",
+      " 5 |                        | 5",
+      " 4 | K  P                 P | 4",
+      " 3 | P                      | 3",
+      " 2 |                        | 2",
+      " 1 |                        | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
 });
 
 Deno.test("Game From PGN > Parser > Black checkmate", function () {
-  // "Game of the Century." This is a SUPER annotated version of the game from lichess.org. Should exercise some of the
-  // annotation-ignoring logic...
-  // const result = gameFromPGN(`
-  //   [Event "Third Rosenwald Trophy"]
-  //   [Site "https://lichess.org/ZAMs9lOM"]
-  //   [Date "1956.10.17"]
-  //   [Round "8"]
-  //   [White "Donald Byrne (?)"]
-  //   [Black "Robert James Fischer (?)"]
-  //   [Result "0-1"]
-  //   [WhiteElo "?"]
-  //   [BlackElo "?"]
-  //   [Variant "Standard"]
-  //   [TimeControl "-"]
-  //   [ECO "A15"]
-  //   [Opening "English Opening: Anglo-Indian Defense, King's Indian Formation"]
-  //   [Termination "Normal"]
-  //   [Annotator "lichess.org"]
-    
-  //   1. Nf3 { [%eval 0.31] } 1... Nf6 { [%eval 0.26] } 2. c4 { [%eval 0.09] } 2... g6 { [%eval 0.54] } { A15 English Opening: Anglo-Indian Defense, King's Indian Formation } 3. Nc3 { [%eval 0.29] } 3... Bg7 { [%eval 0.47] } 4. d4 { [%eval 0.39] } 4... O-O { [%eval 0.64] } 5. Bf4 { [%eval 0.15] } 5... d5 { [%eval 0.22] } 6. Qb3 { [%eval -0.05] } 6... dxc4 { [%eval 0.22] } 7. Qxc4 { [%eval -0.02] } 7... c6?! { (-0.02 → 0.53) Inaccuracy. Be6 was best. } { [%eval 0.53] } (7... Be6 8. Qb5 Nc6 9. e3 Nd5 10. Nxd5 Qxd5 11. a3 Na5 12. Qxd5 Bxd5 13. Bxc7 Nb3 14. Rd1) 8. e4 { [%eval 0.42] } 8... Nbd7 { [%eval 0.63] } 9. Rd1 { [%eval 0.65] } 9... Nb6 { [%eval 0.65] } 10. Qc5 { [%eval 0.25] } 10... Bg4 { [%eval 0.35] } 11. Bg5?? { (0.35 → -1.47) Blunder. Be2 was best. } { [%eval -1.47] } (11. Be2 Nfd7 12. Qa3 Bxf3 13. Bxf3 e5 14. dxe5 Qc7 15. Qd6 Qxd6 16. exd6 f5 17. Be3 Nc4) 11... Na4 { [%eval -1.45] } 12. Qa3 { [%eval -1.48] } 12... Nxc3 { [%eval -1.33] } 13. bxc3 { [%eval -1.48] } 13... Nxe4 { [%eval -1.38] } 14. Bxe7 { [%eval -1.52] } 14... Qb6 { [%eval -1.35] } 15. Bc4 { [%eval -1.49] } 15... Nxc3 { [%eval -1.58] } 16. Bc5 { [%eval -2.08] } 16... Rfe8+ { [%eval -2.0] } 17. Kf1 { [%eval -1.84] } 17... Be6 { [%eval -1.79] } 18. Bxb6?? { (-1.79 → -6.59) Blunder. Qxc3 was best. } { [%eval -6.59] } (18. Qxc3 Qxc5) 18... Bxc4+ { [%eval -6.64] } 19. Kg1 { [%eval -6.63] } 19... Ne2+ { [%eval -6.59] } 20. Kf1 { [%eval -6.64] } 20... Nxd4+ { [%eval -6.58] } 21. Kg1 { [%eval -6.6] } 21... Ne2+ { [%eval -6.5] } 22. Kf1 { [%eval -6.54] } 22... Nc3+ { [%eval -6.49] } 23. Kg1 { [%eval -6.53] } 23... axb6 { [%eval -6.43] } 24. Qb4 { [%eval -6.38] } 24... Ra4 { [%eval -6.29] } 25. Qxb6 { [%eval -7.29] } 25... Nxd1 { [%eval -7.05] } 26. h3 { [%eval -8.47] } 26... Rxa2 { [%eval -8.29] } 27. Kh2 { [%eval -8.75] } 27... Nxf2 { [%eval -7.89] } 28. Re1 { [%eval -11.08] } 28... Rxe1 { [%eval -10.74] } 29. Qd8+ { [%eval -10.79] } 29... Bf8 { [%eval -10.52] } 30. Nxe1 { [%eval -10.56] } 30... Bd5 { [%eval -10.18] } 31. Nf3 { [%eval -10.52] } 31... Ne4 { [%eval -10.49] } 32. Qb8 { [%eval -10.39] } 32... b5 { [%eval -9.69] } 33. h4 { [%eval -10.4] } 33... h5 { [%eval -10.13] } 34. Ne5 { [%eval -53.37] } 34... Kg7 { [%eval -50.62] } 35. Kg1?! { (-50.62 → Mate in 16) Checkmate is now unavoidable. Nxf7 was best. } { [%eval #-16] } (35. Nxf7 Kxf7) 35... Bc5+ { [%eval #-16] } 36. Kf1 { [%eval #-5] } 36... Ng3+ { [%eval #-4] } 37. Ke1 { [%eval #-4] } 37... Bb4+ { [%eval #-4] } 38. Kd1 { [%eval #-4] } 38... Bb3+ { [%eval #-3] } 39. Kc1 { [%eval #-3] } 39... Ne2+ { [%eval #-2] } 40. Kb1 { [%eval #-2] } 40... Nc3+ { [%eval #-1] } 41. Kc1 { [%eval #-1] } 41... Rc2# { Black wins by checkmate. } 0-1
-  // `);
-  // console.log(result.winner);
-  // console.log(result.board.current.status);
-  // console.log(result.tags);
-  // console.log(boardRenderASCII(result.board, true));
+  // User Ogmobot from reddit annotated one of the Game Grumps chess bouts, so here's a hand-written chess game.
+  // The version they uploaded didn't use the PGN tags correctly, and didn't note the game result, so I edited that.
+  const result = gameFromPGN(`
+    [Event "Game Grumps"]
+    [Date "2019.??.??"]
+    [White "Hanson, Arin"]
+    [Black "Avidan, Dan"]
+    [Result "0-1"]
+    [WhiteElo "?"]
+    [BlackElo "?"]
+
+    1. e4 e5 2. Nf3 Nc6 3. Nc3 Bc5 4. d3 d6 5. Bg5 Nf6 6. Nd5 Be6 7. Nxf6+ gxf6 8. Bh6 f5 9. h4 fxe4 10. dxe4 Qf6 11. Bg5
+    Qg6 12. h5 Qxe4+ 13. Be2 Nb4 14. Rc1 Nxa2 15. Rh4 Qd5 16. Bc4 Qxd1+ 17. Rxd1 Bxc4 18. Rxc4 b5 19. Re4 Nb4 20. h6 Nxc2+
+    21. Kf1 f5 22. Re2 Nd4 23. Nxd4 Rg8 24. Nxb5 Kd7 25. Red2? Rxg5 26. Rxd6+? cxd6 27. Rd5 Kc6 28. Nc3 a5 29. Rd1 a4 30.
+    Ra1 Rh5 31. b3? Rh1+ 32. Ke2 Rxa1 33. bxa4 Rc1 34. Nb5 Rxa4 35. Kd3 Kxb5 36. f4 exf4 37. g4 fxg4 38. Ke2 Rc3 39. Kd2
+    Kb4 40. Kd1 Ra2 41. Ke1 Rc1# 0-1
+  `);
+  asserts.assertObjectMatch(result, {
+    winner: "black",
+    tags: {
+      Event: "Game Grumps",
+      Date: "2019.??.??",
+      White: "Hanson, Arin",
+      Black: "Avidan, Dan",
+      Result: "0-1",
+      WhiteElo: "?",
+      BlackElo: "?",
+    },
+  });
+  asserts.assertEquals(result.board.current.status, GAMESTATUS_CHECKMATE);
+  asserts.assertEquals(result.moves.length, 82);
+  asserts.assertEquals(
+    boardRenderASCII(result.board, false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |                        | 8",
+      " 7 |                      p | 7",
+      " 6 |          p           P | 6",
+      " 5 |       b                | 5",
+      " 4 |    k           p  p    | 4",
+      " 3 |                        | 3",
+      " 2 | r                      | 2",
+      " 1 |       r     K          | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
 });
 
-
+Deno.test("Game From PGN > Parser > Game of the Century", function () {
+  // "Game of the Century." This is a SUPER annotated version of the game from lichess.org. Should exercise some of the
+  // annotation-ignoring logic...
+  const result = gameFromPGN(`
+    [Event "Third Rosenwald Trophy"]
+    [Site "https://lichess.org/ZAMs9lOM"]
+    [Date "1956.10.17"]
+    [Round "8"]
+    [White "Donald Byrne (?)"]
+    [Black "Robert James Fischer (?)"]
+    [Result "0-1"]
+    [WhiteElo "?"]
+    [BlackElo "?"]
+    [Variant "Standard"]
+    [TimeControl "-"]
+    [ECO "A15"]
+    [Opening "English Opening: Anglo-Indian Defense, King's Indian Formation"]
+    [Termination "Normal"]
+    [Annotator "lichess.org"]
+    
+    1. Nf3 { [%eval 0.31] } 1... Nf6 { [%eval 0.26] } 2. c4 { [%eval 0.09] } 2... g6 { [%eval 0.54] } { A15 English Opening: Anglo-Indian Defense, King's Indian Formation } 3. Nc3 { [%eval 0.29] } 3... Bg7 { [%eval 0.47] } 4. d4 { [%eval 0.39] } 4... O-O { [%eval 0.64] } 5. Bf4 { [%eval 0.15] } 5... d5 { [%eval 0.22] } 6. Qb3 { [%eval -0.05] } 6... dxc4 { [%eval 0.22] } 7. Qxc4 { [%eval -0.02] } 7... c6?! { (-0.02 → 0.53) Inaccuracy. Be6 was best. } { [%eval 0.53] } (7... Be6 8. Qb5 Nc6 9. e3 Nd5 10. Nxd5 Qxd5 11. a3 Na5 12. Qxd5 Bxd5 13. Bxc7 Nb3 14. Rd1) 8. e4 { [%eval 0.42] } 8... Nbd7 { [%eval 0.63] } 9. Rd1 { [%eval 0.65] } 9... Nb6 { [%eval 0.65] } 10. Qc5 { [%eval 0.25] } 10... Bg4 { [%eval 0.35] } 11. Bg5?? { (0.35 → -1.47) Blunder. Be2 was best. } { [%eval -1.47] } (11. Be2 Nfd7 12. Qa3 Bxf3 13. Bxf3 e5 14. dxe5 Qc7 15. Qd6 Qxd6 16. exd6 f5 17. Be3 Nc4) 11... Na4 { [%eval -1.45] } 12. Qa3 { [%eval -1.48] } 12... Nxc3 { [%eval -1.33] } 13. bxc3 { [%eval -1.48] } 13... Nxe4 { [%eval -1.38] } 14. Bxe7 { [%eval -1.52] } 14... Qb6 { [%eval -1.35] } 15. Bc4 { [%eval -1.49] } 15... Nxc3 { [%eval -1.58] } 16. Bc5 { [%eval -2.08] } 16... Rfe8+ { [%eval -2.0] } 17. Kf1 { [%eval -1.84] } 17... Be6 { [%eval -1.79] } 18. Bxb6?? { (-1.79 → -6.59) Blunder. Qxc3 was best. } { [%eval -6.59] } (18. Qxc3 Qxc5) 18... Bxc4+ { [%eval -6.64] } 19. Kg1 { [%eval -6.63] } 19... Ne2+ { [%eval -6.59] } 20. Kf1 { [%eval -6.64] } 20... Nxd4+ { [%eval -6.58] } 21. Kg1 { [%eval -6.6] } 21... Ne2+ { [%eval -6.5] } 22. Kf1 { [%eval -6.54] } 22... Nc3+ { [%eval -6.49] } 23. Kg1 { [%eval -6.53] } 23... axb6 { [%eval -6.43] } 24. Qb4 { [%eval -6.38] } 24... Ra4 { [%eval -6.29] } 25. Qxb6 { [%eval -7.29] } 25... Nxd1 { [%eval -7.05] } 26. h3 { [%eval -8.47] } 26... Rxa2 { [%eval -8.29] } 27. Kh2 { [%eval -8.75] } 27... Nxf2 { [%eval -7.89] } 28. Re1 { [%eval -11.08] } 28... Rxe1 { [%eval -10.74] } 29. Qd8+ { [%eval -10.79] } 29... Bf8 { [%eval -10.52] } 30. Nxe1 { [%eval -10.56] } 30... Bd5 { [%eval -10.18] } 31. Nf3 { [%eval -10.52] } 31... Ne4 { [%eval -10.49] } 32. Qb8 { [%eval -10.39] } 32... b5 { [%eval -9.69] } 33. h4 { [%eval -10.4] } 33... h5 { [%eval -10.13] } 34. Ne5 { [%eval -53.37] } 34... Kg7 { [%eval -50.62] } 35. Kg1?! { (-50.62 → Mate in 16) Checkmate is now unavoidable. Nxf7 was best. } { [%eval #-16] } (35. Nxf7 Kxf7) 35... Bc5+ { [%eval #-16] } 36. Kf1 { [%eval #-5] } 36... Ng3+ { [%eval #-4] } 37. Ke1 { [%eval #-4] } 37... Bb4+ { [%eval #-4] } 38. Kd1 { [%eval #-4] } 38... Bb3+ { [%eval #-3] } 39. Kc1 { [%eval #-3] } 39... Ne2+ { [%eval #-2] } 40. Kb1 { [%eval #-2] } 40... Nc3+ { [%eval #-1] } 41. Kc1 { [%eval #-1] } 41... Rc2# { Black wins by checkmate. } 0-1
+  `);
+  asserts.assertObjectMatch(result, {
+    winner: "black",
+    tags: {
+      Event: "Third Rosenwald Trophy",
+      Site: "https://lichess.org/ZAMs9lOM",
+      Date: "1956.10.17",
+      Round: "8",
+      White: "Donald Byrne (?)",
+      Black: "Robert James Fischer (?)",
+      Result: "0-1",
+      WhiteElo: "?",
+      BlackElo: "?",
+      Variant: "Standard",
+      TimeControl: "-",
+      ECO: "A15",
+      Opening: "English Opening: Anglo-Indian Defense, King's Indian Formation",
+      Termination: "Normal",
+      Annotator: "lichess.org",
+    },
+  });
+  asserts.assertEquals(result.board.current.status, GAMESTATUS_CHECKMATE);
+  asserts.assertEquals(result.moves.length, 82);
+  asserts.assertEquals(
+    boardRenderASCII(result.board, false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |    Q                   | 8",
+      " 7 |                p  k    | 7",
+      " 6 |       p           p    | 6",
+      " 5 |    p        N        p | 5",
+      " 4 |    b                 P | 4",
+      " 3 |    b  n                | 3",
+      " 2 |       r           P    | 2",
+      " 1 |       K                | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
+});
