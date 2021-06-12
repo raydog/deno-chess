@@ -90,7 +90,7 @@ export class BeginnerAI {
   }
 }
 
-// Rate a move. Basically, prio captures first
+// Rate a move. Basically, prioritize captures first
 function rateMoves(a: Move, b: Move): number {
   return spaceGetType(b.capture) - spaceGetType(a.capture);
 }

@@ -29,7 +29,7 @@ export class Board {
   #layerIdx = 0;
   #layers: Layer[] = [newLayer()];
 
-  // Current kept public, since everything else will be mutating these vals.
+  // Current kept public, since everything else will be mutating these values.
   // Yeah, it's ugly. But it *IS* somewhat quicker...
   current: Layer = this.#layers[0];
 
