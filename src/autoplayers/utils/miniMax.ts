@@ -18,7 +18,7 @@ import { GameScore, moveScore } from "./gameScore.ts";
 import { mateScore } from "./gameScore.ts";
 
 // TODO: Test nullable prop vs optional prop perf.
-type MiniMaxResponse = { score: GameScore; move?: Move };
+type MiniMaxResponse = { score: GameScore; move?: Move; nodes: number };
 type CompareMoveFn = (a: Move, b: Move) => number;
 type RateBoardFn = (b: Board) => number;
 
@@ -56,12 +56,12 @@ function miniMax(
   // Checkmates cause a surprise leaf:
   const res = checkMoveResults(board, enemy);
   if (res.newGameStatus === GAMESTATUS_CHECKMATE) {
-    return { score: mateScore(-curDepth) };
+    return { score: mateScore(-curDepth), nodes: 1 };
   }
 
   // Reached the tree's horizon:
   if (curDepth >= maxDepth) {
-    return { score: moveScore(rateBoard(board)) };
+    return { score: moveScore(rateBoard(board)), nodes: 1 };
   }
 
   let best: GameScore = (color === COLOR_WHITE) ? -Infinity : Infinity;
@@ -69,13 +69,14 @@ function miniMax(
 
   const allMoves = listAllValidMoves(board, color);
   const orderedMoves = [...allMoves].sort(compareMoves);
+  let nodes = 0;
 
   for (const move of orderedMoves) {
     board.save();
 
     performMove(board, move);
 
-    const { score } = miniMax(
+    const { score, nodes: branchNodes } = miniMax(
       board,
       enemy,
       curDepth + 1,
@@ -87,6 +88,8 @@ function miniMax(
     );
 
     board.restore();
+    
+    nodes += branchNodes;
 
     // Easy case: Whether minimizing or maximizing: we've seen this literal score before, so
     // we can just store it as an alternative: it shouldn't cause alpha or beta bailouts:
@@ -122,8 +125,8 @@ function miniMax(
   }
 
   return curDepth
-    ? { score: best }
-    : { score: best, move: _pickOne(bestMoves) };
+    ? { score: best, nodes }
+    : { score: best, move: _pickOne(bestMoves), nodes };
 }
 
 function _pickOne<T>(arr: T[]): T {

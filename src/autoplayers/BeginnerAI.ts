@@ -79,10 +79,11 @@ export class BeginnerAI {
     const move = coordToAN(best.move.from) + coordToAN(best.move.dest);
 
     console.log(
-      "Best Move (%s) = [%s] in %d ms",
+      "Best Move (%s) = [%s] in %d ms (%d nodes considered)",
       scoreToString(best.score),
       move,
       Date.now() - start,
+      best.nodes
     );
 
     this.#game.move(move, "Q");
