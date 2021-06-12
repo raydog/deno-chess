@@ -16,7 +16,7 @@ well as for the browser. Features include:
 ## Example
 
 ```ts
-import { ChessGame } from "https://deno.land/x/chess@0.1.0/mod.ts";
+import { ChessGame } from "https://deno.land/x/chess@0.2.0/mod.ts";
 
 // Start a new game:
 const game = ChessGame.NewStandardGame();
@@ -232,7 +232,7 @@ worked on, but will probably never get _too_ advanced. Still, if you want to try
 it out:
 
 ```ts
-import { BeginnerAI, ChessGame } from "https://deno.land/x/chess@0.1.0/mod.ts";
+import { BeginnerAI, ChessGame } from "https://deno.land/x/chess@0.2.0/mod.ts";
 
 const game = ChessGame.NewStandardGame();
 const ai = BeginnerAI.NewForGame(game, "black");
