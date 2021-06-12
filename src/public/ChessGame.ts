@@ -28,6 +28,7 @@ import { doGameMove } from "./doGameMove.ts";
 import { GameMove, GameMoveInternal } from "./GameMove.ts";
 import { gameFromPGN } from "../core/logic/PGN/gameFromPGN.ts";
 import { gameToPGN } from "../core/logic/PGN/gameToPGN.ts";
+import { validatePGNKeyValue } from "../core/logic/PGN/pgnUtils.ts";
 
 /**
  * The current game status.
@@ -122,8 +123,11 @@ export class ChessGame {
   #gameWinner: "white" | "black" | "draw" | null = null;
   #drawReason: string | null = null;
 
+  #tags: { [name: string]: string } = {};
+
   private constructor(b: Board) {
     this.#board = b;
+    this.setTag("Date", new Date());
   }
 
   /**
@@ -144,6 +148,8 @@ export class ChessGame {
   public static NewFromFEN(fen: string): ChessGame {
     const game = new ChessGame(boardFromFEN(fen));
     game.maybeRefreshWinner();
+    game.setTag("SetUp", true);
+    game.setTag("FEN", fen);
     return game;
   }
 
@@ -156,7 +162,7 @@ export class ChessGame {
   public static NewFromPGN(pgn: string): ChessGame {
     const data = gameFromPGN(pgn);
     const game = new ChessGame(data.board);
-    // TODO: What to do with TAGs??
+    game.#tags = data.tags;
     game.#moves.push(...data.moves.map((move): GameMoveInternal => {
       return {
         num: move.num,
@@ -171,6 +177,57 @@ export class ChessGame {
       game.#gameWinner = data.winner;
     }
     return game;
+  }
+
+  /**
+   * Return all PGN tags that we currently have stored for this game.
+   * 
+   * @returns 
+   */
+  getTags(): { [name: string]: string } {
+    return { ...this.#tags };
+  }
+
+  /**
+   * Will set a single tag value for this game. This doesn't have any bearing on how the game will run, but these values
+   * will be used when generating a PGN file.
+   * 
+   * Name must start with an Uppercase letter, and only contain letters (a-z), digits (0-9), and underscores (_). This
+   * is to remain consistent with the PGN standard.
+   * 
+   * If value is null, the prior tag value will be unset. If the value is a string or number, the value will simply
+   * be coerced to string. Boolean values are coerced to "1" or "0". Date values are coerced to "YYYY.MM.DD" format.
+   * Values must contain only printable ASCII values.
+   * 
+   * @param name The tag name.
+   * @param value The tag value. (null if we wish to erase a prior value.)
+   */
+  setTag(name: string, value: null | string | boolean | number | Date) {
+    // Special case for key deletion:
+    if (value == null) {
+      validatePGNKeyValue(name, "");
+      delete this.#tags[name];
+      return;
+    }
+
+    // Else, coerce to string:
+    let valueStr: string;
+    if (typeof value === "boolean") {
+      valueStr = value ? "1" : "0";
+    } else if (value instanceof Date) {
+      valueStr = (isNaN(value.valueOf()))
+        ? "????.??.??"
+        : [
+          value.getFullYear(),
+          String(value.getMonth()+1).padStart(2, "0"),
+          String(value.getDate()).padStart(2, "0"),
+        ].join(".");
+    } else {
+      valueStr = String(value);
+    }
+
+    validatePGNKeyValue(name, valueStr);
+    this.#tags[name] = valueStr;
   }
 
   /**
@@ -323,17 +380,12 @@ export class ChessGame {
    * - `"terminal"`: The same as "ascii", but with ANSI color codes, giving color to the board and pieces. Useful when
    *   console.log()-ing to a terminal.
    * - `"fen"`: The board state, as a FEN string.
+   * - `"pgn"`: The game, as a PGN string.
    *
    * @param fmt The format string
    * @returns
    */
-  toString(): string;
-  toString(fmt: "pgn", options?: PGNOptions): string;
-  toString(fmt: "ascii" | "terminal" | "fen"): string;
-  toString(
-    fmt: "pgn" | "ascii" | "terminal" | "fen" = "ascii",
-    options?: PGNOptions,
-  ): string {
+  toString(fmt: "pgn" | "ascii" | "terminal" | "fen" = "ascii"): string {
     switch (fmt) {
       case "ascii":
         return boardRenderASCII(this.#board, false);
@@ -346,7 +398,7 @@ export class ChessGame {
           board: this.#board,
           winner: this.#gameWinner,
           moves: this.#moves,
-          tags: options?.tags ?? {},
+          tags: this.#tags,
         });
       }
       default:

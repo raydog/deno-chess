@@ -1,5 +1,5 @@
 import { Board } from "../../datatypes/Board.ts";
-import { ChessBadInput } from "../../datatypes/ChessError.ts";
+import { validatePGNKeyValue } from "./pgnUtils.ts";
 
 type GameData = {
   board: Board;
@@ -13,8 +13,6 @@ type GameData = {
 };
 
 const MAX_LINE = 80;
-const TAG_KEY_RE = /^[A-Z][a-zA-Z0-9_]*$/;
-const TAG_VAL_RE = /^[\u0020-\u007e]*$/;
 
 export function gameToPGN({ winner, moves, tags }: GameData): string {
   const pgnWinner = _pgnWinner(winner);
@@ -64,13 +62,7 @@ export function gameToPGN({ winner, moves, tags }: GameData): string {
 }
 
 function _tag(key: string, val: string) {
-  if (!TAG_KEY_RE.test(key)) {
-    throw new ChessBadInput("Invalid PGN tag name: " + key);
-  }
-  if (!TAG_VAL_RE.test(val)) {
-    throw new ChessBadInput("Invalid characters in PGN tag value");
-  }
-
+  validatePGNKeyValue(key, val);
   val = val.replace(/["\\]/g, "\\$&");
   return `[${key} "${val}"]`;
 }

@@ -497,3 +497,13 @@ Deno.test("ChessGame Public API > PGN Output > Produces a parsable result", func
     winner: "white",
   });
 });
+
+Deno.test("ChessGame Public API > PGN Output > Works with custom starts", function () {
+  const game = ChessGame.NewFromFEN("3rqr2/3ppp2/8/8/8/8/3PPP2/3RKR2 w - - 0 1");
+  game.move("e4").move("e5");
+  game.move("Rc1").move("Rh8");
+  const pgn = game.toString("pgn");
+  asserts.assertStringIncludes(pgn, '[Result "*"]');
+  asserts.assertStringIncludes(pgn, '[SetUp "1"]');
+  asserts.assertStringIncludes(pgn, '[FEN "3rqr2/3ppp2/8/8/8/8/3PPP2/3RKR2 w - - 0 1"]');
+});

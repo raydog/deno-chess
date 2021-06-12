@@ -158,6 +158,23 @@ Most of the game features are provided by the ChessGame class.
 
   The game was drawn. A reason can be provided.
 
+### Tags
+
+Keeping tags for your game can be useful when exporting in PGN format. By default, Deno-Chess will add a "Date" tag, equal to
+the YYYY.MM.DD when you called the constructor. You can manage your tags with:
+
+- **`game.getTags()`**
+
+  Get all tags current stored for this game. Returns an object, mapping from string Names to string Values.
+
+- **`game.setTag(name: string, value: null | string | boolean | number | Date)`**
+
+  Set a single tag to be equal to the given value. Use `null` to clear a prior tag value. Booleans are coerced to either
+  "0" or "1". Numbers are stringified. And Dates are formatted in "YYYY.MM.DD" format, according to the local timezone.
+  (Or "????.??.??" if the Date is invalid...)
+
+### Outputting a string
+
 - **`game.toString(format = "ascii")`**
 
   Will return the game as a string, in the given format. (Default is "ascii")
@@ -191,19 +208,12 @@ Most of the game features are provided by the ChessGame class.
     ```
 
   - `"pgn"` - Output in
-    [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) format. When
-    using this format, a second argument can be provided, to give custom Tags.
-
-    ```ts
-    game.toString("pgn", {
-      tags: { Event: 'Example game for "README.md"' },
-    });
-    ```
+    [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) format.
 
     ```pgn
     [Event "Example game for \"README.md\""]
     [Site "?"]
-    [Date "????.??.??"]
+    [Date "2021.06.11"]
     [Round "?"]
     [White "?"]
     [Black "?"]
