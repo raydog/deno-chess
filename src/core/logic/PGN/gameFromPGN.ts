@@ -77,7 +77,7 @@ export function gameFromPGN(pgn: string): PgnOutput {
   }
 
   // Now that we have the tags. Init the board to either the optional FEN starting pos, or just the standard setup:
-  const board = (tags.FEN) ? boardFromFEN(tags.FEN) : buildStandardBoard();
+  const board = (tags.SetUp === "1" && tags.FEN) ? boardFromFEN(tags.FEN) : buildStandardBoard();
 
   // Consume all moves. Moves *MUST* be valid:
   _parseMoveList(tokens, board, moves);
