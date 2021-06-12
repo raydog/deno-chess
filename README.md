@@ -1,5 +1,7 @@
 # Deno-Chess [![Build Status](https://travis-ci.com/raydog/deno-chess.svg?branch=main)](https://travis-ci.com/raydog/deno-chess)
 
+![Deno dressed as a king](./data/king-deno.png)
+
 Deno-Chess is a speedy pure-Typescript chess engine. It is packaged for Deno, as
 well as for the browser. Features include:
 
@@ -7,6 +9,7 @@ well as for the browser. Features include:
   detection, etc. All the standard Chess-engine stuff.
 - Can both read and write
   [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) strings.
+- Can both read and write [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) strings.
 - Fast! the game core is built on top of typed arrays, and a whole bunch of
   bit-math. In the end, it's roughly 10x faster than Chess.js.
 
