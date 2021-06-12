@@ -75,6 +75,10 @@ export function listValidMoves(
 
   assert(sp !== SPACE_EMPTY, "Listing moves of empty space");
 
+  b.save();
+  b.set(idx, SPACE_EMPTY);
+
+
   switch (spaceGetType(sp)) {
     // Slidey pieces:
 
@@ -105,6 +109,8 @@ export function listValidMoves(
       _pawnMoves(b, sp, idx, out);
       break;
   }
+
+  b.restore();
 
   return out;
 }
