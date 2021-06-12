@@ -9,7 +9,8 @@ well as for the browser. Features include:
   detection, etc. All the standard Chess-engine stuff.
 - Can both read and write
   [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) strings.
-- Can both read and write [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) strings.
+- Can both read and write
+  [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) strings.
 - Fast! the game core is built on top of typed arrays, and a whole bunch of
   bit-math. In the end, it's roughly 10x faster than Chess.js.
 
@@ -163,18 +164,21 @@ Most of the game features are provided by the ChessGame class.
 
 ### Tags
 
-Keeping tags for your game can be useful when exporting in PGN format. By default, Deno-Chess will add a "Date" tag, equal to
-the YYYY.MM.DD when you called the constructor. You can manage your tags with:
+Keeping tags for your game can be useful when exporting in PGN format. By
+default, Deno-Chess will add a "Date" tag, equal to the YYYY.MM.DD when you
+called the constructor. You can manage your tags with:
 
 - **`game.getTags()`**
 
-  Get all tags current stored for this game. Returns an object, mapping from string Names to string Values.
+  Get all tags current stored for this game. Returns an object, mapping from
+  string Names to string Values.
 
 - **`game.setTag(name: string, value: null | string | boolean | number | Date)`**
 
-  Set a single tag to be equal to the given value. Use `null` to clear a prior tag value. Booleans are coerced to either
-  "0" or "1". Numbers are stringified. And Dates are formatted in "YYYY.MM.DD" format, according to the local timezone.
-  (Or "????.??.??" if the Date is invalid...)
+  Set a single tag to be equal to the given value. Use `null` to clear a prior
+  tag value. Booleans are coerced to either "0" or "1". Numbers are stringified.
+  And Dates are formatted in "YYYY.MM.DD" format, according to the local
+  timezone. (Or "????.??.??" if the Date is invalid...)
 
 ### Outputting a string
 

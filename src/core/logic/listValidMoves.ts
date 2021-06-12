@@ -78,7 +78,6 @@ export function listValidMoves(
   b.save();
   b.set(idx, SPACE_EMPTY);
 
-
   switch (spaceGetType(sp)) {
     // Slidey pieces:
 

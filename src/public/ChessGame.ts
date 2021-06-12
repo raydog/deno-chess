@@ -181,8 +181,8 @@ export class ChessGame {
 
   /**
    * Return all PGN tags that we currently have stored for this game.
-   * 
-   * @returns 
+   *
+   * @returns
    */
   getTags(): { [name: string]: string } {
     return { ...this.#tags };
@@ -191,14 +191,14 @@ export class ChessGame {
   /**
    * Will set a single tag value for this game. This doesn't have any bearing on how the game will run, but these values
    * will be used when generating a PGN file.
-   * 
+   *
    * Name must start with an Uppercase letter, and only contain letters (a-z), digits (0-9), and underscores (_). This
    * is to remain consistent with the PGN standard.
-   * 
+   *
    * If value is null, the prior tag value will be unset. If the value is a string or number, the value will simply
    * be coerced to string. Boolean values are coerced to "1" or "0". Date values are coerced to "YYYY.MM.DD" format.
    * Values must contain only printable ASCII values.
-   * 
+   *
    * @param name The tag name.
    * @param value The tag value. (null if we wish to erase a prior value.)
    */
@@ -215,13 +215,11 @@ export class ChessGame {
     if (typeof value === "boolean") {
       valueStr = value ? "1" : "0";
     } else if (value instanceof Date) {
-      valueStr = (isNaN(value.valueOf()))
-        ? "????.??.??"
-        : [
-          value.getFullYear(),
-          String(value.getMonth()+1).padStart(2, "0"),
-          String(value.getDate()).padStart(2, "0"),
-        ].join(".");
+      valueStr = (isNaN(value.valueOf())) ? "????.??.??" : [
+        value.getFullYear(),
+        String(value.getMonth() + 1).padStart(2, "0"),
+        String(value.getDate()).padStart(2, "0"),
+      ].join(".");
     } else {
       valueStr = String(value);
     }
