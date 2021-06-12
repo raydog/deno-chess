@@ -35,6 +35,9 @@ sed -Ei "s|^## $VERSION_RE( .*)?|## $VERSION ($TODAY)|" "$HISTORY_PATH"
 sed -Ei "s|^BundleVersion .*|BundleVersion = $VERSION|" "$MAKEFILE_PATH"
 sed -Ei "s|^BundleYear .*|BundleYear = $YEAR|" "$MAKEFILE_PATH"
 
+# Rebuild the dist asset:
+make build
+
 # Make a release commit:
 git commit --allow-empty -am "Release: $VERSION"
 
