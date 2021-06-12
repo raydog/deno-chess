@@ -14,6 +14,7 @@ import { findMoveBySAN } from "../findMoveBySAN.ts";
 import { listAllValidMoves } from "../listValidMoves.ts";
 import { checkMoveResults } from "../moveResults.ts";
 import { performMove } from "../performMove.ts";
+import { validatePGNKeyValue } from "./pgnUtils.ts";
 
 /**
  * PGN file parsing can be customized with a few options.
@@ -60,8 +61,6 @@ const DIGIT_RE = /^\d/;
 const SYMBOL_START_RE = /^[a-z0-9]/i;
 const SYMBOL_CONTINUE_RE = /^[-a-z0-9_+#=:/]/i; // Aside: spec actually forgot / as a symbol continuation character, even though the spec depends on it.
 const IS_INT_RE = /^\d+$/;
-const VALID_TAG_NAME_START_RE = /^[A-Z]/;
-const VALID_TAG_NAME_REST_RE = /^[a-z0-9_]+$/i;
 const GAME_TERM_RE = /^(1-0|0-1|1\/2-1\/2)$/;
 
 /**
@@ -100,7 +99,6 @@ function _parseTag(tokens: Token[], tags: Tags) {
 
   const key = tokens.shift() as TokenSymbol;
   _expectToken(key, "Sym");
-  _validateTagName(key);
 
   const val = tokens.shift() as TokenString;
   _expectToken(val, "Str");
@@ -108,24 +106,13 @@ function _parseTag(tokens: Token[], tags: Tags) {
   const rbrack = tokens.shift() as TokenSpecialChar;
   _expectToken(rbrack, "]");
 
+  validatePGNKeyValue(key.value, val.value);
+
   if (tags[key.value]) {
     throw new ChessParseError("Duplicate PGN tag: " + key.value);
   }
 
   tags[key.value] = val.value;
-}
-
-function _validateTagName(tok: TokenSymbol) {
-  if (!VALID_TAG_NAME_START_RE.test(tok.value)) {
-    throw new ChessParseError(
-      `PGN tag names must start with an uppercase letter. Got: '${tok.value}'`,
-    );
-  }
-  if (!VALID_TAG_NAME_REST_RE.test(tok.value)) {
-    throw new ChessParseError(
-      `PGN tag names can only have letters, digits, and underscores. Got: '${tok.value}'`,
-    );
-  }
 }
 
 function _parseMoveList(tokens: Token[], board: Board, moves: PgnMove[]) {
