@@ -1,6 +1,6 @@
 import { Board } from "../../datatypes/Board.ts";
 import { ChessParseError } from "../../datatypes/ChessError.ts";
-import { Color, COLOR_BLACK, COLOR_WHITE } from "../../datatypes/Color.ts";
+import { Color } from "../../datatypes/Color.ts";
 import {
   GAMESTATUS_ACTIVE,
   GAMESTATUS_DRAW,
