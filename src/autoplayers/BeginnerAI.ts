@@ -83,7 +83,7 @@ export class BeginnerAI {
       scoreToString(best.score),
       move,
       Date.now() - start,
-      best.nodes
+      best.nodes,
     );
 
     this.#game.move(move, "Q");

@@ -210,14 +210,19 @@ Deno.test("List Valid Moves > King > Cannot castle kingside with enemy piece", f
     a1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
     h1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
     e1: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE),
-    
+
     b3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
     g3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
   });
-  performMove(b, createSimpleCapture(b.get(0x26), 0x26, 0x07, b.get(0x07), 0x07));
+  performMove(
+    b,
+    createSimpleCapture(b.get(0x26), 0x26, 0x07, b.get(0x07), 0x07),
+  );
   const m = listValidMoves(b, coordFromAN("e1"));
   assertMoves(b, m, [
-    "Kd1", "Ke2", "Kf1",
+    "Kd1",
+    "Ke2",
+    "Kf1",
     // NOT: O-O !
   ]);
 });
@@ -227,14 +232,19 @@ Deno.test("List Valid Moves > King > Cannot castle queenside with enemy piece", 
     a1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
     h1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
     e1: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE),
-    
+
     b3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
     g3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
   });
-  performMove(b, createSimpleCapture(b.get(0x21), 0x21, 0x00, b.get(0x00), 0x00));
+  performMove(
+    b,
+    createSimpleCapture(b.get(0x21), 0x21, 0x00, b.get(0x00), 0x00),
+  );
   const m = listValidMoves(b, coordFromAN("e1"));
   assertMoves(b, m, [
-    "Kd1", "Kd2", "Kf2",
+    "Kd1",
+    "Kd2",
+    "Kf2",
     // NOT: O-O-O !
   ]);
 });

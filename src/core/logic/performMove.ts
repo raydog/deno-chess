@@ -84,8 +84,14 @@ export function performMove(
   }
 
   // If a capture of a rook that hasn't moved, make sure that side can no longer castle:
-  if (move.capture && spaceGetType(move.capture) === PIECETYPE_ROOK && !spaceHasMoved(move.capture)) {
-    b.current.castles = castleMapRookMoved(b.current.castles, move.captureCoord);
+  if (
+    move.capture && spaceGetType(move.capture) === PIECETYPE_ROOK &&
+    !spaceHasMoved(move.capture)
+  ) {
+    b.current.castles = castleMapRookMoved(
+      b.current.castles,
+      move.captureCoord,
+    );
   }
 
   // Toggle the active player:

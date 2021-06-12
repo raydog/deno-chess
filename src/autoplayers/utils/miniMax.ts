@@ -88,7 +88,7 @@ function miniMax(
     );
 
     board.restore();
-    
+
     nodes += branchNodes;
 
     // Easy case: Whether minimizing or maximizing: we've seen this literal score before, so
