@@ -11,13 +11,15 @@ BuildOpts = --bundle --minify --color=false --target=es2015 --global-name=DenoCh
 fmt:
 	deno fmt --ignore='data/eco,scripts/build,dist'
 
-test: 
+test:
 	deno test test
 
 build:
 	cd scripts/build && \
 	yarn && \
-	node_modules/.bin/esbuild $(BuildOpts) ../../mod.ts --outfile=../../dist/denochess.js
+	node_modules/.bin/esbuild $(BuildOpts) ../../mod.ts --outfile=../../dist/denochess.min.js
+
+# TODO: Emit .d.ts file as well, once Typescript's issue #38149 gets fixed...
 
 devserver:
 	cd scripts/build && \
