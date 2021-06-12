@@ -77,10 +77,15 @@ export function performMove(
   }
 
   // If a capture or pawn move, reset the clock. Else increment.
-  if (spaceGetType(space) === PIECETYPE_PAWN || move.capture) {
+  if (move.capture || spaceGetType(space) === PIECETYPE_PAWN) {
     b.current.clock = 0;
   } else {
     b.current.clock++;
+  }
+
+  // If a capture of a rook that hasn't moved, make sure that side can no longer castle:
+  if (move.capture && spaceGetType(move.capture) === PIECETYPE_ROOK && !spaceHasMoved(move.capture)) {
+    b.current.castles = castleMapRookMoved(b.current.castles, move.captureCoord);
   }
 
   // Toggle the active player:

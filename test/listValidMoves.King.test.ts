@@ -1,5 +1,6 @@
 import { COLOR_BLACK, COLOR_WHITE } from "../src/core/datatypes/Color.ts";
 import { coordFromAN } from "../src/core/datatypes/Coord.ts";
+import { createSimpleCapture } from "../src/core/datatypes/Move.ts";
 import {
   PIECETYPE_BISHOP,
   PIECETYPE_KING,
@@ -10,6 +11,7 @@ import {
 } from "../src/core/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/core/datatypes/Space.ts";
 import { listValidMoves } from "../src/core/logic/listValidMoves.ts";
+import { performMove } from "../src/core/logic/performMove.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";
 import { boardLayout } from "./testUtils/boardLayout.ts";
 
@@ -200,5 +202,39 @@ Deno.test("List Valid Moves > King > Blocked kingside castle", function () {
     "Kd2",
     "Ke2",
     "Kf2",
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Cannot castle kingside with enemy piece", function () {
+  const b = boardLayout({
+    a1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
+    h1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
+    e1: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE),
+    
+    b3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
+    g3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
+  });
+  performMove(b, createSimpleCapture(b.get(0x26), 0x26, 0x07, b.get(0x07), 0x07));
+  const m = listValidMoves(b, coordFromAN("e1"));
+  assertMoves(b, m, [
+    "Kd1", "Ke2", "Kf1",
+    // NOT: O-O !
+  ]);
+});
+
+Deno.test("List Valid Moves > King > Cannot castle queenside with enemy piece", function () {
+  const b = boardLayout({
+    a1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
+    h1: encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE),
+    e1: encodePieceSpace(PIECETYPE_KING, COLOR_WHITE),
+    
+    b3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
+    g3: encodePieceSpace(PIECETYPE_KNIGHT, COLOR_BLACK),
+  });
+  performMove(b, createSimpleCapture(b.get(0x21), 0x21, 0x00, b.get(0x00), 0x00));
+  const m = listValidMoves(b, coordFromAN("e1"));
+  assertMoves(b, m, [
+    "Kd1", "Kd2", "Kf2",
+    // NOT: O-O-O !
   ]);
 });
