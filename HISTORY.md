@@ -1,3 +1,9 @@
+## 0.2.1 (2021-06-12)
+
+- Fix a move enumeration bug, that would allow the King to castle when not
+  appropriate.
+- Slight performance improvement with move enumeration.
+
 ## 0.2.0 (2021-06-12)
 
 - Basic PGN import & export support.

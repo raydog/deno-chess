@@ -1,5 +1,5 @@
 # These 2 lines are updated by the release script:
-BundleVersion = 0.2.0
+BundleVersion = 0.2.1
 BundleYear = 2021
 
 BundleHeader = /*! Deno-Chess $(BundleVersion), (c) $(BundleYear), license: MIT */
