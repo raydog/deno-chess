@@ -48,6 +48,6 @@ export function buildStandardBoard(): Board {
 
 function _setRow(b: Board, color: Color, start: Coord, pieces: PieceType[]) {
   for (let i = 0; i < 8; i++) {
-    b.set(start + i, encodePieceSpace(pieces[i], color, false));
+    b.set(start | i, encodePieceSpace(pieces[i], color, false));
   }
 }
