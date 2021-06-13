@@ -1,4 +1,4 @@
-import { assert } from "../../src/logic/assert.ts";
+import { assert } from "../../src/core/logic/assert.ts";
 import { path, readLines } from "../../testDeps.ts";
 
 type OpeningEntry = {

@@ -1,6 +1,6 @@
 import { bench, runBenchmarks } from "../../testDeps.ts";
-import { buildStandardBoard } from "../../src/logic/boardLayouts/standard.ts";
-import { hashBoard } from "../../src/logic/hashBoard.ts";
+import { buildStandardBoard } from "../../src/core/logic/boardLayouts/buildStandardBoard.ts";
+import { hashBoard } from "../../src/core/logic/hashBoard.ts";
 
 const LOOP = 10_000;
 

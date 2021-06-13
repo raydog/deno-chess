@@ -2,7 +2,7 @@
 
 import { boardRenderASCII } from "../core/logic/boardRenderASCII.ts";
 import { boardToFEN } from "../core/logic/FEN/boardToFEN.ts";
-import { buildStandardBoard } from "../core/logic/boardLayouts/standard.ts";
+import { buildStandardBoard } from "../core/logic/boardLayouts/buildStandardBoard.ts";
 import {
   listAllValidMoves,
   listValidMoves,

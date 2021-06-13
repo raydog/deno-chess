@@ -22,7 +22,7 @@ const PROMOTIONS = [
  * @param depth
  */
 export function perft(board: Board, depth: number): number {
-  if (depth <= 0)return 1;
+  if (depth <= 0) return 1;
 
   let num = 0;
   const moves = listAllValidMoves(board, board.current.turn);

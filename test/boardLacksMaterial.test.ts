@@ -9,7 +9,7 @@ import {
 } from "../src/core/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/core/datatypes/Space.ts";
 import { boardLacksMaterial } from "../src/core/logic/boardLacksMaterial.ts";
-import { buildStandardBoard } from "../src/core/logic/boardLayouts/standard.ts";
+import { buildStandardBoard } from "../src/core/logic/boardLayouts/buildStandardBoard.ts";
 import { asserts } from "../testDeps.ts";
 import { boardLayout } from "./testUtils/boardLayout.ts";
 

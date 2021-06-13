@@ -31,9 +31,10 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Kiwipete",
-    boardFn: () => boardFromFEN(
-      "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
-    ),
+    boardFn: () =>
+      boardFromFEN(
+        "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+      ),
     tests: [
       { depth: 1, shouldBe: 48 },
       { depth: 2, shouldBe: 2039 },
@@ -56,9 +57,10 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Position 4",
-    boardFn: () => boardFromFEN(
-      "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
-    ),
+    boardFn: () =>
+      boardFromFEN(
+        "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+      ),
     tests: [
       { depth: 1, shouldBe: 6 },
       { depth: 2, shouldBe: 264 },
@@ -69,9 +71,10 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Position 5",
-    boardFn: () => boardFromFEN(
-      "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
-    ),
+    boardFn: () =>
+      boardFromFEN(
+        "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
+      ),
     tests: [
       { depth: 1, shouldBe: 44 },
       { depth: 2, shouldBe: 1486 },
@@ -83,9 +86,10 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Position 6",
-    boardFn: () => boardFromFEN(
-      "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
-    ),
+    boardFn: () =>
+      boardFromFEN(
+        "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+      ),
     tests: [
       { depth: 1, shouldBe: 46 },
       { depth: 2, shouldBe: 2079 },

@@ -8,7 +8,7 @@ import {
   GAMESTATUS_RESIGNED,
 } from "../../datatypes/GameStatus.ts";
 import { Move } from "../../datatypes/Move.ts";
-import { buildStandardBoard } from "../boardLayouts/standard.ts";
+import { buildStandardBoard } from "../boardLayouts/buildStandardBoard.ts";
 import { boardFromFEN } from "../FEN/boardFromFEN.ts";
 import { findMoveBySAN } from "../findMoveBySAN.ts";
 import { listAllValidMoves } from "../listValidMoves.ts";

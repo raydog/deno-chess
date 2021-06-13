@@ -7,7 +7,7 @@ import {
   PIECETYPE_ROOK,
 } from "../src/core/datatypes/PieceType.ts";
 import { encodePieceSpace } from "../src/core/datatypes/Space.ts";
-import { buildStandardBoard } from "../src/core/logic/boardLayouts/standard.ts";
+import { buildStandardBoard } from "../src/core/logic/boardLayouts/buildStandardBoard.ts";
 import { listAllValidMoves } from "../src/core/logic/listValidMoves.ts";
 import { asserts } from "../testDeps.ts";
 import { assertMoves } from "./testUtils/assertMoves.ts";

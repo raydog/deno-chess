@@ -13,7 +13,7 @@ import {
   spaceGetType,
   spaceHasMoved,
 } from "../src/core/datatypes/Space.ts";
-import { buildStandardBoard } from "../src/core/logic/boardLayouts/standard.ts";
+import { buildStandardBoard } from "../src/core/logic/boardLayouts/buildStandardBoard.ts";
 import { performMove } from "../src/core/logic/performMove.ts";
 import { asserts } from "../testDeps.ts";
 
