@@ -22,18 +22,17 @@ const PAWN_ROW = Array(8).fill(PIECETYPE_PAWN);
  * @returns A new board.
  */
 export function buildChess960(): Board {
-  
   const template: PieceType[] = Array(8).fill(0);
 
   // Bishops must be on alternate colors:
-  template[randInt(4)*2] = PIECETYPE_BISHOP;
-  template[randInt(4)*2+1] = PIECETYPE_BISHOP;
+  template[randInt(4) * 2] = PIECETYPE_BISHOP;
+  template[randInt(4) * 2 + 1] = PIECETYPE_BISHOP;
 
   // Queens and knights go wherever:
   placeAt(template, randInt(6), PIECETYPE_KNIGHT);
   placeAt(template, randInt(5), PIECETYPE_KNIGHT);
   placeAt(template, randInt(4), PIECETYPE_QUEEN);
-  
+
   // King needs to be in-between rooks, so just fill the rest with R K R:
   const qRook = placeAt(template, 0, PIECETYPE_ROOK);
   const _king = placeAt(template, 0, PIECETYPE_KING);
@@ -41,7 +40,7 @@ export function buildChess960(): Board {
 
   // Build the result:
   const out = new Board();
-  
+
   setRow(out, COLOR_WHITE, 0x00, template);
   setRow(out, COLOR_WHITE, 0x10, PAWN_ROW);
 
@@ -72,7 +71,7 @@ function randInt(max: number): number {
 
 // Util: Places a PieceType at the Nth empty (0) space:
 function placeAt(arr: PieceType[], num: number, type: PieceType): number {
-  for (let i=0; i<8; i++) {
+  for (let i = 0; i < 8; i++) {
     if (arr[i] === 0 && num-- === 0) {
       arr[i] = type;
       return i;

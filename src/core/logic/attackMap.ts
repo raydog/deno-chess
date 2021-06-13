@@ -24,8 +24,8 @@ const ATTACK_SLIDE = 0b1000;
 const DIRS = [16, 1, -16, -1, 17, -15, -17, 15];
 const KNIGHT = [31, 33, 14, 18, -18, -14, -33, -31];
 const PAWN: { [color in Color]: number[] } = {
-  [COLOR_WHITE]: [15, 17], 
-  [COLOR_BLACK]: [-15, -17]
+  [COLOR_WHITE]: [15, 17],
+  [COLOR_BLACK]: [-15, -17],
 };
 
 export function attackMapIsAttacked(b: Board, idx: Coord, byColor: Color) {
@@ -189,7 +189,7 @@ function recastUnderlyingRays(b: Board, idx: Coord, bit: 0 | 1) {
   const bufAttack = b.current.attacks;
   const bufBoard = b.current.board;
 
-  for (let color = 0; color <= 8; color+=8) {
+  for (let color = 0; color <= 8; color += 8) {
     const bColor = color << 4;
     const here = bufAttack[idx | bColor | ATTACK_SLIDE];
     for (let dir = 0; dir < 8; dir++) {

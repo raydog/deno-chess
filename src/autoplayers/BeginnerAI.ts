@@ -4,7 +4,6 @@ import { Color, COLOR_BLACK, COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordToAN } from "../core/datatypes/Coord.ts";
 import { Move } from "../core/datatypes/Move.ts";
 import {
-  PieceType,
   PIECETYPE_BISHOP,
   PIECETYPE_KING,
   PIECETYPE_KNIGHT,
@@ -12,15 +11,11 @@ import {
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
 } from "../core/datatypes/PieceType.ts";
-import {
-  SPACE_EMPTY,
-  spaceGetColor,
-  spaceGetType,
-} from "../core/datatypes/Space.ts";
+import { spaceGetType } from "../core/datatypes/Space.ts";
 import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
-import { listAllValidMoves } from "../core/logic/listValidMoves.ts";
 import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
+import { boardScore } from "./utils/evaluation/boardScore.ts";
 
 type TurnColor = "white" | "black";
 
@@ -59,20 +54,49 @@ export class BeginnerAI {
       return;
     }
 
-    // TODO: Faster.
+    // TODO: Faster?
     const fen = this.#game.toString("fen");
     boardFromFEN(fen, board);
 
-    // console.log("FEN", fen)
-
-    // console.log(boardRenderASCII(board, false));
     const start = Date.now();
 
-    const best = searchBestMoves(board, turn, 3, rateMoves, rateBoard);
+    const best = searchBestMoves(
+      board,
+      turn,
+      3,
+      rateMoves,
+      (board) =>
+        boardScore(board, {
+          General: {
+            BookMove: 250,
+          },
 
-    // const best = (turn === COLOR_WHITE)
-    //   ? descendWhite(board, 2)
-    //   : descendBlack(board, 2);
+          Material: {
+            [PIECETYPE_PAWN]: 100,
+            [PIECETYPE_BISHOP]: 300,
+            [PIECETYPE_KNIGHT]: 300,
+            [PIECETYPE_ROOK]: 500,
+            [PIECETYPE_QUEEN]: 900,
+            [PIECETYPE_KING]: 20000,
+          },
+
+          Mobility: {
+            MoveScore: 25,
+          },
+
+          PawnStructure: {
+            IsolatedPawn: -50,
+            DoubledPawn: -20,
+            PastPawn: 80,
+            PawnSupport: 20,
+            PawnRanks: 20,
+          },
+
+          Random: {
+            Range: 0,
+          },
+        }),
+    );
 
     if (!best.move) throw new Error("Need move list");
 
@@ -93,58 +117,4 @@ export class BeginnerAI {
 // Rate a move. Basically, prioritize captures first
 function rateMoves(a: Move, b: Move): number {
   return spaceGetType(b.capture) - spaceGetType(a.capture);
-}
-
-// Rate a board. + benefits white. - benefits black.
-function rateBoard(board: Board): number {
-  const material = _countMaterial(board);
-  const mobility = _countMobility(board);
-
-  return material + 0.25 * mobility;
-}
-
-function _countMaterial(board: Board) {
-  let net = 0;
-
-  for (let rank = 0; rank < 0x80; rank += 0x10) {
-    for (let file = 0; file < 0x8; file++) {
-      const idx = rank | file;
-      const spot = board.get(idx);
-
-      if (spot === SPACE_EMPTY) continue;
-
-      const value = _pieceValue(spaceGetType(spot));
-      if (spaceGetColor(spot) === COLOR_WHITE) {
-        net += value;
-      } else {
-        net -= value;
-      }
-    }
-  }
-
-  return net;
-}
-
-function _countMobility(board: Board) {
-  return listAllValidMoves(board, COLOR_WHITE).length -
-    listAllValidMoves(board, COLOR_BLACK).length;
-}
-
-function _pieceValue(type: PieceType): number {
-  switch (type) {
-    case PIECETYPE_PAWN:
-      return 1;
-    case PIECETYPE_KNIGHT:
-      return 3;
-    case PIECETYPE_BISHOP:
-      return 3;
-    case PIECETYPE_ROOK:
-      return 5;
-    case PIECETYPE_QUEEN:
-      return 9;
-    case PIECETYPE_KING:
-      return 200;
-    default:
-      return 0;
-  }
 }
