@@ -1,12 +1,12 @@
 import { Board } from "../src/core/datatypes/Board.ts";
-import { buildStandardBoard } from "../src/core/logic/boardLayouts/standard.ts";
+import { buildStandardBoard } from "../src/core/logic/boardLayouts/buildStandardBoard.ts";
 import { boardFromFEN } from "../src/core/logic/FEN/boardFromFEN.ts";
 import { perft } from "../src/core/logic/perft.ts";
 import { asserts } from "../testDeps.ts";
 
 type PerftDef = {
   name: string;
-  board: Board;
+  boardFn: () => Board;
   tests: { depth: number; shouldBe: number }[];
 };
 
@@ -19,7 +19,7 @@ const SLOW_CUTOFF = 2_000_000;
 const PERFT_TESTS: PerftDef[] = [
   {
     name: "Initial position",
-    board: buildStandardBoard(),
+    boardFn: () => buildStandardBoard(),
     tests: [
       { depth: 1, shouldBe: 20 },
       { depth: 2, shouldBe: 400 },
@@ -31,7 +31,7 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Kiwipete",
-    board: boardFromFEN(
+    boardFn: () => boardFromFEN(
       "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
     ),
     tests: [
@@ -44,7 +44,7 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Position 3",
-    board: boardFromFEN("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"),
+    boardFn: () => boardFromFEN("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1"),
     tests: [
       { depth: 1, shouldBe: 14 },
       { depth: 2, shouldBe: 191 },
@@ -56,7 +56,7 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Position 4",
-    board: boardFromFEN(
+    boardFn: () => boardFromFEN(
       "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
     ),
     tests: [
@@ -69,7 +69,7 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Position 5",
-    board: boardFromFEN(
+    boardFn: () => boardFromFEN(
       "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8",
     ),
     tests: [
@@ -83,7 +83,7 @@ const PERFT_TESTS: PerftDef[] = [
 
   {
     name: "Position 6",
-    board: boardFromFEN(
+    boardFn: () => boardFromFEN(
       "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
     ),
     tests: [
@@ -96,12 +96,13 @@ const PERFT_TESTS: PerftDef[] = [
   },
 ];
 
-for (const { name, board, tests } of PERFT_TESTS) {
+for (const { name, boardFn, tests } of PERFT_TESTS) {
   for (const { depth, shouldBe } of tests) {
     Deno.test({
       name: `Perft > ${name} > Depth ${depth}`,
       ignore: shouldBe > SLOW_CUTOFF,
       fn() {
+        const board = boardFn();
         const count = perft(board, depth);
         asserts.assertEquals(count, shouldBe);
       },
