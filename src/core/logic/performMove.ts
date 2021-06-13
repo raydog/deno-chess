@@ -95,5 +95,5 @@ export function performMove(
   }
 
   // Toggle the active player:
-  b.current.turn = 1 - b.current.turn;
+  b.current.turn = 8 - b.current.turn;
 }

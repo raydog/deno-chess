@@ -9,7 +9,7 @@ import { PIECETYPE_KING } from "../datatypes/PieceType.ts";
 import { attackMapIsAttacked } from "./attackMap.ts";
 
 export function kingInDanger(b: Board, kingColor: Color): boolean {
-  const enemy = 1 - kingColor;
+  const enemy = 8 - kingColor;
   for (let rank = 0; rank < 0x80; rank += 0x10) {
     for (let file = 0; file < 0x8; file++) {
       const idx = rank | file;

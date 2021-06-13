@@ -93,7 +93,7 @@ export function boardFromFEN(fen: string, board?: Board): Board {
   // Field 6: Full-move number
   out.current.moveNum = _parseIntField(fields[5]);
 
-  const status = checkMoveResults(out, 1 - turn);
+  const status = checkMoveResults(out, 8 - turn);
   out.current.status = status.newGameStatus;
 
   return out;

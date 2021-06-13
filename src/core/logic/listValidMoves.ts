@@ -126,7 +126,7 @@ function _findMoves(
   out: Move[],
 ) {
   const color = spaceGetColor(sp);
-  const enemy = 1 - color;
+  const enemy = 8 - color;
 
   for (let dirIdx = dirsLow; dirIdx < dirsHigh; dirIdx++) {
     const step = dirs[dirIdx];
@@ -199,7 +199,7 @@ function _pawnMoves(
   out: Move[],
 ) {
   const color = spaceGetColor(sp);
-  const enemy = 1 - color;
+  const enemy = 8 - color;
 
   const dir = color === COLOR_WHITE ? 1 : -1;
 

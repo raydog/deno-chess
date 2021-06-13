@@ -23,11 +23,14 @@ const ATTACK_SLIDE = 0b1000;
 // This is so we don't have to have different tables for rooks and bishops etc, just different ranges.
 const DIRS = [16, 1, -16, -1, 17, -15, -17, 15];
 const KNIGHT = [31, 33, 14, 18, -18, -14, -33, -31];
-const PAWN = [[15, 17], [-15, -17]];
+const PAWN: { [color in Color]: number[] } = {
+  [COLOR_WHITE]: [15, 17], 
+  [COLOR_BLACK]: [-15, -17]
+};
 
 export function attackMapIsAttacked(b: Board, idx: Coord, byColor: Color) {
   const attacks = b.current.attacks;
-  const bColor = byColor << 7;
+  const bColor = byColor << 4;
   return Boolean(
     attacks[idx | bColor | ATTACK_SLIDE] ||
       attacks[idx | bColor | ATTACK_STEPS],
@@ -147,17 +150,17 @@ export function attackMapDebug(b: Board): string {
     for (let file = 0; file < 8; file++) {
       const idx = rank | file;
 
-      let white = attacks[idx | (COLOR_WHITE << 7) | ATTACK_STEPS];
-      let black = attacks[idx | (COLOR_BLACK << 7) | ATTACK_STEPS];
+      let white = attacks[idx | (COLOR_WHITE << 4) | ATTACK_STEPS];
+      let black = attacks[idx | (COLOR_BLACK << 4) | ATTACK_STEPS];
 
-      const wSlide = attacks[idx | (COLOR_WHITE << 7) | ATTACK_SLIDE];
+      const wSlide = attacks[idx | (COLOR_WHITE << 4) | ATTACK_SLIDE];
       for (let dir = 0; dir < 8; dir++) {
         if (wSlide & (1 << dir)) {
           white++;
         }
       }
 
-      const bSlide = attacks[idx | (COLOR_BLACK << 7) | ATTACK_SLIDE];
+      const bSlide = attacks[idx | (COLOR_BLACK << 4) | ATTACK_SLIDE];
       for (let dir = 0; dir < 8; dir++) {
         if (bSlide & (1 << dir)) {
           black++;
@@ -186,8 +189,8 @@ function recastUnderlyingRays(b: Board, idx: Coord, bit: 0 | 1) {
   const bufAttack = b.current.attacks;
   const bufBoard = b.current.board;
 
-  for (let color = 0; color < 2; color++) {
-    const bColor = color << 7;
+  for (let color = 0; color <= 8; color+=8) {
+    const bColor = color << 4;
     const here = bufAttack[idx | bColor | ATTACK_SLIDE];
     for (let dir = 0; dir < 8; dir++) {
       if (here & (1 << dir)) {
@@ -230,7 +233,7 @@ function tryUpdateStep(
   delta: number,
 ) {
   if (idx & 0x88) return;
-  const bColor = color << 7;
+  const bColor = color << 4;
   bufAttack[idx | bColor | ATTACK_STEPS] += delta;
 }
 
@@ -241,7 +244,7 @@ function setSlide(
   dir: number,
   bit: 0 | 1,
 ) {
-  const bColor = color << 7;
+  const bColor = color << 4;
   if (bit) {
     bufAttack[idx | bColor | ATTACK_SLIDE] |= 1 << dir;
   } else {

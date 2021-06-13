@@ -84,6 +84,6 @@ export function castleMapGetFile(
   color: Color,
   kingSide: boolean,
 ): CastleMap {
-  const offset = (color << 3) + (kingSide ? 0 : 4);
+  const offset = (color) + (kingSide ? 0 : 4);
   return (map >>> offset) & 0xf;
 }

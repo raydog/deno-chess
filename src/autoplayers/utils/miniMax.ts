@@ -51,7 +51,7 @@ function miniMax(
   compareMoves: CompareMoveFn,
   rateBoard: RateBoardFn,
 ): MiniMaxResponse {
-  const enemy = 1 - color;
+  const enemy = 8 - color;
 
   // Checkmates cause a surprise leaf:
   const res = checkMoveResults(board, enemy);

@@ -216,7 +216,7 @@ function _parseEndOfGame(tokens: Token[], board: Board): string {
     // Draw. Pull a good reason from the move result object, and move on:
 
     case "1/2-1/2": {
-      const res = checkMoveResults(board, 1 - board.current.turn);
+      const res = checkMoveResults(board, 8 - board.current.turn);
       board.current.status = (res.newGameStatus >= GAMESTATUS_DRAW)
         ? res.newGameStatus
         : GAMESTATUS_DRAW;
@@ -242,7 +242,7 @@ function _doMove(board: Board, moves: PgnMove[], san: string) {
   });
   performMove(board, move);
   const res = checkMoveResults(board, turn);
-  board.current.turn = 1 - turn;
+  board.current.turn = 8 - turn;
   // We'll accept active, checkmated, or stalemated status, but not the others. (Yet)
   if (
     res.newGameStatus < GAMESTATUS_DRAW ||
