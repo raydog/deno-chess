@@ -3,8 +3,9 @@ import { assert } from "../logic/assert.ts";
 import { Coord } from "./Coord.ts";
 import { GameStatus, GAMESTATUS_ACTIVE } from "./GameStatus.ts";
 import { CastleMap } from "./CastleMap.ts";
-import { Color, COLOR_WHITE } from "./Color.ts";
+import { Color, COLOR_BLACK, COLOR_WHITE } from "./Color.ts";
 import { attackMapAddPiece, attackMapRemovePiece } from "../logic/attackMap.ts";
+import { Move } from "./Move.ts";
 
 // Uses the 0x88 strategy:
 const BOARD_SIZE = 8 * 8 * 2;
@@ -19,6 +20,7 @@ type Layer = {
   turn: Color;
   seen: { [hash: string]: number };
   castles: CastleMap;
+  moveCache: { [colors in Color]: Move[] | null };
 };
 
 /**
@@ -143,6 +145,10 @@ function newLayer(): Layer {
     turn: COLOR_WHITE,
     seen: {},
     castles: 0,
+    moveCache: {
+      [COLOR_WHITE]: null,
+      [COLOR_BLACK]: null,
+    },
   };
 }
 
@@ -156,4 +162,6 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.turn = src.turn;
   dest.seen = {}; // Just create new object instead of copying massive objects.
   dest.castles = src.castles;
+  dest.moveCache[COLOR_WHITE] = src.moveCache[COLOR_WHITE];
+  dest.moveCache[COLOR_BLACK] = src.moveCache[COLOR_BLACK];
 }

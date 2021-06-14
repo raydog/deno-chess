@@ -3,6 +3,7 @@ import {
   castleMapKingMoved,
   castleMapRookMoved,
 } from "../datatypes/CastleMap.ts";
+import { COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
 import { Move } from "../datatypes/Move.ts";
 import {
   PIECETYPE_KING,
@@ -83,7 +84,7 @@ export function performMove(
     b.current.clock++;
   }
 
-  // If a capture of a rook that hasn't moved, make sure that side can no longer castle:
+  // If a capture of a rook thrm hasn't moved, make sure that side can no longer castle:
   if (
     move.capture && spaceGetType(move.capture) === PIECETYPE_ROOK &&
     !spaceHasMoved(move.capture)
@@ -93,6 +94,10 @@ export function performMove(
       move.captureCoord,
     );
   }
+
+  // Purge the move cache:
+  b.current.moveCache[COLOR_WHITE] = null;
+  b.current.moveCache[COLOR_BLACK] = null;
 
   // Toggle the active player:
   b.current.turn = 8 - b.current.turn;

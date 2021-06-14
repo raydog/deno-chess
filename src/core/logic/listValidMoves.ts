@@ -44,6 +44,10 @@ export function listAllValidMoves(
   b: Board,
   color: Color,
 ): Move[] {
+  const cached = b.current.moveCache[color];
+  if (cached) {
+    return [...cached];
+  }
   const out: Move[] = [];
   for (let rank = 0; rank < 0x80; rank += 0x10) {
     for (let file = 0; file < 0x8; file++) {
@@ -54,6 +58,7 @@ export function listAllValidMoves(
       }
     }
   }
+  b.current.moveCache[color] = out;
   return out;
 }
 
