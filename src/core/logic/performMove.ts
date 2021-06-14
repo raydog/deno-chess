@@ -28,8 +28,10 @@ export function performMove(
   b: Board,
   move: Move,
 ) {
+  const current = b.current;
+
   // Clear all En Passant-marked pawns from this board:
-  b.current.ep = 0x88;
+  current.ep = 0x88;
 
   // This piece just moved:
   let space = spaceMarkMoved(move.what);
@@ -39,17 +41,17 @@ export function performMove(
   // If this is a king, remove all castle eligibility, either because it's castling NOW, or because it's otherwise
   // moving.
   if (type === PIECETYPE_KING) {
-    b.current.castles = castleMapKingMoved(b.current.castles, color);
+    current.castles = castleMapKingMoved(current.castles, color);
   }
 
   // If this is a rook that hasn't moved before, mark it as ineligible for castles:
   if (type === PIECETYPE_ROOK && !spaceHasMoved(move.what)) {
-    b.current.castles = castleMapRookMoved(b.current.castles, move.from);
+    current.castles = castleMapRookMoved(current.castles, move.from);
   }
 
   // Mark as being vulnerable to En Passant if requested:
   if (move.markEnPassant) {
-    b.current.ep = move.markEnPassant;
+    current.ep = move.markEnPassant;
   }
 
   // If this pawn promoted, update the type before copying into the board:
@@ -74,14 +76,14 @@ export function performMove(
 
   // If this move is black's, then the turn number just increased:
   if (spaceGetColor(space)) {
-    b.current.moveNum++;
+    current.moveNum++;
   }
 
   // If a capture or pawn move, reset the clock. Else increment.
   if (move.capture || spaceGetType(space) === PIECETYPE_PAWN) {
-    b.current.clock = 0;
+    current.clock = 0;
   } else {
-    b.current.clock++;
+    current.clock++;
   }
 
   // If a capture of a rook thrm hasn't moved, make sure that side can no longer castle:
@@ -89,16 +91,16 @@ export function performMove(
     move.capture && spaceGetType(move.capture) === PIECETYPE_ROOK &&
     !spaceHasMoved(move.capture)
   ) {
-    b.current.castles = castleMapRookMoved(
-      b.current.castles,
+    current.castles = castleMapRookMoved(
+      current.castles,
       move.captureCoord,
     );
   }
 
   // Purge the move cache:
-  b.current.moveCache[COLOR_WHITE] = null;
-  b.current.moveCache[COLOR_BLACK] = null;
+  current.moveCache[COLOR_WHITE] = null;
+  current.moveCache[COLOR_BLACK] = null;
 
   // Toggle the active player:
-  b.current.turn = 8 - b.current.turn;
+  current.turn = 8 - current.turn;
 }
