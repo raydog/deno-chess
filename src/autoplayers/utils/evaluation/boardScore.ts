@@ -1,6 +1,7 @@
 import { Board } from "../../../core/datatypes/Board.ts";
 import { scoreMaterial } from "./scoreMaterial.ts";
 import { scoreMobility } from "./scoreMobility.ts";
+import { scorePawnStructures } from "./scorePawnStructure.ts";
 import { ScoreSettings } from "./scoreSettings.ts";
 
 /**
@@ -13,5 +14,6 @@ export function boardScore(board: Board, settings: ScoreSettings): number {
   let out = 0;
   out += scoreMaterial(board, settings);
   out += scoreMobility(board, settings);
+  out += scorePawnStructures(board, settings);
   return out;
 }

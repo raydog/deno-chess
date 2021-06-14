@@ -4,14 +4,6 @@ import { PieceType } from "../../../core/datatypes/PieceType.ts";
  * Score numbers
  */
 export type ScoreSettings = {
-  General: {
-    /**
-     * A score, added when a move is a part of some opening book.
-     *
-     * (Openings can be rough for these evaluations, so encourage playing by the book.)
-     */
-    BookMove: number;
-  };
 
   /**
    * A score for each type of piece on the board.
@@ -94,5 +86,13 @@ export type ScoreSettings = {
      * (To simulate the effect of a less experienced player, or just to make games a little more spicy.)
      */
     Range: number;
+
+    /**
+     * A number, between 0 and 1, for how often we'll only consider one of the book moves, when a book move is available
+     * for this position.
+     * 
+     * (To simulate knowledge of the provided openings trailing off the further along the game goes.)
+     */
+    BookOdds: number
   };
 };
