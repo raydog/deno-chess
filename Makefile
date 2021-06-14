@@ -3,10 +3,10 @@ BundleVersion = 0.2.1
 BundleYear = 2021
 
 BundleHeader = /*! Deno-Chess $(BundleVersion), (c) $(BundleYear), license: MIT */
-BuildOpts = --bundle --minify --color=false --target=es2015 --global-name=DenoChess --banner:js="$(BundleHeader)"
+BuildOpts = --bundle --minify --color=false --target=es2015 --banner:js="$(BundleHeader)" --out-extension:.js=.min.js
 
 
-.PHONY: fmt test build devserver
+.PHONY: fmt test build build-core build-ai devserver
 
 fmt:
 	deno fmt --ignore='data/eco,scripts/build,dist'
@@ -14,14 +14,21 @@ fmt:
 test:
 	deno test test
 
-build:
+build: build-core build-ai
+
+build-core:
 	cd scripts/build && \
 	yarn && \
-	node_modules/.bin/esbuild $(BuildOpts) ../../mod.ts --outfile=../../dist/denochess.min.js
+	node_modules/.bin/esbuild $(BuildOpts) ./entrypoints/denochess.ts --global-name=DenoChess --outfile=../../dist/denochess.min.js
+
+build-ai:
+	cd scripts/build && \
+	yarn && \
+	node_modules/.bin/esbuild $(BuildOpts) ./entrypoints/denochess.ai.ts --global-name=DenoChessAI --outfile=../../dist/denochess.ai.min.js
 
 # TODO: Emit .d.ts file as well, once Typescript's issue #38149 gets fixed...
 
 devserver:
 	cd scripts/build && \
 		yarn && \
-		node_modules/.bin/esbuild $(BuildOpts) ../../mod.ts --servedir=www --outdir=www/js
+		node_modules/.bin/esbuild $(BuildOpts) ./entrypoints/devserver.ts --global-name=Lib --servedir=www --outdir=www/js
