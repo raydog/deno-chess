@@ -19,6 +19,7 @@ import { boardScore } from "./utils/evaluation/boardScore.ts";
 import { ScoreSettings } from "./utils/evaluation/scoreSettings.ts";
 import { hashBoard } from "../core/logic/hashBoard.ts";
 import { compileOpeningBook } from "./utils/openingBook.ts";
+import { listOrderedMoves } from "./utils/evaluation/listOrderedMoves.ts";
 
 type TurnColor = "white" | "black";
 
@@ -112,7 +113,7 @@ export class BeginnerAI {
       board,
       turn,
       4,
-      rateMoves,
+      (board) => listOrderedMoves(BeginnerAI.#settings, board),
       (board) => boardScore(board, BeginnerAI.#settings),
     );
 

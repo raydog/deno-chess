@@ -11,7 +11,6 @@ import { Board } from "../../core/datatypes/Board.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../../core/datatypes/Color.ts";
 import { GAMESTATUS_CHECKMATE } from "../../core/datatypes/GameStatus.ts";
 import { Move } from "../../core/datatypes/Move.ts";
-import { listAllValidMoves } from "../../core/logic/listValidMoves.ts";
 import { checkMoveResults } from "../../core/logic/moveResults.ts";
 import { performMove } from "../../core/logic/performMove.ts";
 import { GameScore, moveScore } from "./gameScore.ts";
@@ -19,14 +18,14 @@ import { mateScore } from "./gameScore.ts";
 
 // TODO: Test nullable prop vs optional prop perf.
 type MiniMaxResponse = { score: GameScore; move?: Move; nodes: number };
-type CompareMoveFn = (a: Move, b: Move) => number;
+type ListMovesFn = (b: Board) => Move[];
 type RateBoardFn = (b: Board) => number;
 
 export function searchBestMoves(
   board: Board,
   color: Color,
   maxDepth: number,
-  compareMoves: CompareMoveFn,
+  listMoves: ListMovesFn,
   rateBoard: RateBoardFn,
 ) {
   return miniMax(
@@ -36,7 +35,7 @@ export function searchBestMoves(
     maxDepth,
     -Infinity,
     Infinity,
-    compareMoves,
+    listMoves,
     rateBoard,
   );
 }
@@ -48,7 +47,7 @@ function miniMax(
   maxDepth: number,
   alpha: GameScore,
   beta: GameScore,
-  compareMoves: CompareMoveFn,
+  listMoves: ListMovesFn,
   rateBoard: RateBoardFn,
 ): MiniMaxResponse {
   const enemy = 8 - color;
@@ -67,8 +66,8 @@ function miniMax(
   let best: GameScore = (color === COLOR_WHITE) ? -Infinity : Infinity;
   let bestMoves: Move[] = [];
 
-  const allMoves = listAllValidMoves(board, color);
-  const orderedMoves = [...allMoves].sort(compareMoves);
+  const orderedMoves = listMoves(board);
+
   let nodes = 0;
 
   for (const move of orderedMoves) {
@@ -83,7 +82,7 @@ function miniMax(
       maxDepth,
       alpha,
       beta,
-      compareMoves,
+      listMoves,
       rateBoard,
     );
 
