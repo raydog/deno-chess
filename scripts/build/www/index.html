@@ -13,7 +13,7 @@
       crossorigin="anonymous"></script>
     
     <!-- TODO: Better mod name. It's 1:40am... -->
-    <script src="js/mod.js"></script>
+    <script src="js/devserver.min.js"></script>
   </head>
   <body>
     <div id="board" style="width: 400px"></div>
@@ -23,8 +23,8 @@
 
       var BEST_BLUE = "#4353FF";
 
-      var game = DenoChess.ChessGame.NewStandardGame();
-      var ai = DenoChess.BeginnerAI.NewForGame(game, "black");
+      var game = Lib.DenoChess.ChessGame.NewStandardGame();
+      var ai = Lib.DenoChessAI.BeginnerAI.NewForGame(game, "black");
 
       var status, moves;
       var highlighted = [];
