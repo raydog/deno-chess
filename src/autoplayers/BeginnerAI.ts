@@ -16,6 +16,9 @@ import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
 import { boardScore } from "./utils/evaluation/boardScore.ts";
+import { ScoreSettings } from "./utils/evaluation/scoreSettings.ts";
+import { hashBoard } from "../core/logic/hashBoard.ts";
+import { compileOpeningBook } from "./utils/openingBook.ts";
 
 type TurnColor = "white" | "black";
 
@@ -30,6 +33,36 @@ export class BeginnerAI {
   // These are scratch spaces for our work:
   #color: Color;
   #board: Board = new Board();
+
+  static #book = compileOpeningBook();
+  static #settings: ScoreSettings = {
+
+    Material: {
+      [PIECETYPE_PAWN]: 100,
+      [PIECETYPE_BISHOP]: 300,
+      [PIECETYPE_KNIGHT]: 300,
+      [PIECETYPE_ROOK]: 500,
+      [PIECETYPE_QUEEN]: 900,
+      [PIECETYPE_KING]: 20000,
+    },
+
+    Mobility: {
+      MoveScore: 25,
+    },
+
+    PawnStructure: {
+      IsolatedPawn: -50,
+      DoubledPawn: -20,
+      PastPawn: 80,
+      PawnSupport: 20,
+      PawnRanks: 20,
+    },
+
+    Random: {
+      Range: 0,
+      BookOdds: 1,
+    },
+  };
 
   constructor(game: ChessGame, color: Color) {
     this.#game = game;
@@ -54,51 +87,36 @@ export class BeginnerAI {
       return;
     }
 
-    // TODO: Faster?
     const fen = this.#game.toString("fen");
     boardFromFEN(fen, board);
 
+    // If this board exists in our opening book, maybe use it?
+    const book = BeginnerAI.#book[hashBoard(board)];
+
+    if (book?.length && Math.random() < BeginnerAI.#settings.Random.BookOdds) {
+      const bookMove = book[Math.floor(Math.random() * book.length)];
+      console.log(
+        "Book Move (%s) = [%s]",
+        scoreToString(0),
+        bookMove,
+      );
+  
+      this.#game.move(bookMove, "Q");
+      return;
+    }
+
+    // Else, we gotta do this the hard way:
     const start = Date.now();
 
     const best = searchBestMoves(
       board,
       turn,
-      3,
+      4,
       rateMoves,
-      (board) =>
-        boardScore(board, {
-          General: {
-            BookMove: 250,
-          },
-
-          Material: {
-            [PIECETYPE_PAWN]: 100,
-            [PIECETYPE_BISHOP]: 300,
-            [PIECETYPE_KNIGHT]: 300,
-            [PIECETYPE_ROOK]: 500,
-            [PIECETYPE_QUEEN]: 900,
-            [PIECETYPE_KING]: 20000,
-          },
-
-          Mobility: {
-            MoveScore: 25,
-          },
-
-          PawnStructure: {
-            IsolatedPawn: -50,
-            DoubledPawn: -20,
-            PastPawn: 80,
-            PawnSupport: 20,
-            PawnRanks: 20,
-          },
-
-          Random: {
-            Range: 0,
-          },
-        }),
+      (board) => boardScore(board, BeginnerAI.#settings),
     );
 
-    if (!best.move) throw new Error("Need move list");
+    if (!best.move) throw new Error("Minimax didn't return move with score");
 
     const move = coordToAN(best.move.from) + coordToAN(best.move.dest);
 
