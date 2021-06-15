@@ -1,7 +1,7 @@
 import { Board } from "../../../core/datatypes/Board.ts";
 import { COLOR_BLACK, COLOR_WHITE } from "../../../core/datatypes/Color.ts";
 import { listAllValidMoves } from "../../../core/logic/listValidMoves.ts";
-import { ScoreSettings } from "./scoreSettings.ts";
+import { ScoreSettings } from "./ScoreSettings.ts";
 
 /**
  * Returns a score for how mobile (or activated) each side is.

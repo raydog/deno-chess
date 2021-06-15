@@ -4,7 +4,7 @@ import { Move } from "../../../core/datatypes/Move.ts";
 import { spaceGetType } from "../../../core/datatypes/Space.ts";
 import { attackMapIsAttacked } from "../../../core/logic/attackMap.ts";
 import { listAllValidMoves } from "../../../core/logic/listValidMoves.ts";
-import { ScoreSettings } from "./scoreSettings.ts";
+import { ScoreSettings } from "./ScoreSettings.ts";
 
 export function listOrderedMoves(
   settings: ScoreSettings,

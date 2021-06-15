@@ -2,7 +2,7 @@ import { Board } from "../../../core/datatypes/Board.ts";
 import { scoreMaterial } from "./scoreMaterial.ts";
 import { scoreMobility } from "./scoreMobility.ts";
 import { scorePawnStructures } from "./scorePawnStructure.ts";
-import { ScoreSettings } from "./scoreSettings.ts";
+import { ScoreSettings } from "./ScoreSettings.ts";
 
 /**
  * The central "score this leaf" function. Returns a number for how desirable a position is, rated in centipawns.

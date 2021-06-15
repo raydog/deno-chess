@@ -5,7 +5,7 @@ import {
   spaceGetColor,
   spaceGetType,
 } from "../../../core/datatypes/Space.ts";
-import { ScoreSettings } from "./scoreSettings.ts";
+import { ScoreSettings } from "./ScoreSettings.ts";
 
 /**
  * Returns the pure-material score for the given board state.

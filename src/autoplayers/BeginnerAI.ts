@@ -15,7 +15,7 @@ import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
 import { boardScore } from "./utils/evaluation/boardScore.ts";
-import { ScoreSettings } from "./utils/evaluation/scoreSettings.ts";
+import { ScoreSettings } from "./utils/evaluation/ScoreSettings.ts";
 import { hashBoard } from "../core/logic/hashBoard.ts";
 import { compileOpeningBook } from "./utils/openingBook.ts";
 import { listOrderedMoves } from "./utils/evaluation/listOrderedMoves.ts";
@@ -54,7 +54,7 @@ export class BeginnerAI {
       DoubledPawn: -20,
       PastPawn: 80,
       PawnSupport: 20,
-      PawnRanks: 20,
+      PawnAdvancement: 20,
     },
 
     Random: {

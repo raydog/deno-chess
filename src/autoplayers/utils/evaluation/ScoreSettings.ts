@@ -70,7 +70,7 @@ export type ScoreSettings = {
      *
      * (To encourage pawns to move up.)
      */
-    PawnRanks: number;
+    PawnAdvancement: number;
   };
 
   // Are there pieces bearing down on the King?
