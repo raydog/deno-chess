@@ -110,7 +110,7 @@ export class BeginnerAI {
     const best = searchBestMoves(
       board,
       turn,
-      4,
+      3,
       (board) => listOrderedMoves(BeginnerAI.#settings, board),
       (board) => boardScore(board, BeginnerAI.#settings),
     );
