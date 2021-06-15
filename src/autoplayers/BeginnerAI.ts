@@ -37,7 +37,6 @@ export class BeginnerAI {
 
   static #book = compileOpeningBook();
   static #settings: ScoreSettings = {
-
     Material: {
       [PIECETYPE_PAWN]: 100,
       [PIECETYPE_BISHOP]: 300,
@@ -101,7 +100,7 @@ export class BeginnerAI {
         scoreToString(0),
         bookMove,
       );
-  
+
       this.#game.move(bookMove, "Q");
       return;
     }

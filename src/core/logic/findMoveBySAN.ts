@@ -74,22 +74,10 @@ export function findMoveBySAN(moves: Move[], san: string): Move {
       (match[3]
         ? ((move.from >>> 4) & 0x7) === (match[3].charCodeAt(0) - 49)
         : true) &&
-      (match[4] ? move.capture !== 0 : move.capture === 0)
+      (match[4] ? move.capture !== 0 : move.capture === 0) &&
+      (match[6] ? move.promote === PIECETYPE_MAP[match[6]] : true)
     ),
   );
-
-  // Finally, handle promotion, if requested.
-  if (match[6]) {
-    if (spaceGetType(move.what) !== PIECETYPE_PAWN) {
-      throw new ChessBadMove(`Piece at ${match[5]} is not a pawn`);
-    }
-    if (!move.promote) {
-      throw new ChessBadMove(
-        `Pawn at ${match[5]} is not eligible for promotion`,
-      );
-    }
-    move.promote = PIECETYPE_MAP[match[6]];
-  }
 
   return move;
 }
@@ -105,6 +93,10 @@ function _selectMoveByInvariant(
     const move = moves[i];
     if (fn(move)) {
       if (found) {
+        // Special case: Forgetting the promotion param:
+        if (found.promote && move.promote) {
+          throw new ChessBadMove(`${san} needs a promotion type`);
+        }
         throw new ChessBadMove(`${san} is ambiguous`);
       }
       found = move;

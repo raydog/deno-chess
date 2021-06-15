@@ -86,7 +86,7 @@ export function performMove(
     current.clock++;
   }
 
-  // If a capture of a rook thrm hasn't moved, make sure that side can no longer castle:
+  // If a capture of a rook that hasn't moved, make sure that side can no longer castle:
   if (
     move.capture && spaceGetType(move.capture) === PIECETYPE_ROOK &&
     !spaceHasMoved(move.capture)

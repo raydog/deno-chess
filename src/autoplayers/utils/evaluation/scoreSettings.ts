@@ -4,7 +4,6 @@ import { PieceType } from "../../../core/datatypes/PieceType.ts";
  * Score numbers
  */
 export type ScoreSettings = {
-
   /**
    * A score for each type of piece on the board.
    *
@@ -90,9 +89,9 @@ export type ScoreSettings = {
     /**
      * A number, between 0 and 1, for how often we'll only consider one of the book moves, when a book move is available
      * for this position.
-     * 
+     *
      * (To simulate knowledge of the provided openings trailing off the further along the game goes.)
      */
-    BookOdds: number
+    BookOdds: number;
   };
 };

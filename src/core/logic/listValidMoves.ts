@@ -23,6 +23,7 @@ import {
   createSimpleCapture,
   createSimpleMove,
   Move,
+  moveToPromotion,
 } from "../datatypes/Move.ts";
 import { performMove } from "./performMove.ts";
 import { kingInDanger } from "./kingInDanger.ts";
@@ -32,6 +33,13 @@ import { castleMapGetFile } from "../datatypes/CastleMap.ts";
 const DIRS = [16, 1, -16, -1, 17, -15, -17, 15];
 const KNIGHT = [31, 33, 14, 18, -18, -14, -33, -31];
 const PAWN_CAPS = [-1, 1];
+
+const PROMOTIONS = [
+  PIECETYPE_QUEEN,
+  PIECETYPE_ROOK,
+  PIECETYPE_KNIGHT,
+  PIECETYPE_BISHOP,
+];
 
 /**
  * Will extract all valid moves for the given player.
@@ -266,8 +274,7 @@ function _pawnMoves(
   return out;
 }
 
-// Will push the candidate move to the output array IF it doesn't expose your king to check. Also will populate
-// a few extra details if asked. (Since we've already done the move...)
+// Will push the candidate move to the output array IF it doesn't expose your king to check.
 function _tryPushMove(b: Board, out: Move[], move: Move) {
   const color = spaceGetColor(move.what);
 
@@ -275,7 +282,13 @@ function _tryPushMove(b: Board, out: Move[], move: Move) {
 
   performMove(b, move);
   if (!kingInDanger(b, color)) {
-    out.push(move);
+    if (move.promote) {
+      for (const type of PROMOTIONS) {
+        out.push(moveToPromotion(move, type));
+      }
+    } else {
+      out.push(move);
+    }
   }
 
   b.restore();

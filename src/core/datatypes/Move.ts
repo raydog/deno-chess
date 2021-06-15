@@ -87,3 +87,7 @@ export function createFullMove(
     markEnPassant,
   };
 }
+
+export function moveToPromotion(move: Move, promote: PieceType): Move {
+  return { ...move, promote };
+}

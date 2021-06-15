@@ -7,7 +7,7 @@ import { hashBoard } from "../../core/logic/hashBoard.ts";
 import RawPlaybook from "../../../data/processed/aiOpenings.ts";
 
 export type OpeningBook = {
-  [hash: string]: string[],
+  [hash: string]: string[];
 };
 
 export function compileOpeningBook(): OpeningBook {
@@ -27,15 +27,19 @@ export function compileOpeningBook(): OpeningBook {
   return book;
 }
 
-function _handleNode(book: OpeningBook, board: Board, [move, next]: typeof RawPlaybook[0]) {
+function _handleNode(
+  book: OpeningBook,
+  board: Board,
+  [move, next]: typeof RawPlaybook[0],
+) {
   // We don't need to create an entry for this node, since it has no "next" list:
-  if (!next || !next.length) { return; }
+  if (!next || !next.length) return;
 
   // Else, do the move. Board was already saved externally:
   const moves = listAllValidMoves(board, board.current.turn);
   const from = coordFromAN(move.slice(0, 2)), dest = coordFromAN(move.slice(2));
-  const moveObj = moves.find(m => m.from === from && m.dest === dest);
-  if (!moveObj) { throw new Error("Entry book had invalid move!"); }
+  const moveObj = moves.find((m) => m.from === from && m.dest === dest);
+  if (!moveObj) throw new Error("Entry book had invalid move!");
   performMove(board, moveObj);
 
   const hash = hashBoard(board);

@@ -6,12 +6,12 @@ import {
 import { COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordFromAN, coordToAN } from "../core/datatypes/Coord.ts";
 import {
+  PieceType,
   PIECETYPE_BISHOP,
   PIECETYPE_KNIGHT,
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
 } from "../core/datatypes/PieceType.ts";
-import { SPACE_EMPTY } from "../core/datatypes/Space.ts";
 import { findMoveBySAN } from "../core/logic/findMoveBySAN.ts";
 import { listAllValidMoves } from "../core/logic/listValidMoves.ts";
 import { moveToSAN } from "../core/logic/moveFormats/moveToSAN.ts";
@@ -19,9 +19,9 @@ import { checkMoveResults } from "../core/logic/moveResults.ts";
 import { performMove } from "../core/logic/performMove.ts";
 import { GameMoveInternal } from "./GameMove.ts";
 
-const UCI_MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])$/;
+const UCI_MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])([bnrqBNRQ])?$/;
 
-const PROMOTE_MAP = {
+const PROMOTE_MAP: { [type: string]: PieceType } = {
   N: PIECETYPE_KNIGHT,
   B: PIECETYPE_BISHOP,
   R: PIECETYPE_ROOK,
@@ -29,14 +29,10 @@ const PROMOTE_MAP = {
 };
 
 // Applies a move from the user.
-export function doGameMove(
-  board: Board,
-  moveStr: string,
-  promote: "B" | "R" | "N" | "Q" | undefined,
-): GameMoveInternal {
+export function doGameMove(board: Board, moveStr: string): GameMoveInternal {
   const match = moveStr.match(UCI_MOVE_RE);
   if (match) {
-    return _uciMove(board, match[1], match[2], promote);
+    return _uciMove(board, match[1], match[2], match[3]);
   }
 
   // Else, possibly SAN:
@@ -47,14 +43,16 @@ function _uciMove(
   board: Board,
   from: string,
   dest: string,
-  promote: "B" | "R" | "N" | "Q" | undefined,
+  promote: string,
 ): GameMoveInternal {
   const fromIdx = coordFromAN(from), destIdx = coordFromAN(dest);
+  let promoteType: PieceType | 0 = 0;
 
-  // Sanity checks:
-  const sp = board.get(fromIdx);
-  if (sp === SPACE_EMPTY) {
-    throw new ChessBadMove(`Departure square (${from}) is empty`);
+  if (promote) {
+    promoteType = PROMOTE_MAP[promote.toUpperCase()];
+    if (!promoteType) {
+      throw new ChessBadMove(`Invalid promotion: ${promote}`);
+    }
   }
 
   // Get the full list of moves. We need the FULL list of moves (and not just the moves for this one piece) because
@@ -63,22 +61,16 @@ function _uciMove(
   const turn = board.current.turn;
   const moves = listAllValidMoves(board, turn);
   const picked = moves.find((move) =>
-    move.from === fromIdx && move.dest === destIdx
+    move.from === fromIdx && move.dest === destIdx &&
+    (promoteType ? move.promote === promoteType : true)
   );
 
   if (!picked) {
-    throw new ChessBadMove(`Invalid move: ${from}${dest}`);
+    throw new ChessBadMove(`Invalid move: ${from}${dest}${promote || ""}`);
   }
 
-  // Do we require a promotion?
-  if (picked.promote) {
-    if (promote == null) {
-      throw new ChessNeedsPromotion();
-    }
-    picked.promote = PROMOTE_MAP[promote];
-    if (!picked.promote) {
-      throw new ChessBadMove(`Invalid promotion: ${promote}`);
-    }
+  if (picked.promote && !promoteType) {
+    throw new ChessNeedsPromotion();
   }
 
   const num = board.current.moveNum;

@@ -39,102 +39,82 @@ Deno.test("ChessGame Public API > List all moves", function () {
     {
       dest: "a3",
       from: "b1",
-      promotion: false,
     },
     {
       dest: "c3",
       from: "b1",
-      promotion: false,
     },
     {
       dest: "f3",
       from: "g1",
-      promotion: false,
     },
     {
       dest: "h3",
       from: "g1",
-      promotion: false,
     },
     {
       dest: "a3",
       from: "a2",
-      promotion: false,
     },
     {
       dest: "a4",
       from: "a2",
-      promotion: false,
     },
     {
       dest: "b3",
       from: "b2",
-      promotion: false,
     },
     {
       dest: "b4",
       from: "b2",
-      promotion: false,
     },
     {
       dest: "c3",
       from: "c2",
-      promotion: false,
     },
     {
       dest: "c4",
       from: "c2",
-      promotion: false,
     },
     {
       dest: "d3",
       from: "d2",
-      promotion: false,
     },
     {
       dest: "d4",
       from: "d2",
-      promotion: false,
     },
     {
       dest: "e3",
       from: "e2",
-      promotion: false,
     },
     {
       dest: "e4",
       from: "e2",
-      promotion: false,
     },
     {
       dest: "f3",
       from: "f2",
-      promotion: false,
     },
     {
       dest: "f4",
       from: "f2",
-      promotion: false,
     },
     {
       dest: "g3",
       from: "g2",
-      promotion: false,
     },
     {
       dest: "g4",
       from: "g2",
-      promotion: false,
     },
     {
       dest: "h3",
       from: "h2",
-      promotion: false,
     },
     {
       dest: "h4",
       from: "h2",
-      promotion: false,
     },
   ]);
 });
@@ -146,12 +126,10 @@ Deno.test("ChessGame Public API > List single pawn moves", function () {
     {
       dest: "d3",
       from: "d2",
-      promotion: false,
     },
     {
       dest: "d4",
       from: "d2",
-      promotion: false,
     },
   ]);
 });
@@ -162,7 +140,22 @@ Deno.test("ChessGame Public API > List a promotion", function () {
     {
       dest: "a8",
       from: "a7",
-      promotion: true,
+      promotion: "Q",
+    },
+    {
+      dest: "a8",
+      from: "a7",
+      promotion: "R",
+    },
+    {
+      dest: "a8",
+      from: "a7",
+      promotion: "N",
+    },
+    {
+      dest: "a8",
+      from: "a7",
+      promotion: "B",
     },
   ]);
 });
@@ -221,23 +214,43 @@ Deno.test("ChessGame Public API > Promote requires a param", function () {
   );
 });
 
-Deno.test("ChessGame Public API > Promote to Knight", function () {
+Deno.test("ChessGame Public API > Promote to Knight in UCI", function () {
   const game = ChessGame.NewStandardGame();
   game.move("a2a4").move("b7b5");
   game.move("a4b5").move("b8a6");
   game.move("b5b6").move("a6c5");
   game.move("b6b7").move("c5e6");
-  game.move("b7b8", "N");
+  game.move("b7b8n");
   asserts.assertEquals(game.history().reverse()[0].san, "b8=N");
 });
 
-Deno.test("ChessGame Public API > Promote to Queen after capture", function () {
+Deno.test("ChessGame Public API > Promote to Queen after capture in UCI", function () {
   const game = ChessGame.NewStandardGame();
   game.move("a2a4").move("b7b5");
   game.move("a4b5").move("b8a6");
   game.move("b5b6").move("a6c5");
   game.move("b6b7").move("c5e6");
-  game.move("b7a8", "Q");
+  game.move("b7a8Q");
+  asserts.assertEquals(game.history().reverse()[0].san, "bxa8=Q");
+});
+
+Deno.test("ChessGame Public API > Promote to Knight in SAN", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("a4").move("b5");
+  game.move("axb5").move("Na6");
+  game.move("b6").move("Nc5");
+  game.move("b7").move("Ne6");
+  game.move("b8=N");
+  asserts.assertEquals(game.history().reverse()[0].san, "b8=N");
+});
+
+Deno.test("ChessGame Public API > Promote to Queen after capture in SAN", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("a4").move("b5");
+  game.move("axb5").move("Na6");
+  game.move("b6").move("Nc5");
+  game.move("b7").move("Ne6");
+  game.move("bxa8=Q");
   asserts.assertEquals(game.history().reverse()[0].san, "bxa8=Q");
 });
 

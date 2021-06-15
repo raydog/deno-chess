@@ -1,12 +1,15 @@
 import { Board } from "../../../core/datatypes/Board.ts";
 import { Color, COLOR_WHITE } from "../../../core/datatypes/Color.ts";
 import { Coord } from "../../../core/datatypes/Coord.ts";
-import { PieceType, PIECETYPE_PAWN } from "../../../core/datatypes/PieceType.ts";
 import {
+  PieceType,
+  PIECETYPE_PAWN,
+} from "../../../core/datatypes/PieceType.ts";
+import {
+  Space,
   SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
-Space,
 } from "../../../core/datatypes/Space.ts";
 import { ScoreSettings } from "./scoreSettings.ts";
 
@@ -57,16 +60,23 @@ import { ScoreSettings } from "./scoreSettings.ts";
  */
 export function scorePawnStructures(
   board: Board,
-  { PawnStructure: { IsolatedPawn, DoubledPawn, PastPawn, PawnSupport, PawnRanks } }: ScoreSettings,
+  {
+    PawnStructure: {
+      IsolatedPawn,
+      DoubledPawn,
+      PastPawn,
+      PawnSupport,
+      PawnRanks,
+    },
+  }: ScoreSettings,
 ): number {
-  
   let numDoubledPawns = 0;
   let numPawnSupport = 0;
   let numPawnRanks = 0;
 
   for (let file = 0; file < 0x8; file++) {
     let prevPawnColor: Color | -1 = -1;
-    
+
     for (let rank = 0; rank < 0x80; rank += 0x10) {
       const idx = rank | file;
       const spot = board.get(idx);
@@ -91,7 +101,10 @@ export function scorePawnStructures(
       // Pawn Support:
       const leftIdx = idx - (dir << 4) - 1;
       const rightIdx = idx - (dir << 4) + 1;
-      if (hasSimilarPawn(board, leftIdx, color) || hasSimilarPawn(board, rightIdx, color)) {
+      if (
+        hasSimilarPawn(board, leftIdx, color) ||
+        hasSimilarPawn(board, rightIdx, color)
+      ) {
         numPawnSupport += dir;
       }
 
@@ -105,14 +118,14 @@ export function scorePawnStructures(
   }
 
   return (
-    numDoubledPawns * DoubledPawn + 
-    numPawnSupport * PawnSupport + 
+    numDoubledPawns * DoubledPawn +
+    numPawnSupport * PawnSupport +
     numPawnRanks * PawnRanks
   );
 }
 
 function hasSimilarPawn(board: Board, idx: Coord, color: Color): boolean {
-  if (idx & 0x88) { return false; }
+  if (idx & 0x88) return false;
   const spot = board.get(idx);
   return (
     spot !== SPACE_EMPTY &&

@@ -9,7 +9,7 @@ BuildOpts = --bundle --minify --color=false --target=es2015 --banner:js="$(Bundl
 .PHONY: fmt test build build-core build-ai devserver
 
 fmt:
-	deno fmt --ignore='data/eco,scripts/build,dist'
+	deno fmt --ignore='data/eco,data/processed,scripts/build,dist'
 
 test:
 	deno test test

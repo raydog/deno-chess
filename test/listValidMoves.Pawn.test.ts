@@ -76,14 +76,24 @@ Deno.test("List Valid Moves > Pawn > White promotion", function () {
   const b = boardLayout({
     c7: encodePieceSpace(PIECETYPE_PAWN, COLOR_WHITE, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("c7")), ["c8=Q"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("c7")), [
+    "c8=B",
+    "c8=N",
+    "c8=R",
+    "c8=Q",
+  ]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black promotion", function () {
   const b = boardLayout({
     e2: encodePieceSpace(PIECETYPE_PAWN, COLOR_BLACK, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("e2")), ["e1=Q"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("e2")), [
+    "e1=B",
+    "e1=N",
+    "e1=R",
+    "e1=Q",
+  ]);
 });
 
 Deno.test("List Valid Moves > Pawn > White capture promotion", function () {
@@ -91,7 +101,16 @@ Deno.test("List Valid Moves > Pawn > White capture promotion", function () {
     c7: encodePieceSpace(PIECETYPE_PAWN, COLOR_WHITE, true),
     d8: encodePieceSpace(PIECETYPE_QUEEN, COLOR_BLACK, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("c7")), ["c8=Q", "cxd8=Q"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("c7")), [
+    "c8=B",
+    "cxd8=B",
+    "c8=N",
+    "cxd8=N",
+    "c8=R",
+    "cxd8=R",
+    "c8=Q",
+    "cxd8=Q",
+  ]);
 });
 
 Deno.test("List Valid Moves > Pawn > Black capture promotion", function () {
@@ -99,7 +118,16 @@ Deno.test("List Valid Moves > Pawn > Black capture promotion", function () {
     e2: encodePieceSpace(PIECETYPE_PAWN, COLOR_BLACK, true),
     f1: encodePieceSpace(PIECETYPE_QUEEN, COLOR_WHITE, true),
   });
-  assertMoves(b, listValidMoves(b, coordFromAN("e2")), ["e1=Q", "exf1=Q"]);
+  assertMoves(b, listValidMoves(b, coordFromAN("e2")), [
+    "e1=B",
+    "exf1=B",
+    "e1=N",
+    "exf1=N",
+    "e1=R",
+    "exf1=R",
+    "e1=Q",
+    "exf1=Q",
+  ]);
 });
 
 Deno.test("List Valid Moves > Pawn > White opening capture left", function () {

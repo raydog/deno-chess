@@ -6,15 +6,17 @@ import { attackMapIsAttacked } from "../../../core/logic/attackMap.ts";
 import { listAllValidMoves } from "../../../core/logic/listValidMoves.ts";
 import { ScoreSettings } from "./scoreSettings.ts";
 
-export function listOrderedMoves(settings: ScoreSettings, board: Board): Move[] {
-
+export function listOrderedMoves(
+  settings: ScoreSettings,
+  board: Board,
+): Move[] {
   const color = board.current.turn;
   const allMoves = listAllValidMoves(board, color);
-  const scoredMoves = allMoves.map(move => ({
+  const scoredMoves = allMoves.map((move) => ({
     move,
     score: moveScore(settings, board, move, color),
   }));
-  
+
   scoredMoves.sort((a, b) => {
     return b.score - a.score;
   });
@@ -23,12 +25,18 @@ export function listOrderedMoves(settings: ScoreSettings, board: Board): Move[] 
 }
 
 // Rate moves LIKELY to be good higher, so minimax tries those branches first:
-function moveScore({ Material }: ScoreSettings, board: Board, move: Move, color: Color): number {
+function moveScore(
+  { Material }: ScoreSettings,
+  board: Board,
+  move: Move,
+  color: Color,
+): number {
   let score = 0;
 
   // Captures are always worth something, but prioritize captures of high-value stuff with low-value stuff:
   if (move.capture) {
-    score += 1000 + Material[spaceGetType(move.capture)] - Material[spaceGetType(move.what)];
+    score += 1000 + Material[spaceGetType(move.capture)] -
+      Material[spaceGetType(move.what)];
   }
 
   // Promotions net us the material of the new piece type:
@@ -48,6 +56,6 @@ function moveScore({ Material }: ScoreSettings, board: Board, move: Move, color:
   } else {
     score += (move.from >>> 4) - (move.dest >>> 4);
   }
-  
+
   return score;
 }
