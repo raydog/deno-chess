@@ -38,7 +38,15 @@ function _handleNode(book: OpeningBook, board: Board, [move, next]: typeof RawPl
   if (!moveObj) { throw new Error("Entry book had invalid move!"); }
   performMove(board, moveObj);
 
-  book[hashBoard(board)] = next.map(([m]) => m);
+  const hash = hashBoard(board);
+  const nextMoves = next.map(([m]) => m);
+  if (book[hash]) {
+    // Merge the next steps in with the existing next steps. This *can* result in duplicate move entries, but it'll
+    // double up moves that are more common, effectively giving weight to more common openings, so bug: meet feature.
+    book[hash].push(...nextMoves);
+  } else {
+    book[hash] = nextMoves;
+  }
 
   for (const step of next) {
     board.save();
