@@ -18,7 +18,7 @@ const PIECETYPE_MAP: { [type: string]: PieceType } = {
   K: PIECETYPE_KING,
 };
 
-const CASTLE_RE = /^(?:O-O(?:-O)?|0-0(?:-0)?)$/;
+const CASTLE_RE = /^(O-O(?:-O)?|0-0(?:-0)?)(?:\s+|[!?]+|[+#]|[eE]\.?[pP]\.?|(?:1|0|1\/2|½)-(?:1|0|1\/2|½))*$/;
 const MOVE_RE =
   /^([BNRQK]?)([a-h]?)([1-8]?)(x?)([a-h][1-8])(?:=([BNRQ]))?(?:\s+|[!?]+|[+#]|[eE]\.?[pP]\.?|(?:1|0|1\/2|½)-(?:1|0|1\/2|½))*$/;
 // [1] - Piece capture
@@ -46,11 +46,12 @@ export function findMoveBySAN(moves: Move[], san: string): Move {
   san = san.trim();
 
   // Castles:
-  if (CASTLE_RE.test(san)) {
+  const castleMatch = san.match(CASTLE_RE);
+  if (castleMatch) {
     return _selectMoveByInvariant(
       moves,
       san,
-      (san.length === 5)
+      (castleMatch[1].length === 5)
         ? (move) => (move.castleRookDest & 0x7) === 3 // O-O-O
         : (move) => (move.castleRookDest & 0x7) === 5, // O-O
     );
