@@ -4,8 +4,7 @@ import { boardFromFEN } from "../src/core/logic/FEN/boardFromFEN.ts";
 import { asserts } from "../testDeps.ts";
 
 const settings: ScoreSettings = {
-  Material: {
-  },
+  Material: {},
 
   Mobility: {
     MoveScore: 10,
@@ -50,7 +49,9 @@ Deno.test("Board Scoring > Mobility > Tarrasch Defense for White", function () {
 });
 
 Deno.test("Board Scoring > Mobility > Tarrasch Defense with both", function () {
-  const b = boardFromFEN("rnbqkbnr/pp3ppp/4p3/2pp4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4");
+  const b = boardFromFEN(
+    "rnbqkbnr/pp3ppp/4p3/2pp4/2PP4/2N5/PP2PPPP/R1BQKBNR w KQkq - 0 4",
+  );
   const score = scoreMobility(b, settings);
   asserts.assertEquals(score, 0);
 });

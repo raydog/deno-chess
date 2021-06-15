@@ -118,7 +118,9 @@ Deno.test("Board Scoring > Material > White starting", function () {
 });
 
 Deno.test("Board Scoring > Material > Both starting", function () {
-  const b = boardFromFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+  const b = boardFromFEN(
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  );
   const score = scoreMaterial(b, settings);
   asserts.assertEquals(score, 0);
 });

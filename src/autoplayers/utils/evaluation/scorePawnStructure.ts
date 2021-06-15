@@ -1,9 +1,7 @@
 import { Board } from "../../../core/datatypes/Board.ts";
 import { Color, COLOR_WHITE } from "../../../core/datatypes/Color.ts";
 import { Coord } from "../../../core/datatypes/Coord.ts";
-import {
-  PIECETYPE_PAWN,
-} from "../../../core/datatypes/PieceType.ts";
+import { PIECETYPE_PAWN } from "../../../core/datatypes/PieceType.ts";
 import {
   SPACE_EMPTY,
   spaceGetColor,
