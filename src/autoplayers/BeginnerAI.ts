@@ -2,7 +2,6 @@ import { Board } from "../core/datatypes/Board.ts";
 import { ChessGame } from "../public/ChessGame.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../core/datatypes/Color.ts";
 import { coordToAN } from "../core/datatypes/Coord.ts";
-import { Move } from "../core/datatypes/Move.ts";
 import {
   PIECETYPE_BISHOP,
   PIECETYPE_KING,
@@ -10,8 +9,8 @@ import {
   PIECETYPE_PAWN,
   PIECETYPE_QUEEN,
   PIECETYPE_ROOK,
+  pieceTypeLetter,
 } from "../core/datatypes/PieceType.ts";
-import { spaceGetType } from "../core/datatypes/Space.ts";
 import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
@@ -101,7 +100,7 @@ export class BeginnerAI {
         bookMove,
       );
 
-      this.#game.move(bookMove, "Q");
+      this.#game.move(bookMove);
       return;
     }
 
@@ -118,7 +117,9 @@ export class BeginnerAI {
 
     if (!best.move) throw new Error("Minimax didn't return move with score");
 
-    const move = coordToAN(best.move.from) + coordToAN(best.move.dest);
+    const move = coordToAN(best.move.from) +
+      coordToAN(best.move.dest) +
+      (best.move.promote ? pieceTypeLetter(best.move.promote) : "");
 
     console.log(
       "Best Move (%s) = [%s] in %d ms (%d nodes considered)",
@@ -128,11 +129,6 @@ export class BeginnerAI {
       best.nodes,
     );
 
-    this.#game.move(move, "Q");
+    this.#game.move(move);
   }
-}
-
-// Rate a move. Basically, prioritize captures first
-function rateMoves(a: Move, b: Move): number {
-  return spaceGetType(b.capture) - spaceGetType(a.capture);
 }
