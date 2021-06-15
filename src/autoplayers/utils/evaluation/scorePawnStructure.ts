@@ -2,54 +2,14 @@ import { Board } from "../../../core/datatypes/Board.ts";
 import { Color, COLOR_WHITE } from "../../../core/datatypes/Color.ts";
 import { Coord } from "../../../core/datatypes/Coord.ts";
 import {
-  PieceType,
   PIECETYPE_PAWN,
 } from "../../../core/datatypes/PieceType.ts";
 import {
-  Space,
   SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
 } from "../../../core/datatypes/Space.ts";
-import { ScoreSettings } from "./scoreSettings.ts";
-
-// // How well structured are our pawns?
-// PawnStructure: {
-//   /**
-//    * A score (probably negative) for a pawn not having another pawn in a nearby file.
-//    *
-//    * (To discourage these isolated pawn islands.)
-//    */
-//   IsolatedPawn: number;
-
-//   /**
-//    * A score (probably negative) for a pawn being blocked by another pawn of the same color.
-//    *
-//    * (To discourage pawns being stacked that way, since they're tricky to move and defend.)
-//    */
-//   DoubledPawn: number;
-
-//   /**
-//    * A score for a pawn not having any enemy pawns in front of them.
-//    *
-//    * (To encourage past pawns, for possible promotion in endgame.)
-//    */
-//   PastPawn: number;
-
-//   /**
-//    * A score for when a pawn has another pawn defending it.
-//    *
-//    * (To encourage pawns to line up in defended patterns.)
-//    */
-//   PawnSupport: number;
-
-//   /**
-//    * A score for each rank BEHIND a pawn.
-//    *
-//    * (To encourage pawns to move up.)
-//    */
-//   PawnRanks: number;
-// };
+import { ScoreSettings } from "./ScoreSettings.ts";
 
 /**
  * Returns the pure-material score for the given board state.
@@ -66,7 +26,7 @@ export function scorePawnStructures(
       DoubledPawn,
       PastPawn,
       PawnSupport,
-      PawnRanks,
+      PawnAdvancement,
     },
   }: ScoreSettings,
 ): number {
@@ -81,7 +41,10 @@ export function scorePawnStructures(
       const idx = rank | file;
       const spot = board.get(idx);
 
-      if (spot === SPACE_EMPTY) continue;
+      if (spot === SPACE_EMPTY) {
+        prevPawnColor = -1;
+        continue;
+      }
 
       const type = spaceGetType(spot);
       const color = spaceGetColor(spot);
@@ -120,7 +83,7 @@ export function scorePawnStructures(
   return (
     numDoubledPawns * DoubledPawn +
     numPawnSupport * PawnSupport +
-    numPawnRanks * PawnRanks
+    numPawnRanks * PawnAdvancement
   );
 }
 
