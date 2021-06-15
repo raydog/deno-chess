@@ -48,6 +48,8 @@ export class Board {
     current.turn = COLOR_WHITE;
     current.seen = {};
     current.castles = 0;
+    current.moveCache[COLOR_WHITE] = null;
+    current.moveCache[COLOR_BLACK] = null;
   }
 
   /**
