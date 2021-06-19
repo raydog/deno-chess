@@ -61,10 +61,7 @@ export default (
 );
 
 function integrateEntry(rawMoves: string) {
-  const moves = rawMoves.trim().split(" ").slice(0, 10);
-
-  // Not interested in lines under 5 full moves:
-  if (moves.length < 10) return;
+  const moves = rawMoves.trim().split(" ");
 
   let node = root;
   for (const move of moves) {

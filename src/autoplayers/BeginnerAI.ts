@@ -14,11 +14,9 @@ import {
 import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { scoreToString } from "./utils/gameScore.ts";
 import { searchBestMoves } from "./utils/miniMax.ts";
-import { boardScore } from "./utils/evaluation/boardScore.ts";
 import { ScoreSettings } from "./utils/evaluation/ScoreSettings.ts";
-import { hashBoard } from "../core/logic/hashBoard.ts";
-import { compileOpeningBook } from "./utils/openingBook.ts";
 import { listOrderedMoves } from "./utils/evaluation/listOrderedMoves.ts";
+import { scoreBoard } from "./utils/evaluation/scoreBoard.ts";
 
 type TurnColor = "white" | "black";
 
@@ -34,7 +32,7 @@ export class BeginnerAI {
   #color: Color;
   #board: Board = new Board();
 
-  static #book = compileOpeningBook();
+  // static #book = compileOpeningBook();
   static #settings: ScoreSettings = {
     Material: {
       [PIECETYPE_PAWN]: 100,
@@ -44,23 +42,17 @@ export class BeginnerAI {
       [PIECETYPE_QUEEN]: 900,
       [PIECETYPE_KING]: 20000,
     },
-
-    Mobility: {
-      MoveScore: 25,
-    },
-
-    PawnStructure: {
-      IsolatedPawn: -50,
-      DoubledPawn: -20,
-      PastPawn: 80,
-      PawnSupport: 20,
-      PawnAdvancement: 20,
-    },
-
-    Random: {
-      Range: 0,
-      BookOdds: 1,
-    },
+    PawnCenter: 40,
+    PawnCenterAttack: 10,
+    MinorCenter: 20,
+    QueenCenter: 30,
+    PieceCenterAttack: 10,
+    PieceOuterCenter: 10,
+    PieceMobility: 10,
+    PawnMobility: 5,
+    KingEndgameEdge: -10,
+    KingEndgameOuterCenter: 25,
+    KingEndgameCenter: 35,
   };
 
   constructor(game: ChessGame, color: Color) {
@@ -74,6 +66,9 @@ export class BeginnerAI {
 
   takeTurn() {
     const board = this.#board;
+    const fen = this.#game.toString("fen");
+    boardFromFEN(fen, board);
+
     const status = this.#game.getStatus();
     if (status.state !== "active") {
       console.warn("Game over");
@@ -86,33 +81,30 @@ export class BeginnerAI {
       return;
     }
 
-    const fen = this.#game.toString("fen");
-    boardFromFEN(fen, board);
-
     // If this board exists in our opening book, maybe use it?
-    const book = BeginnerAI.#book[hashBoard(board)];
+    // const book = BeginnerAI.#book[hashBoard(board)];
 
-    if (book?.length && Math.random() < BeginnerAI.#settings.Random.BookOdds) {
-      const bookMove = book[Math.floor(Math.random() * book.length)];
-      console.log(
-        "Book Move (%s) = [%s]",
-        scoreToString(0),
-        bookMove,
-      );
+    // if (book?.length && Math.random() < BeginnerAI.#settings.Random.BookOdds) {
+    //   const bookMove = book[Math.floor(Math.random() * book.length)];
+    //   console.log(
+    //     "Book Move (%s) = [%s]",
+    //     scoreToString(0),
+    //     bookMove,
+    //   );
 
-      this.#game.move(bookMove);
-      return;
-    }
+    //   this.#game.move(bookMove);
+    //   return;
+    // }
 
     // Else, we gotta do this the hard way:
-    const start = Date.now();
+    const start = performance.now();
 
     const best = searchBestMoves(
       board,
       turn,
-      3,
+      4,
       (board) => listOrderedMoves(BeginnerAI.#settings, board),
-      (board) => boardScore(board, BeginnerAI.#settings),
+      (board) => scoreBoard(board, BeginnerAI.#settings),
     );
 
     if (!best.move) throw new Error("Minimax didn't return move with score");
@@ -121,11 +113,12 @@ export class BeginnerAI {
       coordToAN(best.move.dest) +
       (best.move.promote ? pieceTypeLetter(best.move.promote) : "");
 
+    // console.log(fen);
     console.log(
       "Best Move (%s) = [%s] in %d ms (%d nodes considered)",
       scoreToString(best.score),
       move,
-      Date.now() - start,
+      performance.now() - start,
       best.nodes,
     );
 

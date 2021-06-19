@@ -16,15 +16,17 @@
     <script src="js/devserver.min.js"></script>
   </head>
   <body>
-    <div id="board" style="width: 400px"></div>
-
+  <div id="board" style="width: 600px"></div>
   <script>
     $(function() {
 
       var BEST_BLUE = "#4353FF";
 
       var game = Lib.DenoChess.ChessGame.NewStandardGame();
-      var ai = Lib.DenoChessAI.BeginnerAI.NewForGame(game, "black");
+
+      var white_ai = Lib.DenoChessAI.BeginnerAI.NewForGame(game, "white");
+      var black_ai = null; //Lib.DenoChessAI.BeginnerAI.NewForGame(game, "black");
+      var userAction = null;
 
       var status, moves;
       var highlighted = [];
@@ -41,55 +43,94 @@
         onSnapEnd: onSnapEnd
       });
 
+      _doTurn();
+
+      async function _doTurn() {
+        var status = game.getStatus();
+
+        board.position(game.toString("fen"));
+        
+        if (status.state !== "active") {
+          console.log("GAME OVER", status.state, "Winner:", status.winner);
+          return;
+        }
+
+        var ai = (status.turn === "white")
+          ? white_ai
+          : black_ai;
+        
+        if (ai) {
+          ai.takeTurn();
+
+        } else {
+          var promise = new Promise(resolve => {
+            userAction = resolve;
+          });
+          var move = await promise;
+          userAction = null;
+
+          try {
+            game.move(move.from + move.dest + (move.promotion || ""));
+          
+          } catch (ex) {
+            console.error(ex.message);
+          }
+        }
+        
+        refreshState();
+        board.position(game.toString("fen"));
+
+        setTimeout(_doTurn, 250);
+      }
+
       function onDragStart (source, piece, position, orientation) {
 
-        highlight(
-          moves
-            .filter(move => move.from === source)
-            .map(move => move.dest)
-        );
-        
         // do not pick up pieces if the game is over
         if (game.isGameOver()) { return false; }
+
+        // must be user's turn to play:
+        if (!userAction) { return false; }
 
         // only pick up pieces for the side to move
         if ((status.turn === 'white' && piece.startsWith("b")) ||
             (status.turn === 'black' && piece.startsWith("w"))) {
           return false
         }
+
+        highlight(
+          moves
+            .filter(move => move.from === source)
+            .map(move => move.dest)
+        );
       }
 
       function onDrop (source, target) {
         
         clearHighlights();
 
-        if (target === "offboard" || source === target) {
+        if (!userAction) { return "snapback"; }
+
+        var found = moves.filter(move => move.from === source && move.dest === target);
+
+        if (target === "offboard" || !found.length) {
           return "snapback";
         }
-        
-        try {
-          var move = game.move(source + target, 'Q');
-          refreshState();
 
-        } catch (ex) {
-          console.error(ex.message);
-          return 'snapback';
+        while (found.length > 1) {
+          var promotion = prompt("Promote to which piece? ('B' 'N' 'R' or 'Q')");
+          var newFound = moves.filter(move => move.from === source && move.dest === target && move.promotion === promotion);
+          if (newFound.length === 1) {
+            found = newFound;
+          }
         }
 
-        // Let AI take a turn:
-        try {
-          ai.takeTurn();
-          refreshState();
-
-        } catch (ex) {
-          console.error("AI Error", ex.message);
-        }
+        userAction(found[0]);
       }
 
       // update the board position after the piece snap
       // for castling, en passant, pawn promotion
       function onSnapEnd () {
-        board.position(game.toString("fen"))
+        // board.position(game.toString("fen"))
       }
 
       function refreshState() {

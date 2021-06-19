@@ -16,6 +16,8 @@ export function compileOpeningBook(): OpeningBook {
 
   const start = performance.now();
 
+  book[hashBoard(board)] = RawPlaybook.map((entry) => entry[0]);
+
   for (const step of RawPlaybook) {
     board.save();
     _handleNode(book, board, step);
