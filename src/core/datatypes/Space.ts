@@ -1,15 +1,18 @@
 import { Color } from "./Color.ts";
 import { PieceType } from "./PieceType.ts";
 
-const _hashPiece = (c: Color, t: PieceType): number => c * 6 + t - 1;
+const _hashPiece = (c: Color, t: PieceType): number => (c | t);
 
 const FEN_MAP = [
+  "",
   "P",
   "B",
   "N",
   "R",
   "Q",
   "K",
+  "",
+  "",
   "p",
   "b",
   "n",
@@ -53,7 +56,7 @@ export function spaceGetType(sp: Space): PieceType {
 }
 
 export function spaceGetColor(sp: Space): Color {
-  return (sp >>> 3) & 0x1;
+  return sp & 0x8;
 }
 
 export function spaceHasMoved(sp: Space): boolean {
@@ -74,7 +77,7 @@ export const encodePieceSpace = (
   c: Color,
   moved = false,
 ): Space => {
-  return t | (c << 3) | (Number(moved) << 4);
+  return t | c | (Number(moved) << 4);
 };
 
 export function spaceGetFENString(sp: Space): string {

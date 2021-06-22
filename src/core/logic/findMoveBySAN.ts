@@ -18,7 +18,8 @@ const PIECETYPE_MAP: { [type: string]: PieceType } = {
   K: PIECETYPE_KING,
 };
 
-const CASTLE_RE = /^(?:O-O(?:-O)?|0-0(?:-0)?)$/;
+const CASTLE_RE =
+  /^(O-O(?:-O)?|0-0(?:-0)?)(?:\s+|[!?]+|[+#]|[eE]\.?[pP]\.?|(?:1|0|1\/2|½)-(?:1|0|1\/2|½))*$/;
 const MOVE_RE =
   /^([BNRQK]?)([a-h]?)([1-8]?)(x?)([a-h][1-8])(?:=([BNRQ]))?(?:\s+|[!?]+|[+#]|[eE]\.?[pP]\.?|(?:1|0|1\/2|½)-(?:1|0|1\/2|½))*$/;
 // [1] - Piece capture
@@ -46,11 +47,12 @@ export function findMoveBySAN(moves: Move[], san: string): Move {
   san = san.trim();
 
   // Castles:
-  if (CASTLE_RE.test(san)) {
+  const castleMatch = san.match(CASTLE_RE);
+  if (castleMatch) {
     return _selectMoveByInvariant(
       moves,
       san,
-      (san.length === 5)
+      (castleMatch[1].length === 5)
         ? (move) => (move.castleRookDest & 0x7) === 3 // O-O-O
         : (move) => (move.castleRookDest & 0x7) === 5, // O-O
     );
@@ -74,22 +76,10 @@ export function findMoveBySAN(moves: Move[], san: string): Move {
       (match[3]
         ? ((move.from >>> 4) & 0x7) === (match[3].charCodeAt(0) - 49)
         : true) &&
-      (match[4] ? move.capture !== 0 : move.capture === 0)
+      (match[4] ? move.capture !== 0 : move.capture === 0) &&
+      (match[6] ? move.promote === PIECETYPE_MAP[match[6]] : true)
     ),
   );
-
-  // Finally, handle promotion, if requested.
-  if (match[6]) {
-    if (spaceGetType(move.what) !== PIECETYPE_PAWN) {
-      throw new ChessBadMove(`Piece at ${match[5]} is not a pawn`);
-    }
-    if (!move.promote) {
-      throw new ChessBadMove(
-        `Pawn at ${match[5]} is not eligible for promotion`,
-      );
-    }
-    move.promote = PIECETYPE_MAP[match[6]];
-  }
 
   return move;
 }
@@ -105,6 +95,10 @@ function _selectMoveByInvariant(
     const move = moves[i];
     if (fn(move)) {
       if (found) {
+        // Special case: Forgetting the promotion param:
+        if (found.promote && move.promote) {
+          throw new ChessBadMove(`${san} needs a promotion type`);
+        }
         throw new ChessBadMove(`${san} is ambiguous`);
       }
       found = move;

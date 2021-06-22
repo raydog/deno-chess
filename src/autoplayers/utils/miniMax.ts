@@ -9,9 +9,14 @@
 
 import { Board } from "../../core/datatypes/Board.ts";
 import { Color, COLOR_BLACK, COLOR_WHITE } from "../../core/datatypes/Color.ts";
-import { GAMESTATUS_CHECKMATE } from "../../core/datatypes/GameStatus.ts";
+import { coordToAN } from "../../core/datatypes/Coord.ts";
+import {
+  GAMESTATUS_CHECKMATE,
+  GAMESTATUS_DRAW,
+} from "../../core/datatypes/GameStatus.ts";
 import { Move } from "../../core/datatypes/Move.ts";
-import { listAllValidMoves } from "../../core/logic/listValidMoves.ts";
+import { boardRenderASCII } from "../../core/logic/boardRenderASCII.ts";
+import { moveToSAN } from "../../core/logic/moveFormats/moveToSAN.ts";
 import { checkMoveResults } from "../../core/logic/moveResults.ts";
 import { performMove } from "../../core/logic/performMove.ts";
 import { GameScore, moveScore } from "./gameScore.ts";
@@ -19,14 +24,14 @@ import { mateScore } from "./gameScore.ts";
 
 // TODO: Test nullable prop vs optional prop perf.
 type MiniMaxResponse = { score: GameScore; move?: Move; nodes: number };
-type CompareMoveFn = (a: Move, b: Move) => number;
+type ListMovesFn = (b: Board) => Move[];
 type RateBoardFn = (b: Board) => number;
 
 export function searchBestMoves(
   board: Board,
   color: Color,
   maxDepth: number,
-  compareMoves: CompareMoveFn,
+  listMoves: ListMovesFn,
   rateBoard: RateBoardFn,
 ) {
   return miniMax(
@@ -36,7 +41,7 @@ export function searchBestMoves(
     maxDepth,
     -Infinity,
     Infinity,
-    compareMoves,
+    listMoves,
     rateBoard,
   );
 }
@@ -48,31 +53,44 @@ function miniMax(
   maxDepth: number,
   alpha: GameScore,
   beta: GameScore,
-  compareMoves: CompareMoveFn,
+  listMoves: ListMovesFn,
   rateBoard: RateBoardFn,
 ): MiniMaxResponse {
-  const enemy = 1 - color;
+  const enemy = 8 - color;
 
   // Checkmates cause a surprise leaf:
   const res = checkMoveResults(board, enemy);
   if (res.newGameStatus === GAMESTATUS_CHECKMATE) {
-    return { score: mateScore(-curDepth), nodes: 1 };
+    const score = mateScore(
+      enemy === COLOR_WHITE ? curDepth + 1 : -curDepth - 1,
+    );
+    return { score, nodes: 1 };
+  }
+
+  // Same thing with the various draw conditions:
+  if (res.newGameStatus >= GAMESTATUS_DRAW) {
+    // TODO: Treat an early draw as an enemy checkmate
+    return { score: 0, nodes: 1 };
   }
 
   // Reached the tree's horizon:
   if (curDepth >= maxDepth) {
+    // console.log("> ".repeat(curDepth) + "LEAF:", moveScore(rateBoard(board)));
+    // console.log(boardRenderASCII(board, true));
     return { score: moveScore(rateBoard(board)), nodes: 1 };
   }
 
   let best: GameScore = (color === COLOR_WHITE) ? -Infinity : Infinity;
   let bestMoves: Move[] = [];
 
-  const allMoves = listAllValidMoves(board, color);
-  const orderedMoves = [...allMoves].sort(compareMoves);
+  const orderedMoves = listMoves(board);
+
   let nodes = 0;
 
   for (const move of orderedMoves) {
     board.save();
+
+    // console.log("> ".repeat(curDepth) + "MOVE:", moveToSAN(orderedMoves, move));
 
     performMove(board, move);
 
@@ -83,9 +101,13 @@ function miniMax(
       maxDepth,
       alpha,
       beta,
-      compareMoves,
+      listMoves,
       rateBoard,
     );
+
+    // if (!curDepth) {
+    //   console.log(moveToSAN(orderedMoves, move), score);
+    // }
 
     board.restore();
 
@@ -102,11 +124,12 @@ function miniMax(
         best = score;
         bestMoves = [move];
       }
-      if (alpha < score) {
-        alpha = score;
-      }
-      if (alpha >= beta) {
+      if (best >= beta) {
+        // console.log("> ".repeat(curDepth) + "BAIL:", beta, ">=", best);
         break;
+      }
+      if (alpha < best) {
+        alpha = best;
       }
 
       // Minimizer
@@ -115,11 +138,12 @@ function miniMax(
         best = score;
         bestMoves = [move];
       }
-      if (beta > score) {
-        beta = score;
-      }
-      if (beta <= alpha) {
+      if (best <= alpha) {
+        // console.log("> ".repeat(curDepth) + "BAIL:", best, "<=", alpha);
         break;
+      }
+      if (beta > best) {
+        beta = score;
       }
     }
   }

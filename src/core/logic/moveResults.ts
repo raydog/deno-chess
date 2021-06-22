@@ -63,7 +63,7 @@ export function moveAndCheckResults(board: Board, move: Move) {
  * @param move
  */
 export function checkMoveResults(board: Board, moveColor: Color): MoveResults {
-  const enemy = 1 - moveColor;
+  const enemy = 8 - moveColor;
 
   const enemyInCheck = kingInDanger(board, enemy);
 

@@ -28,13 +28,13 @@ Deno.test("Game Score > Black mate encoding", function () {
 });
 
 Deno.test("Game Score > Standard score encoding", function () {
-  asserts.assertEquals(scoreToString(moveScore(0)), "0");
-  asserts.assertEquals(scoreToString(moveScore(20)), "20");
-  asserts.assertEquals(scoreToString(moveScore(-5.25)), "-5.25");
-  asserts.assertEquals(scoreToString(moveScore(100_000)), "100000");
-  asserts.assertEquals(scoreToString(moveScore(-100_000)), "-100000");
-  asserts.assertEquals(scoreToString(moveScore(4294967295)), "4294967295");
-  asserts.assertEquals(scoreToString(moveScore(-4294967295)), "-4294967295");
+  asserts.assertEquals(scoreToString(moveScore(0)), "0.00");
+  asserts.assertEquals(scoreToString(moveScore(2000)), "20.00");
+  asserts.assertEquals(scoreToString(moveScore(-525)), "-5.25");
+  asserts.assertEquals(scoreToString(moveScore(10000000)), "100000.00");
+  asserts.assertEquals(scoreToString(moveScore(-10000000)), "-100000.00");
+  asserts.assertEquals(scoreToString(moveScore(4294967295)), "42949672.95");
+  asserts.assertEquals(scoreToString(moveScore(-4294967295)), "-42949672.95");
   asserts.assertThrows(() => moveScore(NaN));
   asserts.assertThrows(() => moveScore(2 ** 32));
   asserts.assertThrows(() => moveScore(-(2 ** 32)));

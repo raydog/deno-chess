@@ -18,3 +18,16 @@ export const PIECETYPE_KNIGHT = 3;
 export const PIECETYPE_ROOK = 4;
 export const PIECETYPE_QUEEN = 5;
 export const PIECETYPE_KING = 6;
+
+const PIECETYPE_LETTERS: { [type in PieceType]: string } = {
+  [PIECETYPE_PAWN]: "P",
+  [PIECETYPE_BISHOP]: "B",
+  [PIECETYPE_KNIGHT]: "N",
+  [PIECETYPE_ROOK]: "R",
+  [PIECETYPE_QUEEN]: "Q",
+  [PIECETYPE_KING]: "K",
+};
+
+export function pieceTypeLetter(type: PieceType): string {
+  return PIECETYPE_LETTERS[type];
+}

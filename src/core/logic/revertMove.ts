@@ -24,7 +24,7 @@ import {
  *
  * @param b
  */
-export function performMove(
+export function revertMove(
   b: Board,
   move: Move,
 ) {

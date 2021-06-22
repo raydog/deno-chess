@@ -231,9 +231,14 @@ called the constructor. You can manage your tags with:
 
 ## Adding AI
 
-This project has a pretty easy (and kinda slow) AI, that is being casually
-worked on, but will probably never get _too_ advanced. Still, if you want to try
-it out:
+_(Note: This bit is subject to change)_
+
+This project has a pretty easy (and also pretty slow) AI, that is being casually
+worked on, but will probably never get _too_ advanced. It uses a minimax move
+search algorithm, with alpha-beta pruning, but no quiescence search, and no
+iterative deepening. This partly stems from the fact that it can only check ~15k
+positions per second, so move searches (given that it typically looks 4-ply, or
+2 solid moves ahead) can take a while. Still, if you want to try it out:
 
 ```ts
 import { BeginnerAI, ChessGame } from "https://deno.land/x/chess@0.2.1/mod.ts";

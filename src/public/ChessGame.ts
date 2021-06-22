@@ -29,6 +29,7 @@ import { GameMove, GameMoveInternal } from "./GameMove.ts";
 import { gameFromPGN } from "../core/logic/PGN/gameFromPGN.ts";
 import { gameToPGN } from "../core/logic/PGN/gameToPGN.ts";
 import { validatePGNKeyValue } from "../core/logic/PGN/pgnUtils.ts";
+import { pieceTypeLetter } from "../core/datatypes/PieceType.ts";
 
 /**
  * The current game status.
@@ -82,10 +83,9 @@ interface MoveDetails {
   dest: string;
 
   /**
-   * True if this move represents a pawn reaching its final rank, and so the promotion parameter will be required when
-   * performing the move.
+   * If this move is a promotion, this parameter will be included to indicate what the pawn is promoting to.
    */
-  promotion: boolean;
+  promotion?: "B" | "N" | "R" | "Q";
 }
 
 /**
@@ -277,28 +277,28 @@ export class ChessGame {
   /**
    * Performs a chess move. The current player is assumed from the board state.
    *
-   * The "move" parameter can be in one or two formats:
+   * The "move" parameter can be in several formats:
    *
    * 1. A short string in [UCI (Universal Chess Interface)](https://en.wikipedia.org/wiki/Universal_Chess_Interface)
    *    format. These strings look like "e2e4", with both the departing and destination coordinates right next to each
    *    other. (We allow a space or hyphen to separate the two coords, but they are not required.) To promote when using
-   *    this move format, provide the second "promote" parameter.
+   *    this move format, provide that as the last part of the string: "c7c8q" to move the pawn on "c7" to "c8" and
+   *    promote to queen.
    *
    * 2. A short string in [SAN (Standard Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
    *    format. These strings look like "e4" to move the e-file pawn up, or "Raxa4" if the a-file rook captured
    *    something on a4. When using this format, the promote property is always ignored: Instead, use "=" plus the
    *    correct chess piece type (N, B, R, or Q) in the move string.
    *
-   * @param move A string like "b1c3", "d1-h5", "Nf3", or "axb8=Q".
-   * @param promote Either "Q", "N", "R" or "B".
+   * @param move A string like "b1c3", "g7f8n", "d1-h5", "Nf3", or "axb8=Q".
    */
-  public move(move: string, promote?: "B" | "R" | "N" | "Q"): ChessGame {
+  public move(move: string): ChessGame {
     if (this.isGameOver()) {
       throw new ChessGameOver();
     }
 
     // This method handles both UCI and SAN:
-    const record = doGameMove(this.#board, move, promote);
+    const record = doGameMove(this.#board, move);
     this.#moves.push(record);
 
     // Did the move checkmate or draw the game? If so, update the winner accordingly:
@@ -334,11 +334,18 @@ export class ChessGame {
       }
       moves = listValidMoves(this.#board, idx);
     }
-    return moves.map((move) => ({
-      from: coordToAN(move.from),
-      dest: coordToAN(move.dest),
-      promotion: Boolean(move.promote),
-    }));
+    return moves.map((move) => {
+      const from = coordToAN(move.from);
+      const dest = coordToAN(move.dest);
+
+      return (move.promote)
+        ? {
+          from,
+          dest,
+          promotion: pieceTypeLetter(move.promote) as "B" | "N" | "R" | "Q",
+        }
+        : { from, dest };
+    });
   }
 
   /**

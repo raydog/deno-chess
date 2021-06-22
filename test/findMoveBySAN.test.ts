@@ -108,3 +108,35 @@ Deno.test("Find Move by SAN > Knight > Capture", function () {
   const moves = listAllValidMoves(board, COLOR_BLACK);
   asserts.assert(findMoveBySAN(moves, "Nxd5"));
 });
+
+Deno.test("Find Move by SAN > King > Castle Kingside", function () {
+  const board = boardFromFEN(
+    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1",
+  );
+  const moves = listAllValidMoves(board, COLOR_WHITE);
+  asserts.assert(findMoveBySAN(moves, "O-O"));
+});
+
+Deno.test("Find Move by SAN > King > Castle Queenside", function () {
+  const board = boardFromFEN(
+    "r3kb1r/ppp2ppp/2np1nq1/1N2p1B1/4P1b1/3P1NP1/PPP1BP1P/R2QK2R w KQkq - 0 1",
+  );
+  const moves = listAllValidMoves(board, COLOR_BLACK);
+  asserts.assert(findMoveBySAN(moves, "O-O-O"));
+});
+
+Deno.test("Find Move by SAN > King > Castle Kingside with annotations", function () {
+  const board = boardFromFEN(
+    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 1",
+  );
+  const moves = listAllValidMoves(board, COLOR_WHITE);
+  asserts.assert(findMoveBySAN(moves, "O-O# 1-0"));
+});
+
+Deno.test("Find Move by SAN > King > Castle Queenside with annotations", function () {
+  const board = boardFromFEN(
+    "r3kb1r/ppp2ppp/2np1nq1/1N2p1B1/4P1b1/3P1NP1/PPP1BP1P/R2QK2R w KQkq - 0 1",
+  );
+  const moves = listAllValidMoves(board, COLOR_BLACK);
+  asserts.assert(findMoveBySAN(moves, "O-O-O+!?"));
+});

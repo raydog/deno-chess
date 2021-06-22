@@ -57,5 +57,5 @@ export function scoreToString(score: GameScore): string {
   }
 
   // Else, standard move
-  return String(score);
+  return (score / 100).toFixed(2);
 }
