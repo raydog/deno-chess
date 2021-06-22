@@ -120,13 +120,13 @@ export class BeginnerAI {
       (best.move.promote ? pieceTypeLetter(best.move.promote) : "");
 
     // console.log(fen);
-    console.log(
-      "Best Move (%s) = [%s] in %d ms (%d nodes considered)",
-      scoreToString(best.score),
-      move,
-      performance.now() - start,
-      best.nodes,
-    );
+    // console.log(
+    //   "Best Move (%s) = [%s] in %d ms (%d nodes considered)",
+    //   scoreToString(best.score),
+    //   move,
+    //   performance.now() - start,
+    //   best.nodes,
+    // );
 
     this.#game.move(move);
   }

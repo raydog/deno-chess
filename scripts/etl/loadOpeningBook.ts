@@ -21,7 +21,7 @@ for await (const entry of Deno.readDir(dataPath)) {
   }
 
   const fPath = path.join(dataPath, entry.name);
-  console.log("Loading entries from: %s...", fPath);
+  // console.log("Loading entries from: %s...", fPath);
 
   let num = 0;
   for await (const line of readLines(await Deno.open(fPath))) {
@@ -41,7 +41,7 @@ for await (const entry of Deno.readDir(dataPath)) {
     num++;
   }
 
-  console.log(" -> Loaded %d rows", num);
+  // console.log(" -> Loaded %d rows", num);
 }
 
 root.forEach(pruneTerminals);

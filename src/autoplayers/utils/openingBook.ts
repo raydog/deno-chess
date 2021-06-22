@@ -14,7 +14,7 @@ export function compileOpeningBook(): OpeningBook {
   const book: OpeningBook = {};
   const board: Board = buildStandardBoard();
 
-  const start = performance.now();
+  // const start = performance.now();
 
   book[hashBoard(board)] = RawPlaybook.map((entry) => entry[0]);
 
@@ -24,7 +24,7 @@ export function compileOpeningBook(): OpeningBook {
     board.restore();
   }
 
-  console.log("Compiled in", performance.now() - start, "ms");
+  // console.log("Compiled in", performance.now() - start, "ms");
 
   return book;
 }
