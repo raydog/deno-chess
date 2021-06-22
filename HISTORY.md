@@ -1,4 +1,4 @@
-## 0.3.0 (WIP)
+## 0.3.0 (2021-06-22)
 
 - (Breaking) The format of the move list when asking for a list of all legal
   moves was changed.
