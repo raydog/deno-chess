@@ -1,3 +1,17 @@
+## 0.3.0 (WIP)
+
+- (Breaking) The format of the move list when asking for a list of all legal
+  moves was changed.
+  - Moves that involve promoting a pawn are now treated as different moves.
+  - The move object now has a "promotion" string property, which is the piece
+    type ("Q", "N", ...) that this move promotes to.
+- (Breaking) The format of the move method changed. There is no longer a
+  promotion second parameter, and UCI promotions are now part of the string.
+- Move lists are now cached when listing legal moves.
+- Various tweaks to the work-in-progress AI.
+- AI logic is now packaged into a different module from the core chess engine.
+- Fixed a minor bug in PGN parsing.
+
 ## 0.2.1 (2021-06-12)
 
 - Fix a move enumeration bug, that would allow the King to castle when not

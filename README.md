@@ -38,7 +38,11 @@ game.getStatus();
 
 // Enumerate all moves available to the player with:
 game.allMoves();
-// => [ "b1a3", "b1c3", "d1e2", "d1f3", ... ]
+// => [
+//      { from: "b1", dest: "a3" },
+//      { from: "b1", dest: "c3" },
+//      ...
+//    ]
 
 // Do you want to render the board in text? Use .toString()
 game.toString();
@@ -92,20 +96,21 @@ Most of the game features are provided by the ChessGame class.
   [SAN (Standard Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
   string.
 
-  The second "promotion" parameter is for when in UCI mode, so that a pawn that
-  reaches its final rank can promote to the piece that it wants.
+  - _UCI Format_
 
-  ```ts
-  game.move("c7c8", "Q"); // Move to c8 ; Promote to Queen
-  ```
+    ```ts
+    game.move("g8f6"); // Move the black knight on g8 to f6
+    game.move("c7c8Q"); // Move the white pawn on c7 to c8 ; Promote to Queen
+    ```
 
-  The "promotion" parameter can be ignored when using SAN strings:
+  - _SAN Format_
 
-  ```ts
-  game.move("c8=Q");
-  ```
+    ```ts
+    game.move("Raxd1"); // Use the a-file rook to capture on d1
+    game.move("b1=N"); // Move a pawn to b1 ; Promote to a Knight
+    ```
 
-  If a pawn reaches its final rank, and a promotion piece wasn't indicated, a
+  Note: If a pawn reaches its final rank, and promotion info wasn't indicated, a
   `ChessNeedsPromotion` error is thrown.
 
 - **`game.allMoves(coord?: string)`**
@@ -119,8 +124,8 @@ Most of the game features are provided by the ChessGame class.
 
   - `from`: The departure coordinate, in algebraic notation.
   - `dest`: The destination coordinate, in algebraic notation.
-  - `promotion`: True when this is a pawn promotion, and will require that
-    parameter when moving.
+  - `promotion`: Present when this is a promotion. Will be equal to one of: "Q",
+    "R", "N", or "B".
 
 - **`game.isGameOver()`**
 
