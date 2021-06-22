@@ -15,6 +15,13 @@ export type ScoreSettings = {
   Material: { [type in PieceType]: number };
 
   /**
+   * This many points will be added for each legal move a piece of that type can move.
+   *
+   * One exception: Pawns will only count 1 of their 2 possible steps during their opening.
+   */
+  Mobility: { [type in PieceType]: number };
+
+  /**
    * Value of a pawn being physically in the 2x2 center of the board.
    */
   PawnCenter: number;
@@ -43,16 +50,6 @@ export type ScoreSettings = {
    * Value of a piece being in the hollow 4x4 square around the center.
    */
   PieceOuterCenter: number;
-
-  /**
-   * Value of a non-pawn piece's mobility. (Each legal move)
-   */
-  PieceMobility: number;
-
-  /**
-   * Value of a pawn's mobility.
-   */
-  PawnMobility: number;
 
   /**
    * Value (probably negative) of a king being on the outside edge of the board during endgame.

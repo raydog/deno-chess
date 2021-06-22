@@ -24,8 +24,8 @@
 
       var game = Lib.DenoChess.ChessGame.NewStandardGame();
 
-      var white_ai = Lib.DenoChessAI.BeginnerAI.NewForGame(game, "white");
-      var black_ai = null; //Lib.DenoChessAI.BeginnerAI.NewForGame(game, "black");
+      var white_ai = null; //Lib.DenoChessAI.BeginnerAI.NewForGame(game, "white");
+      var black_ai = Lib.DenoChessAI.BeginnerAI.NewForGame(game, "black");
       var userAction = null;
 
       var status, moves;

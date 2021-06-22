@@ -272,7 +272,14 @@ Deno.test("Board Scoring > Mobility > White piece", function () {
   const score = scoreBoard(
     b,
     _settings({
-      PieceMobility: 1,
+      Mobility: {
+        [PIECETYPE_PAWN]: 1,
+        [PIECETYPE_BISHOP]: 1,
+        [PIECETYPE_KNIGHT]: 1,
+        [PIECETYPE_ROOK]: 1,
+        [PIECETYPE_QUEEN]: 1,
+        [PIECETYPE_KING]: 1,
+      },
     }),
   );
   asserts.assertEquals(score, 21);
@@ -283,7 +290,14 @@ Deno.test("Board Scoring > Mobility > Black piece", function () {
   const score = scoreBoard(
     b,
     _settings({
-      PieceMobility: 1,
+      Mobility: {
+        [PIECETYPE_PAWN]: 1,
+        [PIECETYPE_BISHOP]: 1,
+        [PIECETYPE_KNIGHT]: 1,
+        [PIECETYPE_ROOK]: 1,
+        [PIECETYPE_QUEEN]: 1,
+        [PIECETYPE_KING]: 1,
+      },
     }),
   );
   asserts.assertEquals(score, -32);
@@ -294,10 +308,17 @@ Deno.test("Board Scoring > Mobility > White pawn", function () {
   const score = scoreBoard(
     b,
     _settings({
-      PawnMobility: 1,
+      Mobility: {
+        [PIECETYPE_PAWN]: 1,
+        [PIECETYPE_BISHOP]: 1,
+        [PIECETYPE_KNIGHT]: 1,
+        [PIECETYPE_ROOK]: 1,
+        [PIECETYPE_QUEEN]: 1,
+        [PIECETYPE_KING]: 1,
+      },
     }),
   );
-  asserts.assertEquals(score, 5);
+  asserts.assertEquals(score, 3);
 });
 
 Deno.test("Board Scoring > Mobility > Black pawn", function () {
@@ -305,10 +326,17 @@ Deno.test("Board Scoring > Mobility > Black pawn", function () {
   const score = scoreBoard(
     b,
     _settings({
-      PawnMobility: 1,
+      Mobility: {
+        [PIECETYPE_PAWN]: 1,
+        [PIECETYPE_BISHOP]: 1,
+        [PIECETYPE_KNIGHT]: 1,
+        [PIECETYPE_ROOK]: 1,
+        [PIECETYPE_QUEEN]: 1,
+        [PIECETYPE_KING]: 1,
+      },
     }),
   );
-  asserts.assertEquals(score, -5);
+  asserts.assertEquals(score, -3);
 });
 
 Deno.test("Board Scoring > Pawn in center > Inside in opening", function () {
@@ -538,14 +566,20 @@ function _settings(overrides: Partial<ScoreSettings>): ScoreSettings {
       [PIECETYPE_QUEEN]: 0,
       [PIECETYPE_KING]: 0,
     },
+    Mobility: {
+      [PIECETYPE_PAWN]: 0,
+      [PIECETYPE_BISHOP]: 0,
+      [PIECETYPE_KNIGHT]: 0,
+      [PIECETYPE_ROOK]: 0,
+      [PIECETYPE_QUEEN]: 0,
+      [PIECETYPE_KING]: 0,
+    },
     PawnCenter: 0,
     PawnCenterAttack: 0,
     MinorCenter: 0,
     QueenCenter: 0,
     PieceCenterAttack: 0,
     PieceOuterCenter: 0,
-    PieceMobility: 0,
-    PawnMobility: 0,
     KingEndgameEdge: 0,
     KingEndgameOuterCenter: 0,
     KingEndgameCenter: 0,

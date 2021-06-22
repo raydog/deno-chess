@@ -52,14 +52,13 @@ export function scoreBoard(
   {
     PhaseOverride,
     Material,
+    Mobility,
     PawnCenter,
     PawnCenterAttack,
     MinorCenter,
     QueenCenter,
     PieceCenterAttack,
     PieceOuterCenter,
-    PieceMobility,
-    PawnMobility,
     KingEndgameEdge,
     KingEndgameOuterCenter,
     KingEndgameCenter,
@@ -97,8 +96,13 @@ export function scoreBoard(
       net += side * Material[type];
 
       // General mobility (all phases)
-      net += side * moves.length *
-        (type === PIECETYPE_PAWN ? PawnMobility : PieceMobility);
+      const mobilityMoves = (type === PIECETYPE_PAWN && moves.some((move) =>
+          move.markEnPassant
+        ))
+        ? moves.length - 1
+        : moves.length;
+
+      net += side * mobilityMoves * Mobility[type];
 
       // Opening and midgame. Phase out in endgame:
       if (phase < 2) {

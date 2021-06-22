@@ -50,12 +50,5 @@ function moveScore(
     score -= Material[spaceGetType(move.what)];
   }
 
-  // In general, we like moving into enemy territory:
-  if (color === COLOR_WHITE) {
-    score += (move.dest >>> 4) - (move.from >>> 4);
-  } else {
-    score += (move.from >>> 4) - (move.dest >>> 4);
-  }
-
   return score;
 }
