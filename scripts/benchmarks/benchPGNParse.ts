@@ -26,7 +26,7 @@ const pgn = `[Event "Rubinstein Memorial 4th"]
 
 bench({
   name: "Parse PGN file",
-  runs: 200,
+  runs: 500,
   func(b) {
     b.start();
     gameFromPGN(pgn);

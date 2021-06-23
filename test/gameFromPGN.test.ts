@@ -101,12 +101,12 @@ Deno.test("Game From PGN > Lexer > Reject Strings with EOFs", function () {
   asserts.assertThrows(
     () => _lexer('"Has problems'),
     ChessParseError,
-    "String reached the end",
+    "string reached the end",
   );
   asserts.assertThrows(
     () => _lexer('"Has problems\\'),
     ChessParseError,
-    "String reached the end",
+    "string reached the end",
   );
 });
 

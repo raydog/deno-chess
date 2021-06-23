@@ -265,165 +265,104 @@ function _winnerString(status: string): "white" | "black" | "draw" | null {
   }
 }
 
+const LEX_SANITIZE_RE = /(?:^|\n)%[^\n]*/g;
+const LEX_WHITESPACE_RE = /^\s+/;
+const LEX_COMMENTARY_RE = /^(?:;[^\n]*\n|\{[^}]*\})/;
+const LEX_SINGLE_CHAR_RE = /^[\[\]().*]/;
+const LEX_STRING_RE = /^"(?:[^\\"]|\\.)*"/; // TODO: Len + non-ascii
+const LEX_SYMBOL_RE = /^([a-z0-9][-a-z0-9_+#=:/]*)[!?]{0,2}/i;
+const LEX_NAG_RE = /^\$\d+/;
+const LEX_INT_RE = /^\d+$/;
+
+const LEX_STR_ESCAPE_RE = /\\(.)/g;
+const LEX_STR_BAD_CHARS_RE = /[^\x20-\x7e]/;
+
+
 // Note: exported only for unit tests:
 export function _lexer(pgn: string): Token[] {
-  let idx = 0;
-  const len = pgn.length;
+
+  let wip = pgn.replace(LEX_SANITIZE_RE, "") + "\n";
   const out: Token[] = [];
 
-  // Track when we're on a new line, since some comments are only valid when started here...
-  let lineStartIdx = 0;
+  while (wip) {
+    let match;
 
-  while (idx < len) {
-    const first = pgn[idx];
-
-    // Ignore whitespace:
-    if (WS_RE.test(first)) {
-      idx++;
-      if (first === "\n") {
-        lineStartIdx = idx;
-      }
+    // Ignore this stuff:
+    match = wip.match(LEX_WHITESPACE_RE) || wip.match(LEX_COMMENTARY_RE);
+    if (match) {
+      wip = wip.slice(match[0].length);
       continue;
     }
 
-    // % comments:
-    if ((idx === lineStartIdx) && first === "%") {
-      while (idx < len && pgn[++idx] !== "\n");
+    // Standalone single-char tokens:
+    match = wip.match(LEX_SINGLE_CHAR_RE);
+    if (match) {
+      const char = match[0];
+      out.push({ type: char } as TokenSpecialChar);
+      wip = wip.slice(char.length);
       continue;
     }
 
-    // ; commentary:
-    if (first === ";") {
-      while (idx < len && pgn[++idx] !== "\n");
+    // Symbol. Could be Int or Sym:
+    match = wip.match(LEX_SYMBOL_RE);
+    if (match) {
+      const raw = match[0];
+      const value = match[1];
+      if (LEX_INT_RE.test(value)) {
+        out.push({ type: "Int", value: parseInt(value, 10) });
+      } else {
+        out.push({ type: "Sym", value });
+      }
+      wip = wip.slice(raw.length);
       continue;
     }
 
-    // { commentary }:
-    if (first === "{") {
-      while (idx < len && pgn[++idx] !== "}");
-      idx++;
+    // Quoted string:
+    match = wip.match(LEX_STRING_RE);
+    if (match) {
+      const raw = match[0];
+      out.push({ type: "Str", value: _handleString(raw) });
+      wip = wip.slice(raw.length);
       continue;
     }
 
-    // Special single-character tokens:
-    if (CHAR_TOKENS_RE.test(first)) {
-      idx++;
-      out.push({ type: first } as TokenSpecialChar);
+    // NAG code:
+    match = wip.match(LEX_NAG_RE);
+    if (match) {
+      const raw = match[0];
+      out.push({ type: "Nag", value: parseInt(raw.slice(1), 10) });
+      wip = wip.slice(raw.length);
       continue;
     }
 
-    // Quoted strings:
-    if (first === '"') {
-      let str = "";
-      while (true) {
-        const char = pgn[++idx];
-        if (idx >= len) {
-          throw new ChessParseError(
-            `Invalid PGN: String reached the end without being closed.`,
-          );
-        }
-        if (char === '"') {
-          idx++;
-          break;
-        }
-        if (char === "\\") {
-          const next = pgn[++idx];
-          if (idx >= len) {
-            throw new ChessParseError(
-              `Invalid PGN: String reached the end without being closed.`,
-            );
-          } else if (next === '"' || next === "\\") {
-            str += next;
-          } else {
-            throw new ChessParseError(
-              `Invalid PGN string escape: '\\${next}'. Can only be '\\\\' or '\\"'.`,
-            );
-          }
-          continue;
-        }
-        // Spec insists that we only allow printable characters. For ASCII, that's 32 through 126.
-        const code = char.charCodeAt(0);
-        if (code < 32 || code > 126) {
-          throw new ChessParseError(
-            `PGN strings can only contain printable ASCII characters.`,
-          );
-        }
-        // Else, fine:
-        str += char;
-      }
-      // Spec says these are invalid:
-      if (str.length >= 256) {
-        throw new ChessParseError(
-          `PGN strings must be at most 255 characters long.`,
-        );
-      }
-      out.push({ type: "Str", value: str });
-      continue;
-    }
-
-    // NAGs:
-    if (first === "$") {
-      let digits = "";
-      while (idx < len) {
-        const char = pgn[++idx];
-        if (!DIGIT_RE.test(char)) {
-          break;
-        }
-        digits += char;
-      }
-      if (!digits) {
-        throw new ChessParseError(
-          `PGN $ characters must be followed by a digit`,
-        );
-      }
-      out.push({ type: "Nag", value: parseInt(digits, 10) });
-      continue;
-    }
-
-    // Symbols (and their variants)
-    if (SYMBOL_START_RE.test(first)) {
-      let sym = first;
-      while (idx < len) {
-        const char = pgn[++idx];
-        if (idx >= len || !SYMBOL_CONTINUE_RE.test(char)) {
-          break;
-        }
-        sym += char;
-      }
-
-      // Return early if int:
-      if (IS_INT_RE.test(sym)) {
-        out.push({ type: "Int", value: parseInt(sym, 10) });
-        continue;
-      }
-
-      // Final hack: Section 8.2.3.8 allows for move suffixes, but only if they're the last part of a move symbol.
-      // Allow for that:
-      for (let i = 0; i < 2; i++) {
-        const char = pgn[idx];
-        if (char !== "!" && char !== "?") {
-          break;
-        }
-        sym += char;
-        idx++;
-      }
-
-      if (sym.length >= 256) {
-        throw new ChessParseError(
-          `PGN symbols must be at most 255 characters long.`,
-        );
-      }
-
-      out.push({ type: "Sym", value: sym });
-      continue;
+    // Else, nothing good matches:
+    if (wip.startsWith('"')) {
+      throw new ChessParseError("PGN string reached the end");
     }
 
     // Else, unknown character:
     throw new ChessParseError(
-      `PGN has invalid character: ${first} at ${pgn.slice(idx - 20, idx + 20)}`,
+      `PGN had unexpected data: ${wip.slice(0, 10)}`,
     );
   }
 
+  return out;
+}
+
+function _handleString(raw: string): string {
+  const out = raw.slice(1, -1)
+    .replace(LEX_STR_ESCAPE_RE, (full, ch) => {
+      if (ch !== "\\" && ch !== '"') {
+        throw new ChessParseError(`Invalid PGN string escape: ${JSON.stringify(full)}`);
+      }
+      return ch;
+    });
+  if (LEX_STR_BAD_CHARS_RE.test(out)) {
+    throw new ChessParseError("PGN strings can only contain printable ASCII characters");
+  }
+  if (out.length >= 256) {
+    throw new ChessParseError("PGN strings must be 255 chars or less");
+  }
   return out;
 }
 
