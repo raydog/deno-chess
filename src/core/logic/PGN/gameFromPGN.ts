@@ -55,12 +55,6 @@ export type PgnMove = {
 
 type Tags = { [key: string]: string };
 
-const WS_RE = /^\s/;
-const CHAR_TOKENS_RE = /^[\[\]().*]/;
-const DIGIT_RE = /^\d/;
-const SYMBOL_START_RE = /^[a-z0-9]/i;
-const SYMBOL_CONTINUE_RE = /^[-a-z0-9_+#=:/]/i; // Aside: spec actually forgot / as a symbol continuation character, even though the spec depends on it.
-const IS_INT_RE = /^\d+$/;
 const GAME_TERM_RE = /^(1-0|0-1|1\/2-1\/2)$/;
 
 /**
