@@ -526,36 +526,36 @@ Deno.test("ChessGame Public API > PGN Output > Works with custom starts", functi
   );
 });
 
-Deno.test("ChessGame Public API > Move revert > Standard moves", function() {
+Deno.test("ChessGame Public API > Move revert > Standard moves", function () {
   const game = ChessGame.NewStandardGame();
   game.move("e4").move("e5");
   _testManyUndos(game, [
-    'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2',
-    'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1',
-    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+    "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   ]);
 });
 
-Deno.test("ChessGame Public API > Move revert > Captures", function() {
+Deno.test("ChessGame Public API > Move revert > Captures", function () {
   const game = ChessGame.NewStandardGame();
   game.move("e4").move("e5");
   game.move("d4").move("d5");
   game.move("dxe5").move("dxe4");
   game.move("Qxd8+").move("Kxd8");
   _testManyUndos(game, [
-    'rnbk1bnr/ppp2ppp/8/4P3/4p3/8/PPP2PPP/RNB1KBNR w KQ - 0 5',
-    'rnbQkbnr/ppp2ppp/8/4P3/4p3/8/PPP2PPP/RNB1KBNR b KQkq - 0 4',
-    'rnbqkbnr/ppp2ppp/8/4P3/4p3/8/PPP2PPP/RNBQKBNR w KQkq - 0 4',
-    'rnbqkbnr/ppp2ppp/8/3pP3/4P3/8/PPP2PPP/RNBQKBNR b KQkq - 0 3',
-    'rnbqkbnr/ppp2ppp/8/3pp3/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3',
-    'rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2',
-    'rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2',
-    'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1',
-    'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    "rnbk1bnr/ppp2ppp/8/4P3/4p3/8/PPP2PPP/RNB1KBNR w KQ - 0 5",
+    "rnbQkbnr/ppp2ppp/8/4P3/4p3/8/PPP2PPP/RNB1KBNR b KQkq - 0 4",
+    "rnbqkbnr/ppp2ppp/8/4P3/4p3/8/PPP2PPP/RNBQKBNR w KQkq - 0 4",
+    "rnbqkbnr/ppp2ppp/8/3pP3/4P3/8/PPP2PPP/RNBQKBNR b KQkq - 0 3",
+    "rnbqkbnr/ppp2ppp/8/3pp3/3PP3/8/PPP2PPP/RNBQKBNR w KQkq d6 0 3",
+    "rnbqkbnr/pppp1ppp/8/4p3/3PP3/8/PPP2PPP/RNBQKBNR b KQkq d3 0 2",
+    "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+    "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   ]);
 });
 
-Deno.test("ChessGame Public API > Move revert > Castles", function() {
+Deno.test("ChessGame Public API > Move revert > Castles", function () {
   const game = ChessGame.NewStandardGame();
   game.move("e4").move("e5");
   game.move("Nf3").move("Bc5");
@@ -563,82 +563,95 @@ Deno.test("ChessGame Public API > Move revert > Castles", function() {
   game.move("Kf1");
   asserts.assertEquals(
     game.toString("fen"),
-    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1K1R b kq - 5 4"
+    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1K1R b kq - 5 4",
   );
   game.undoMove();
   game.move("Kg1");
   asserts.assertEquals(
     game.toString("fen"),
-    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4"
+    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQ1RK1 b kq - 5 4",
   );
   game.undoMove();
   game.move("Ke2");
   asserts.assertEquals(
     game.toString("fen"),
-    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPPKPPP/RNBQ3R b kq - 5 4"
+    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/5N2/PPPPKPPP/RNBQ3R b kq - 5 4",
   );
 });
 
-Deno.test("ChessGame Public API > Move revert > Restores En Passant", function() {
+Deno.test("ChessGame Public API > Move revert > Restores En Passant", function () {
   const game = ChessGame.NewStandardGame();
   game.move("e4").move("Nf6");
   game.move("e5").move("d5");
   game.move("Bc4");
   asserts.assertEquals(
     game.toString("fen"),
-    "rnbqkb1r/ppp1pppp/5n2/3pP3/2B5/8/PPPP1PPP/RNBQK1NR b KQkq - 1 3"
+    "rnbqkb1r/ppp1pppp/5n2/3pP3/2B5/8/PPPP1PPP/RNBQK1NR b KQkq - 1 3",
   );
   game.undoMove();
   asserts.assertEquals(
     game.toString("fen"),
-    "rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3"
+    "rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
   );
   game.move("exd6");
   asserts.assertEquals(
     game.toString("fen"),
-    "rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3"
+    "rnbqkb1r/ppp1pppp/3P1n2/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
   );
   game.undoMove();
   asserts.assertEquals(
     game.toString("fen"),
-    "rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3"
+    "rnbqkb1r/ppp1pppp/5n2/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
   );
 });
 
-Deno.test("ChessGame Public API > Move revert > Undoes a promotion", function() {
+Deno.test("ChessGame Public API > Move revert > Undoes a promotion", function () {
   const game = ChessGame.NewFromPGN(`
     [Site "Test case"]
     1. a4 b5 2. axb5 Nc6 3. b6 Ne5 4. b7 Nc4 *
   `);
   asserts.assertEquals(
     game.toString("fen"),
-    "r1bqkbnr/pPpppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR w KQkq - 1 5"
+    "r1bqkbnr/pPpppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR w KQkq - 1 5",
   );
   game.move("b8=N");
   asserts.assertEquals(
     game.toString("fen"),
-    "rNbqkbnr/p1pppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR b KQkq - 0 5"
+    "rNbqkbnr/p1pppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR b KQkq - 0 5",
   );
   game.undoMove();
   asserts.assertEquals(
     game.toString("fen"),
-    "r1bqkbnr/pPpppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR w KQkq - 1 5"
+    "r1bqkbnr/pPpppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR w KQkq - 1 5",
   );
   game.move("bxa8=Q");
   asserts.assertEquals(
     game.toString("fen"),
-    "Q1bqkbnr/p1pppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR b KQk - 0 5"
+    "Q1bqkbnr/p1pppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR b KQk - 0 5",
   );
   game.undoMove();
   asserts.assertEquals(
     game.toString("fen"),
-    "r1bqkbnr/pPpppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR w KQkq - 1 5"
+    "r1bqkbnr/pPpppppp/8/8/2n5/8/1PPPPPPP/RNBQKBNR w KQkq - 1 5",
   );
+});
+
+Deno.test("ChessGame Public API > Move revert > Repetitions", function () {
+  const game = ChessGame.NewStandardGame();
+  for (let i = 0; i < 10; i++) {
+    game.move("Nc3");
+    game.undoMove();
+  }
+  game.move("Nc3");
+  asserts.assertObjectMatch(game.getStatus(), {
+    state: "active",
+    turn: "black",
+  });
 });
 
 // Test our ability to undo moves
 function _testManyUndos(game: ChessGame, fens: string[]) {
-  for (let idx=0; idx<fens.length; idx++) {
+  for (let idx = 0; idx < fens.length; idx++) {
     asserts.assertEquals(game.toString("fen"), fens[idx]);
     game.undoMove();
   }

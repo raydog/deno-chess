@@ -1,7 +1,8 @@
 import { Board } from "../datatypes/Board.ts";
 import { COLOR_BLACK, COLOR_WHITE } from "../datatypes/Color.ts";
 import { Move } from "../datatypes/Move.ts";
-import { SPACE_EMPTY, } from "../datatypes/Space.ts";
+import { SPACE_EMPTY } from "../datatypes/Space.ts";
+import { hashBoard } from "./hashBoard.ts";
 
 /**
  * Will apply a Move object to a board. Assumes that the Move is valid.
@@ -12,8 +13,8 @@ export function revertMove(
   b: Board,
   move: Move,
 ) {
-
-  // TODO: Appearance counter.
+  const hash = hashBoard(b);
+  b.removeBoardHash(hash);
 
   const current = b.current;
 

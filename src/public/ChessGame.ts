@@ -308,11 +308,15 @@ export class ChessGame {
     return this;
   }
 
+  /**
+   * Undoes the most recent move in this game's history.
+   */
   public undoMove(): ChessGame {
     const move = this.#moves.pop();
-    
+
     if (move) {
       revertMove(this.#board, move.move);
+      this.#gameWinner = null;
     }
 
     return this;

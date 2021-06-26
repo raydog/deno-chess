@@ -24,12 +24,12 @@ type Layer = {
 };
 
 export type PriorState = {
-  clock: number,
-  moveNum: number,
-  ep: Coord,
-  status: GameStatus,
-  castles: CastleMap,
-}
+  clock: number;
+  moveNum: number;
+  ep: Coord;
+  status: GameStatus;
+  castles: CastleMap;
+};
 
 /**
  * Internal representation of a Board. Basically a bunch of integers, with a few extra bells-n-whistles.
@@ -102,7 +102,7 @@ export class Board {
    *
    * @param hash
    */
-   putBoardHash(hash: string): number {
+  putBoardHash(hash: string): number {
     // When getting the prior number, run backwards through history until we find this hash. We don't duplicate the hash
     // histories the same way as other Layer data, because duplicating those objects is slow, and we need to change
     // layers frequently. (Far more frequently than they're used...)
@@ -118,6 +118,25 @@ export class Board {
     // Else, not found:
     this.current.seen[hash] = 1;
     return 1;
+  }
+
+  /**
+   * Will push a board hash into our history objects. Returns the number of times we've seen this exact configuration
+   * before.
+   *
+   * @param hash
+   */
+  removeBoardHash(hash: string): void {
+    // When getting the prior number, run backwards through history until we find this hash. We don't duplicate the hash
+    // histories the same way as other Layer data, because duplicating those objects is slow, and we need to change
+    // layers frequently. (Far more frequently than they're used...)
+    for (let idx = this.#layerIdx; idx >= 0; idx--) {
+      if (hash in this.#layers[idx].seen) {
+        // Oh! this one! Decrement 1 and return.
+        this.current.seen[hash]--;
+        return;
+      }
+    }
   }
 
   /**
