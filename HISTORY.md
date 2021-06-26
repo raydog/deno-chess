@@ -1,8 +1,10 @@
 ## 0.4.0 (WIP)
 
-- Fixed a bug where pawn promotions weren't counted as pawn moves, so it wouldn't reset the 50-move counter.
+- Fixed a bug where pawn promotions weren't counted as pawn moves, so it
+  wouldn't reset the 50-move counter.
 - Added the ability to undo moves.
-- PGN parser is now both slightly faster and slightly smaller. (In terms of size in the dist bundle.)
+- PGN parser is now both slightly faster and slightly smaller. (In terms of size
+  in the dist bundle.)
 
 ## 0.3.0 (2021-06-22)
 

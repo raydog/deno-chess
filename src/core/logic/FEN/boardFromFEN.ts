@@ -19,6 +19,9 @@ const DIGIT_RE = /[1-8]/;
 const WHITE_PIECE_RE = /[PBNRQK]/;
 const BLACK_PIECE_RE = /[pbnrqk]/;
 
+const FEN_RE =
+  /^((?:[pbnrqkPBNRQK1-8]{1,8}\/){7}[pbnrqkPBNRQK1-8]{1,8})\s+([wb])\s+(K?Q?k?q?|-)\s+([a-h][36]|-)\s+(\d+)\s+(\d+)$/;
+
 /**
  * Builds a new Board from a FEN string.
  *
@@ -31,17 +34,13 @@ export function boardFromFEN(fen: string, board?: Board): Board {
   const out = board || new Board();
 
   fen = fen.trim();
-
-  const fields = fen.split(/\s+/g);
-  if (fields.length !== 6) {
-    throw new ChessParseError("Bad FEN string: Wrong number of sections");
+  const match = fen.match(FEN_RE);
+  if (!match) {
+    throw new ChessParseError("Bad FEN string");
   }
 
   // Field 1: Board layout
-  const ranks = fields[0].split("/");
-  if (ranks.length !== 8) {
-    throw new ChessParseError("Bad FEN string: Board data should have 8 ranks");
-  }
+  const ranks = match[1].split("/");
 
   for (let rank = 7; rank >= 0; rank--) {
     let dataIdx = 0;
@@ -68,30 +67,25 @@ export function boardFromFEN(fen: string, board?: Board): Board {
         out.set(idx, _spaceBuilder(COLOR_BLACK, type, rank));
       }
     }
-    if (dataIdx < data.length) {
-      throw new ChessParseError(
-        `Bad FEN string: Rank ${rank + 1} had more than 8 files`,
-      );
-    }
   }
 
   // Field 2: Turn
-  const turn = _parseTurn(fields[1]);
+  const turn = _parseTurn(match[2]);
   out.current.turn = turn;
 
   // Field 3: Castle availability
-  out.current.castles = _parseCastles(fields[2]);
+  out.current.castles = _parseCastles(match[3]);
 
   // Field 4: En Passant target
-  if (fields[3] !== "-") {
-    out.current.ep = coordFromAN(fields[3]);
+  if (match[4] !== "-") {
+    out.current.ep = coordFromAN(match[4]);
   }
 
   // Field 5: Half-move clock
-  out.current.clock = _parseIntField(fields[4]);
+  out.current.clock = parseInt(match[5], 10);
 
   // Field 6: Full-move number
-  out.current.moveNum = _parseIntField(fields[5]);
+  out.current.moveNum = parseInt(match[6], 10);
 
   const status = checkMoveResults(out, 8 - turn);
   out.current.status = status.newGameStatus;
@@ -99,41 +93,30 @@ export function boardFromFEN(fen: string, board?: Board): Board {
   return out;
 }
 
+const TYPES: { [fen: string]: PieceType } = {
+  p: PIECETYPE_PAWN,
+  b: PIECETYPE_BISHOP,
+  n: PIECETYPE_KNIGHT,
+  r: PIECETYPE_ROOK,
+  q: PIECETYPE_QUEEN,
+  k: PIECETYPE_KING,
+};
+
 function _getPieceType(fen: string): PieceType {
-  switch (fen.toLowerCase()) {
-    case "p":
-      return PIECETYPE_PAWN;
-    case "b":
-      return PIECETYPE_BISHOP;
-    case "n":
-      return PIECETYPE_KNIGHT;
-    case "r":
-      return PIECETYPE_ROOK;
-    case "q":
-      return PIECETYPE_QUEEN;
-    case "k":
-      return PIECETYPE_KING;
-  }
-  throw new ChessParseError("Bad FEN string: Unknown piece: " + fen);
+  return TYPES[fen.toLowerCase()];
 }
 
+const TURNS: { [fen: string]: Color } = {
+  w: COLOR_WHITE,
+  b: COLOR_BLACK,
+};
+
 function _parseTurn(fen: string): Color {
-  switch (fen) {
-    case "w":
-      return COLOR_WHITE;
-    case "b":
-      return COLOR_BLACK;
-  }
-  throw new ChessParseError("Bad FEN string: Invalid turn: " + fen);
+  return TURNS[fen];
 }
 
 // Assumes that rooks are on the standard starting files, but that's just how it is with FEN:
 function _parseCastles(fen: string): CastleMap {
-  if (fen.length > 4) {
-    throw new ChessParseError(
-      "Bad FEN string: Castle eligibility list is too long",
-    );
-  }
   let wQueen = 0x88, wKing = 0x88, bQueen = 0x88, bKing = 0x88;
   if (fen !== "-") {
     for (let i = 0; i < fen.length; i++) {
@@ -150,11 +133,6 @@ function _parseCastles(fen: string): CastleMap {
         case "q":
           bQueen = 0x70;
           break;
-        default:
-          throw new ChessParseError(
-            "Bad FEN string: Unknown character in castle eligibility list: " +
-              fen[i],
-          );
       }
     }
   }
@@ -168,14 +146,6 @@ function _spaceBuilder(color: Color, type: PieceType, rank: number): Space {
       (rank === 6 && color === COLOR_BLACK);
     return encodePieceSpace(type, color, !onStart);
   }
-  // Else, we don't REALLY care, so they haven't moved. Why not?
+  // Else, we don't REALLY care, so just say they haven't moved. Why not?
   return encodePieceSpace(type, color, false);
-}
-
-function _parseIntField(fen: string): number {
-  const out = parseInt(fen, 10);
-  if (isNaN(out)) {
-    throw new ChessParseError("Bad FEN string: Bad number: " + fen);
-  }
-  return out;
 }
