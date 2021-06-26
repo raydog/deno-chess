@@ -80,7 +80,7 @@ export function performMove(
   }
 
   // If a capture or pawn move, reset the clock. Else increment.
-  if (move.capture || spaceGetType(space) === PIECETYPE_PAWN) {
+  if (move.capture || spaceGetType(move.what) === PIECETYPE_PAWN) {
     current.clock = 0;
   } else {
     current.clock++;
