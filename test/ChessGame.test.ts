@@ -649,6 +649,31 @@ Deno.test("ChessGame Public API > Move revert > Repetitions", function () {
   });
 });
 
+Deno.test("ChessGame Public API > Move revert > Checkmate", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("f4").move("e6");
+  game.move("g4").move("Qh4#");
+  asserts.assertObjectMatch(game.getStatus(), {
+    state: "checkmate",
+    turn: "white",
+    winner: "black",
+  });
+  game.undoMove();
+  asserts.assertObjectMatch(game.getStatus(), {
+    state: "active",
+    turn: "black",
+  });
+  game.undoMove();
+  asserts.assertObjectMatch(game.getStatus(), {
+    state: "active",
+    turn: "white",
+  });
+  asserts.assertEquals(
+    game.toString("fen"),
+    "rnbqkbnr/pppp1ppp/4p3/8/5P2/8/PPPPP1PP/RNBQKBNR w KQkq - 0 2",
+  );
+});
+
 // Test our ability to undo moves
 function _testManyUndos(game: ChessGame, fens: string[]) {
   for (let idx = 0; idx < fens.length; idx++) {
