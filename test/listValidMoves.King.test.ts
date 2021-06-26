@@ -216,7 +216,14 @@ Deno.test("List Valid Moves > King > Cannot castle kingside with enemy piece", f
   });
   performMove(
     b,
-    createSimpleCapture(b.get(0x26), 0x26, 0x07, b.get(0x07), 0x07, b.getPriorState()),
+    createSimpleCapture(
+      b.get(0x26),
+      0x26,
+      0x07,
+      b.get(0x07),
+      0x07,
+      b.getPriorState(),
+    ),
   );
   const m = listValidMoves(b, coordFromAN("e1"));
   assertMoves(b, m, [
@@ -238,7 +245,14 @@ Deno.test("List Valid Moves > King > Cannot castle queenside with enemy piece", 
   });
   performMove(
     b,
-    createSimpleCapture(b.get(0x21), 0x21, 0x00, b.get(0x00), 0x00, b.getPriorState()),
+    createSimpleCapture(
+      b.get(0x21),
+      0x21,
+      0x00,
+      b.get(0x00),
+      0x00,
+      b.getPriorState(),
+    ),
   );
   const m = listValidMoves(b, coordFromAN("e1"));
   assertMoves(b, m, [

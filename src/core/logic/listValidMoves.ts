@@ -172,7 +172,13 @@ function _findMoves(
   }
 }
 
-function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[], prior: PriorState) {
+function _findKingCastles(
+  b: Board,
+  sp: Space,
+  idx: number,
+  out: Move[],
+  prior: PriorState,
+) {
   // Special-case, if King, and king hasn't moved yet, check the same rank for Rooks that haven't moved, and then maybe
   // try castling:
   if (spaceHasMoved(sp)) return;
@@ -190,7 +196,15 @@ function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[], prior: 
     _tryCastle(
       b,
       out,
-      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest, prior),
+      createCastle(
+        sp,
+        idx,
+        kingDest,
+        b.get(rookFrom),
+        rookFrom,
+        rookDest,
+        prior,
+      ),
     );
   }
 
@@ -201,7 +215,15 @@ function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[], prior: 
     _tryCastle(
       b,
       out,
-      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest, prior),
+      createCastle(
+        sp,
+        idx,
+        kingDest,
+        b.get(rookFrom),
+        rookFrom,
+        rookDest,
+        prior,
+      ),
     );
   }
 }
@@ -212,7 +234,7 @@ function _pawnMoves(
   sp: Space,
   idx: number,
   out: Move[],
-  prior: PriorState
+  prior: PriorState,
 ) {
   const color = spaceGetColor(sp);
   const enemy = 8 - color;
@@ -263,7 +285,19 @@ function _pawnMoves(
       _tryPushMove(
         b,
         out,
-        createFullMove(sp, idx, coord, epSpot, epCoord, 0, 0, 0, promote, 0, prior),
+        createFullMove(
+          sp,
+          idx,
+          coord,
+          epSpot,
+          epCoord,
+          0,
+          0,
+          0,
+          promote,
+          0,
+          prior,
+        ),
       );
     } else if (spot !== SPACE_EMPTY && spaceGetColor(spot) === enemy) {
       _tryPushMove(

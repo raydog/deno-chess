@@ -271,10 +271,8 @@ const LEX_INT_RE = /^\d+$/;
 const LEX_STR_ESCAPE_RE = /\\(.)/g;
 const LEX_STR_BAD_CHARS_RE = /[^\x20-\x7e]/;
 
-
 // Note: exported only for unit tests:
 export function _lexer(pgn: string): Token[] {
-
   let wip = pgn.replace(LEX_SANITIZE_RE, "") + "\n";
   const out: Token[] = [];
 
@@ -347,12 +345,16 @@ function _handleString(raw: string): string {
   const out = raw.slice(1, -1)
     .replace(LEX_STR_ESCAPE_RE, (full, ch) => {
       if (ch !== "\\" && ch !== '"') {
-        throw new ChessParseError(`Invalid PGN string escape: ${JSON.stringify(full)}`);
+        throw new ChessParseError(
+          `Invalid PGN string escape: ${JSON.stringify(full)}`,
+        );
       }
       return ch;
     });
   if (LEX_STR_BAD_CHARS_RE.test(out)) {
-    throw new ChessParseError("PGN strings can only contain printable ASCII characters");
+    throw new ChessParseError(
+      "PGN strings can only contain printable ASCII characters",
+    );
   }
   if (out.length >= 256) {
     throw new ChessParseError("PGN strings must be 255 chars or less");

@@ -27,11 +27,15 @@ export type Move = {
   markEnPassant: Coord;
 
   // Prior state. Used when unmaking a move:
-  prior: PriorState
+  prior: PriorState;
 };
 
-
-export function createSimpleMove(what: Space, from: Coord, dest: Coord, prior: PriorState): Move {
+export function createSimpleMove(
+  what: Space,
+  from: Coord,
+  dest: Coord,
+  prior: PriorState,
+): Move {
   return createFullMove(what, from, dest, 0, 0, 0, 0, 0, 0, 0, prior);
 }
 
@@ -43,7 +47,19 @@ export function createSimpleCapture(
   captureCoord: Coord,
   prior: PriorState,
 ): Move {
-  return createFullMove(what, from, dest, capture, captureCoord, 0, 0, 0, 0, 0, prior);
+  return createFullMove(
+    what,
+    from,
+    dest,
+    capture,
+    captureCoord,
+    0,
+    0,
+    0,
+    0,
+    0,
+    prior,
+  );
 }
 
 export function createCastle(
@@ -94,7 +110,7 @@ export function createFullMove(
     castleRookDest,
     promote,
     markEnPassant,
-    prior
+    prior,
   };
 }
 
