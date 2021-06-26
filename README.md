@@ -17,7 +17,7 @@ well as for the browser. Features include:
 ## Example
 
 ```ts
-import { ChessGame } from "https://deno.land/x/chess@0.3.0/mod.ts";
+import { ChessGame } from "https://deno.land/x/chess@0.4.0/mod.ts";
 
 // Start a new game:
 const game = ChessGame.NewStandardGame();
@@ -250,7 +250,7 @@ positions per second, so move searches (given that it typically looks 4-ply, or
 2 solid moves ahead) can take a while. Still, if you want to try it out:
 
 ```ts
-import { BeginnerAI, ChessGame } from "https://deno.land/x/chess@0.3.0/mod.ts";
+import { BeginnerAI, ChessGame } from "https://deno.land/x/chess@0.4.0/mod.ts";
 
 const game = ChessGame.NewStandardGame();
 const ai = BeginnerAI.NewForGame(game, "black");

@@ -1,4 +1,4 @@
-## 0.4.0 (WIP)
+## 0.4.0 (2021-06-26)
 
 - Fixed a bug where pawn promotions weren't counted as pawn moves, so it
   wouldn't reset the 50-move counter.
