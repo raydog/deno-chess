@@ -1,3 +1,4 @@
+import { PriorState } from "./Board.ts";
 import { Coord } from "./Coord.ts";
 import { PieceType } from "./PieceType.ts";
 import { Space } from "./Space.ts";
@@ -24,10 +25,14 @@ export type Move = {
   // Aside, while 0 is a valid coord, it is never possible to get an En Passant there, so 0 is used as the "empty"
   // state.
   markEnPassant: Coord;
+
+  // Prior state. Used when unmaking a move:
+  prior: PriorState
 };
 
-export function createSimpleMove(what: Space, from: Coord, dest: Coord): Move {
-  return createFullMove(what, from, dest, 0, 0, 0, 0, 0, 0, 0);
+
+export function createSimpleMove(what: Space, from: Coord, dest: Coord, prior: PriorState): Move {
+  return createFullMove(what, from, dest, 0, 0, 0, 0, 0, 0, 0, prior);
 }
 
 export function createSimpleCapture(
@@ -36,8 +41,9 @@ export function createSimpleCapture(
   dest: Coord,
   capture: Space,
   captureCoord: Coord,
+  prior: PriorState,
 ): Move {
-  return createFullMove(what, from, dest, capture, captureCoord, 0, 0, 0, 0, 0);
+  return createFullMove(what, from, dest, capture, captureCoord, 0, 0, 0, 0, 0, prior);
 }
 
 export function createCastle(
@@ -47,6 +53,7 @@ export function createCastle(
   castleRook: Space,
   castleRookFrom: Coord,
   castleRookDest: Coord,
+  prior: PriorState,
 ): Move {
   return createFullMove(
     what,
@@ -59,6 +66,7 @@ export function createCastle(
     castleRookDest,
     0,
     0,
+    prior,
   );
 }
 
@@ -73,6 +81,7 @@ export function createFullMove(
   castleRookDest: Coord,
   promote: PieceType,
   markEnPassant: Coord,
+  prior: PriorState,
 ) {
   return {
     what,
@@ -85,6 +94,7 @@ export function createFullMove(
     castleRookDest,
     promote,
     markEnPassant,
+    prior
   };
 }
 

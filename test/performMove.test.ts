@@ -33,8 +33,9 @@ const move = (b: Board, from: string, to: string, ep?: string) =>
       0,
       0,
       an(ep),
+      b.getPriorState(),
     )
-    : createSimpleMove(b.get(an(from)), an(from), an(to));
+    : createSimpleMove(b.get(an(from)), an(from), an(to), b.getPriorState(),);
 
 Deno.test("Perform Move > Réti Opening", function () {
   const b = buildStandardBoard();

@@ -19,7 +19,7 @@ Deno.test("FEN > Output > After 1. e4", function () {
   const b = buildStandardBoard();
   performMove(
     b,
-    createFullMove(b.get(0x14), 0x14, 0x34, 0, 0, 0, 0, 0, 0, 0x24),
+    createFullMove(b.get(0x14), 0x14, 0x34, 0, 0, 0, 0, 0, 0, 0x24, b.getPriorState()),
   );
   const fen = boardToFEN(b);
   asserts.assertEquals(
@@ -32,11 +32,11 @@ Deno.test("FEN > Output > After 1... c5", function () {
   const b = buildStandardBoard();
   performMove(
     b,
-    createFullMove(b.get(0x14), 0x14, 0x34, 0, 0, 0, 0, 0, 0, 0x24),
+    createFullMove(b.get(0x14), 0x14, 0x34, 0, 0, 0, 0, 0, 0, 0x24, b.getPriorState()),
   );
   performMove(
     b,
-    createFullMove(b.get(0x62), 0x62, 0x42, 0, 0, 0, 0, 0, 0, 0x52),
+    createFullMove(b.get(0x62), 0x62, 0x42, 0, 0, 0, 0, 0, 0, 0x52, b.getPriorState()),
   );
   const fen = boardToFEN(b);
   asserts.assertEquals(
@@ -49,13 +49,13 @@ Deno.test("FEN > Output > After 2. Nf3", function () {
   const b = buildStandardBoard();
   performMove(
     b,
-    createFullMove(b.get(0x14), 0x14, 0x34, 0, 0, 0, 0, 0, 0, 0x24),
+    createFullMove(b.get(0x14), 0x14, 0x34, 0, 0, 0, 0, 0, 0, 0x24, b.getPriorState()),
   );
   performMove(
     b,
-    createFullMove(b.get(0x62), 0x62, 0x42, 0, 0, 0, 0, 0, 0, 0x52),
+    createFullMove(b.get(0x62), 0x62, 0x42, 0, 0, 0, 0, 0, 0, 0x52, b.getPriorState()),
   );
-  performMove(b, createFullMove(b.get(0x06), 0x06, 0x25, 0, 0, 0, 0, 0, 0, 0));
+  performMove(b, createFullMove(b.get(0x06), 0x06, 0x25, 0, 0, 0, 0, 0, 0, 0, b.getPriorState()));
   const fen = boardToFEN(b);
   asserts.assertEquals(
     fen,

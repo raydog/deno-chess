@@ -1,4 +1,4 @@
-import { Board } from "../datatypes/Board.ts";
+import { Board, PriorState } from "../datatypes/Board.ts";
 import { Color, COLOR_WHITE } from "../datatypes/Color.ts";
 import {
   Space,
@@ -85,6 +85,7 @@ export function listValidMoves(
   out: Move[] = [],
 ): Move[] {
   const sp = b.get(idx);
+  const prior = b.getPriorState();
 
   assert(sp !== SPACE_EMPTY, "Listing moves of empty space");
 
@@ -95,30 +96,30 @@ export function listValidMoves(
     // Slidey pieces:
 
     case PIECETYPE_BISHOP:
-      _findMoves(b, sp, idx, DIRS, 4, 8, 8, out);
+      _findMoves(b, sp, idx, DIRS, 4, 8, 8, out, prior);
       break;
 
     case PIECETYPE_ROOK:
-      _findMoves(b, sp, idx, DIRS, 0, 4, 8, out);
+      _findMoves(b, sp, idx, DIRS, 0, 4, 8, out, prior);
       break;
 
     case PIECETYPE_QUEEN:
-      _findMoves(b, sp, idx, DIRS, 0, 8, 8, out);
+      _findMoves(b, sp, idx, DIRS, 0, 8, 8, out, prior);
       break;
 
     // Steppy pieces:
 
     case PIECETYPE_KNIGHT:
-      _findMoves(b, sp, idx, KNIGHT, 0, 8, 1, out);
+      _findMoves(b, sp, idx, KNIGHT, 0, 8, 1, out, prior);
       break;
 
     case PIECETYPE_KING:
-      _findMoves(b, sp, idx, DIRS, 0, 8, 1, out);
-      _findKingCastles(b, sp, idx, out);
+      _findMoves(b, sp, idx, DIRS, 0, 8, 1, out, prior);
+      _findKingCastles(b, sp, idx, out, prior);
       break;
 
     case PIECETYPE_PAWN:
-      _pawnMoves(b, sp, idx, out);
+      _pawnMoves(b, sp, idx, out, prior);
       break;
   }
 
@@ -137,6 +138,7 @@ function _findMoves(
   dirsHigh: number,
   maxDist: number,
   out: Move[],
+  prior: PriorState,
 ) {
   const color = spaceGetColor(sp);
   const enemy = 8 - color;
@@ -152,7 +154,7 @@ function _findMoves(
 
       // If empty, we could either stop here or continue:
       if (newSp === SPACE_EMPTY) {
-        _tryPushMove(b, out, createSimpleMove(sp, idx, newIdx));
+        _tryPushMove(b, out, createSimpleMove(sp, idx, newIdx, prior));
         continue;
       }
 
@@ -161,7 +163,7 @@ function _findMoves(
         _tryPushMove(
           b,
           out,
-          createSimpleCapture(sp, idx, newIdx, newSp, newIdx),
+          createSimpleCapture(sp, idx, newIdx, newSp, newIdx, prior),
         );
       }
 
@@ -170,7 +172,7 @@ function _findMoves(
   }
 }
 
-function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[]) {
+function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[], prior: PriorState) {
   // Special-case, if King, and king hasn't moved yet, check the same rank for Rooks that haven't moved, and then maybe
   // try castling:
   if (spaceHasMoved(sp)) return;
@@ -188,7 +190,7 @@ function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[]) {
     _tryCastle(
       b,
       out,
-      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
+      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest, prior),
     );
   }
 
@@ -199,7 +201,7 @@ function _findKingCastles(b: Board, sp: Space, idx: number, out: Move[]) {
     _tryCastle(
       b,
       out,
-      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest),
+      createCastle(sp, idx, kingDest, b.get(rookFrom), rookFrom, rookDest, prior),
     );
   }
 }
@@ -210,6 +212,7 @@ function _pawnMoves(
   sp: Space,
   idx: number,
   out: Move[],
+  prior: PriorState
 ) {
   const color = spaceGetColor(sp);
   const enemy = 8 - color;
@@ -230,7 +233,7 @@ function _pawnMoves(
     _tryPushMove(
       b,
       out,
-      createFullMove(sp, idx, oneUp, 0, 0, 0, 0, 0, promote, 0),
+      createFullMove(sp, idx, oneUp, 0, 0, 0, 0, 0, promote, 0, prior),
     );
 
     // If we haven't moved before, we can attempt 2 up:
@@ -241,7 +244,7 @@ function _pawnMoves(
       _tryPushMove(
         b,
         out,
-        createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, oneUp),
+        createFullMove(sp, idx, twoUp, 0, 0, 0, 0, 0, 0, oneUp, prior),
       );
     }
   }
@@ -260,13 +263,13 @@ function _pawnMoves(
       _tryPushMove(
         b,
         out,
-        createFullMove(sp, idx, coord, epSpot, epCoord, 0, 0, 0, promote, 0),
+        createFullMove(sp, idx, coord, epSpot, epCoord, 0, 0, 0, promote, 0, prior),
       );
     } else if (spot !== SPACE_EMPTY && spaceGetColor(spot) === enemy) {
       _tryPushMove(
         b,
         out,
-        createFullMove(sp, idx, coord, spot, coord, 0, 0, 0, promote, 0),
+        createFullMove(sp, idx, coord, spot, coord, 0, 0, 0, promote, 0, prior),
       );
     }
   }

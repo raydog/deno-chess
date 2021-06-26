@@ -23,6 +23,14 @@ type Layer = {
   moveCache: { [colors in Color]: Move[] | null };
 };
 
+export type PriorState = {
+  clock: number,
+  moveNum: number,
+  ep: Coord,
+  status: GameStatus,
+  castles: CastleMap,
+}
+
 /**
  * Internal representation of a Board. Basically a bunch of integers, with a few extra bells-n-whistles.
  * This will be translated into a more public-friendly representation in the future.
@@ -94,7 +102,7 @@ export class Board {
    *
    * @param hash
    */
-  putBoardHash(hash: string): number {
+   putBoardHash(hash: string): number {
     // When getting the prior number, run backwards through history until we find this hash. We don't duplicate the hash
     // histories the same way as other Layer data, because duplicating those objects is slow, and we need to change
     // layers frequently. (Far more frequently than they're used...)
@@ -133,6 +141,20 @@ export class Board {
       const idx = --this.#layerIdx;
       this.current = this.#layers[idx];
     }
+  }
+
+  /**
+   * Get the counters and such. Used to take snapshots of the board for move undos.
+   */
+  getPriorState(): PriorState {
+    const current = this.current;
+    return {
+      clock: current.clock,
+      moveNum: current.moveNum,
+      ep: current.ep,
+      status: current.status,
+      castles: current.castles,
+    };
   }
 }
 

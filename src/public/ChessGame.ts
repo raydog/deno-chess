@@ -30,6 +30,7 @@ import { gameFromPGN } from "../core/logic/PGN/gameFromPGN.ts";
 import { gameToPGN } from "../core/logic/PGN/gameToPGN.ts";
 import { validatePGNKeyValue } from "../core/logic/PGN/pgnUtils.ts";
 import { pieceTypeLetter } from "../core/datatypes/PieceType.ts";
+import { revertMove } from "../core/logic/revertMove.ts";
 
 /**
  * The current game status.
@@ -303,6 +304,16 @@ export class ChessGame {
 
     // Did the move checkmate or draw the game? If so, update the winner accordingly:
     this.maybeRefreshWinner();
+
+    return this;
+  }
+
+  public undoMove(): ChessGame {
+    const move = this.#moves.pop();
+    
+    if (move) {
+      revertMove(this.#board, move.move);
+    }
 
     return this;
   }
