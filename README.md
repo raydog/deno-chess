@@ -159,6 +159,10 @@ Most of the game features are provided by the ChessGame class.
 
   Returns all moves in the game history.
 
+- **`game.undoMove()`**
+
+  Undoes the most recent move in the history.
+
 - **`game.resignGame(player: "white" | "black")`**
 
   The given player has resigned the game, meaning that the OTHER player wins.

@@ -5,6 +5,7 @@
 - Added the ability to undo moves.
 - PGN parser is now both slightly faster and slightly smaller. (In terms of size
   in the dist bundle.)
+- FEN parser was also tweaked to be smaller in the bundle.
 
 ## 0.3.0 (2021-06-22)
 
