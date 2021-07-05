@@ -21,7 +21,7 @@ type Layer = {
   seen: { [hash: string]: number };
   castles: CastleMap;
   moveCache: { [colors in Color]: Move[] | null };
-  pieceList: Coord[],
+  pieceList: Coord[];
 };
 
 export type PriorState = {

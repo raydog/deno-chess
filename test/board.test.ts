@@ -13,9 +13,9 @@ import {
 import {
   encodePieceSpace,
   Space,
+  SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
-SPACE_EMPTY,
 } from "../src/core/datatypes/Space.ts";
 import { asserts } from "../testDeps.ts";
 
