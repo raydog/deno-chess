@@ -228,5 +228,5 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.castles = src.castles;
   dest.moveCache[COLOR_WHITE] = src.moveCache[COLOR_WHITE];
   dest.moveCache[COLOR_BLACK] = src.moveCache[COLOR_BLACK];
-  dest.pieceList = [...src.pieceList];
+  dest.pieceList = src.pieceList.slice();
 }
