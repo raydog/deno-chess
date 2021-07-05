@@ -21,6 +21,7 @@ type Layer = {
   seen: { [hash: string]: number };
   castles: CastleMap;
   moveCache: { [colors in Color]: Move[] | null };
+  pieceList: Coord[],
 };
 
 export type PriorState = {
@@ -82,6 +83,25 @@ export class Board {
       const color = spaceGetColor(space);
       const type = spaceGetType(space);
       attackMapAddPiece(this, idx, color, type);
+    }
+
+    // Update the piece list:
+    if ((prior === SPACE_EMPTY) !== (space === SPACE_EMPTY)) {
+      const list = this.current.pieceList;
+      if (prior === SPACE_EMPTY) {
+        // Piece added:
+        list.push(idx);
+      } else {
+        // Piece removed:
+        const pieceIdx = list.indexOf(idx);
+        const last = list.length - 1;
+        if (pieceIdx !== last) {
+          const temp = list[last];
+          list[last] = idx;
+          list[pieceIdx] = temp;
+        }
+        list.pop();
+      }
     }
   }
 
@@ -192,6 +212,7 @@ function newLayer(): Layer {
       [COLOR_WHITE]: null,
       [COLOR_BLACK]: null,
     },
+    pieceList: [],
   };
 }
 
@@ -207,4 +228,5 @@ function copyLayer(src: Layer, dest: Layer) {
   dest.castles = src.castles;
   dest.moveCache[COLOR_WHITE] = src.moveCache[COLOR_WHITE];
   dest.moveCache[COLOR_BLACK] = src.moveCache[COLOR_BLACK];
+  dest.pieceList = [...src.pieceList];
 }
