@@ -13,6 +13,7 @@ import {
 import {
   encodePieceSpace,
   Space,
+  SPACE_EMPTY,
   spaceGetColor,
   spaceGetType,
 } from "../src/core/datatypes/Space.ts";
@@ -25,6 +26,23 @@ Deno.test("Board > Can set pieces", function () {
     encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
+  asserts.assertEquals(b.current.pieceList, [0x22]);
+});
+
+Deno.test("Board > Can remove pieces", function () {
+  const b = new Board();
+  b.set(
+    buildCoord(2, 2),
+    encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE, false),
+  );
+  _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
+  asserts.assertEquals(b.current.pieceList, [0x22]);
+  b.set(
+    buildCoord(2, 2),
+    SPACE_EMPTY,
+  );
+  asserts.assertEquals(b.get(buildCoord(2, 2)), SPACE_EMPTY);
+  asserts.assertEquals(b.current.pieceList, []);
 });
 
 Deno.test("Board > Can add overlays", function () {
@@ -35,6 +53,7 @@ Deno.test("Board > Can add overlays", function () {
     encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
+  asserts.assertEquals(b.current.pieceList, [0x22]);
 
   b.save();
   b.set(
@@ -42,6 +61,7 @@ Deno.test("Board > Can add overlays", function () {
     encodePieceSpace(PIECETYPE_QUEEN, COLOR_BLACK, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_QUEEN, COLOR_BLACK);
+  asserts.assertEquals(b.current.pieceList, [0x22]);
 });
 
 Deno.test("Board > Can remove overlays", function () {
@@ -52,6 +72,7 @@ Deno.test("Board > Can remove overlays", function () {
     encodePieceSpace(PIECETYPE_ROOK, COLOR_WHITE, false),
   );
   _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
+  asserts.assertEquals(b.current.pieceList, [0x22]);
 
   b.save();
   b.set(buildCoord(2, 2), 0);
@@ -59,6 +80,7 @@ Deno.test("Board > Can remove overlays", function () {
 
   b.restore();
   _assertSpace(b.get(buildCoord(2, 2)), PIECETYPE_ROOK, COLOR_WHITE);
+  asserts.assertEquals(b.current.pieceList, [0x22]);
 });
 
 function _assertSpace(sp: Space, t: PieceType, c: Color) {

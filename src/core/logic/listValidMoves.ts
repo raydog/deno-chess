@@ -54,16 +54,13 @@ export function listAllValidMoves(
 ): Move[] {
   const cached = b.current.moveCache[color];
   if (cached) {
-    return [...cached];
+    return cached.slice();
   }
   const out: Move[] = [];
-  for (let rank = 0; rank < 0x80; rank += 0x10) {
-    for (let file = 0; file < 0x8; file++) {
-      const idx = rank | file;
-      const sp = b.get(idx);
-      if (sp !== SPACE_EMPTY && spaceGetColor(sp) === color) {
-        listValidMoves(b, idx, out);
-      }
+  for (const idx of b.current.pieceList) {
+    const sp = b.get(idx);
+    if (spaceGetColor(sp) === color) {
+      listValidMoves(b, idx, out);
     }
   }
   b.current.moveCache[color] = out;
