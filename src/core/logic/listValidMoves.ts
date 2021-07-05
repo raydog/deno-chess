@@ -54,7 +54,7 @@ export function listAllValidMoves(
 ): Move[] {
   const cached = b.current.moveCache[color];
   if (cached) {
-    return [...cached];
+    return cached.slice();
   }
   const out: Move[] = [];
   for (const idx of b.current.pieceList) {
