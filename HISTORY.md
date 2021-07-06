@@ -1,3 +1,11 @@
+## 0.5.0 (2021-07-05)
+
+- Added ability to perform moves with an object instead of only with a UCI / SAN
+  formatted string.
+- Fixed a bug where moves wouldn't throw the correct exception when done with a
+  SAN string.
+- Minor performance optimizations.
+
 ## 0.4.0 (2021-06-26)
 
 - Fixed a bug where pawn promotions weren't counted as pawn moves, so it

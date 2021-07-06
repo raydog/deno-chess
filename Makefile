@@ -1,5 +1,5 @@
 # These 2 lines are updated by the release script:
-BundleVersion = 0.4.0
+BundleVersion = 0.5.0
 BundleYear = 2021
 
 esbuild = ./node_modules/.bin/esbuild
