@@ -22,11 +22,14 @@ import { ChessGame } from "https://deno.land/x/chess@0.4.0/mod.ts";
 // Start a new game:
 const game = ChessGame.NewStandardGame();
 
-// Moves can be in UCI "{from}{dest}" format:
-game.move("e2e4");
+// Moves can be done with an object:
+game.move({ from: "e2", dest: "e4" });
 
-// ... Or in normal standard algebraic notation:
-game.move("Nc6");
+// ... Or in UCI "{from}{dest}" format:
+game.move("b8c6");
+
+// ... Or in Standard Algebraic Notation:
+game.move("Nf3");
 
 // Check if the game is over with:
 game.isGameOver();
@@ -47,23 +50,37 @@ game.allMoves();
 // Do you want to render the board in text? Use .toString()
 game.toString();
 /*
-    a  b  c  d  e  f  g  h
-  +------------------------+
-8 | r     b  q  k  b  n  r | 8
-7 | p  p  p  p  p  p  p  p | 7
-6 |       n                | 6
-5 |                        | 5
-4 |             P          | 4
-3 |                        | 3
-2 | P  P  P  P     P  P  P | 2
-1 | R  N  B  Q  K  B  N  R | 1
-  +------------------------+
-    a  b  c  d  e  f  g  h
+     a  b  c  d  e  f  g  h
+   +------------------------+
+ 8 | r     b  q  k  b  n  r | 8
+ 7 | p  p  p  p  p  p  p  p | 7
+ 6 |       n                | 6
+ 5 |                        | 5
+ 4 |             P          | 4
+ 3 |                N       | 3
+ 2 | P  P  P  P     P  P  P | 2
+ 1 | R  N  B  Q  K  B     R | 1
+   +------------------------+
+     a  b  c  d  e  f  g  h
 */
 
-// .toString() also lets you output in FEN:
+// .toString() also lets you export FEN strings:
 game.toString("fen");
 // => "r1bqkbnr/pppppppp/2n5/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2"
+
+// ... Or PGN strings:
+game.toString("pgn");
+/*
+[Event "?"]
+[Site "?"]
+[Date "2021.07.05"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+
+1. e4 Nc6 2. Nf3 *
+*/
 ```
 
 ## Game API
@@ -86,15 +103,22 @@ Most of the game features are provided by the ChessGame class.
 
 ### Playing a game
 
-- **`game.move(move: string, promotion?: string)`**
+- **`game.move(move: string | { from, dest, promotion? })`**
 
   Performs a chess move.
 
-  The first "move" parameter can either be a short string in
+  The "move" parameter can either be an object describing the move, or a short
+  string in either
   [UCI (Universal Chess Interface)](https://en.wikipedia.org/wiki/Universal_Chess_Interface)
-  format, or a more human-friendly
+  format, or in the more human-friendly
   [SAN (Standard Algebraic Notation)](https://en.wikipedia.org/wiki/Algebraic_notation_(chess))
-  string.
+  format.
+
+  - _Object Format_
+    ```ts
+    game.move({ from: "g8", dest: "f6" }); // Move g8 to f6
+    game.move({ from: "c7", dest: "c8", promotion: "Q"); // Move the white pawn on c7 to c8 ; Promote to Queen
+    ```
 
   - _UCI Format_
 
