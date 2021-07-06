@@ -20,9 +20,9 @@ import { performMove } from "../core/logic/performMove.ts";
 import { GameMoveInternal } from "./GameMove.ts";
 
 type ObjectMove = {
-  from: string,
-  dest: string,
-  promotion?: string,
+  from: string;
+  dest: string;
+  promotion?: string;
 };
 
 const UCI_MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])([bnrqBNRQ])?$/;
@@ -35,7 +35,10 @@ const PROMOTE_MAP: { [type: string]: PieceType } = {
 };
 
 // Applies a move from the user.
-export function doGameMove(board: Board, move: string | ObjectMove): GameMoveInternal {
+export function doGameMove(
+  board: Board,
+  move: string | ObjectMove,
+): GameMoveInternal {
   if (typeof move === "object") {
     return _objectMove(board, move);
   }
@@ -135,7 +138,7 @@ function _objectMove(board: Board, move: ObjectMove): GameMoveInternal {
   const num = board.current.moveNum;
   const turn = board.current.turn;
   const moves = listAllValidMoves(board, turn);
-  const picked = moves.find(m => (
+  const picked = moves.find((m) => (
     m.from === fromIdx &&
     m.dest === destIdx &&
     (promoteType ? m.promote === promoteType : true)

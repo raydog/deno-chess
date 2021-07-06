@@ -282,12 +282,14 @@ Deno.test("ChessGame Public API > Can move with move objects", function () {
   game.move({ from: "f6", dest: "f2" }); // # 0-1
   asserts.assertObjectMatch(game.getStatus(), {
     state: "checkmate",
-    winner: "black"
+    winner: "black",
   });
 });
 
 Deno.test("ChessGame Public API > Can promote with move objects", function () {
-  const game = ChessGame.NewFromFEN("1nbqkbnr/2Pppppp/2r5/8/8/8/P1PPPPPP/RNBQKBNR w KQk - 0 1");
+  const game = ChessGame.NewFromFEN(
+    "1nbqkbnr/2Pppppp/2r5/8/8/8/P1PPPPPP/RNBQKBNR w KQk - 0 1",
+  );
   game.move({ from: "c7", dest: "b8", promotion: "Q" });
   asserts.assertEquals(game.history().reverse()[0].san, "cxb8=Q");
 });

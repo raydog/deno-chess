@@ -290,7 +290,7 @@ export class ChessGame {
    *    format. These strings look like "e4" to move the e-file pawn up, or "Raxa4" if the a-file rook captured
    *    something on a4. When using this format, the promote property is always ignored: Instead, use "=" plus the
    *    correct chess piece type (N, B, R, or Q) in the move string.
-   * 
+   *
    * 3. An object, with "from" and "dest" parameters (both coordinates in algebraic notation), with an additional
    *    "promotion" parameter if this move is a pawn promotion. This is the same format that the "allMoves" function
    *    uses, so the moves returned from there can just be passed directly into this method.
@@ -299,16 +299,16 @@ export class ChessGame {
    * // UCI
    * game.move("b1c3");  // Piece on b1 moves to c3.
    * game.move("g7f8n"); // Pawn on g7 moves to f8, and promotes to a knight.
-   * 
+   *
    * // SAN
    * game.move("Nf3"); // Knight moves to f3.
    * game.move("axb8=Q"); // A-file pawn captures on b8, and promotes to queen.
-   * 
+   *
    * // Move object
    * game.move({ from: "c1", dest: "g5" });
    * game.move({ from: "c1", dest: "g5" });
    * game.move({ from: "f2", dest: "f1", promotion: "Q" });
-   * 
+   *
    * @param move A string or object that describes a move.
    */
   public move(move: string | MoveDetails): ChessGame {
