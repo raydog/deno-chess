@@ -19,6 +19,12 @@ import { checkMoveResults } from "../core/logic/moveResults.ts";
 import { performMove } from "../core/logic/performMove.ts";
 import { GameMoveInternal } from "./GameMove.ts";
 
+type ObjectMove = {
+  from: string,
+  dest: string,
+  promotion?: string,
+};
+
 const UCI_MOVE_RE = /^([a-h][1-8])[- ]*([a-h][1-8])([bnrqBNRQ])?$/;
 
 const PROMOTE_MAP: { [type: string]: PieceType } = {
@@ -29,14 +35,17 @@ const PROMOTE_MAP: { [type: string]: PieceType } = {
 };
 
 // Applies a move from the user.
-export function doGameMove(board: Board, moveStr: string): GameMoveInternal {
-  const match = moveStr.match(UCI_MOVE_RE);
+export function doGameMove(board: Board, move: string | ObjectMove): GameMoveInternal {
+  if (typeof move === "object") {
+    return _objectMove(board, move);
+  }
+  const match = move.match(UCI_MOVE_RE);
   if (match) {
     return _uciMove(board, match[1], match[2], match[3]);
   }
 
   // Else, possibly SAN:
-  return _sanMove(board, moveStr);
+  return _sanMove(board, move);
 }
 
 function _uciMove(
@@ -109,5 +118,48 @@ function _sanMove(board: Board, san: string): GameMoveInternal {
     dest: coordToAN(move.dest),
     san: moveToSAN(moves, move, results),
     move,
+  };
+}
+
+function _objectMove(board: Board, move: ObjectMove): GameMoveInternal {
+  const fromIdx = coordFromAN(move.from), destIdx = coordFromAN(move.dest);
+  let promoteType: PieceType | 0 = 0;
+
+  if (move.promotion) {
+    promoteType = PROMOTE_MAP[move.promotion.toUpperCase()];
+    if (!promoteType) {
+      throw new ChessBadMove(`Invalid promotion: ${move.promotion}`);
+    }
+  }
+
+  const num = board.current.moveNum;
+  const turn = board.current.turn;
+  const moves = listAllValidMoves(board, turn);
+  const picked = moves.find(m => (
+    m.from === fromIdx &&
+    m.dest === destIdx &&
+    (promoteType ? m.promote === promoteType : true)
+  ));
+
+  if (!picked) {
+    throw new ChessBadMove(`Invalid move: ${JSON.stringify(move)}`);
+  }
+
+  if (picked.promote && !promoteType) {
+    throw new ChessNeedsPromotion();
+  }
+
+  performMove(board, picked);
+
+  const results = checkMoveResults(board, turn);
+  board.current.status = results.newGameStatus;
+
+  return {
+    num,
+    side: (turn === COLOR_WHITE) ? "white" : "black",
+    from: coordToAN(picked.from),
+    dest: coordToAN(picked.dest),
+    san: moveToSAN(moves, picked, results),
+    move: picked,
   };
 }

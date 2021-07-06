@@ -207,8 +207,20 @@ Deno.test("ChessGame Public API > Promote requires a param", function () {
   game.move("a4b5").move("b8a6");
   game.move("b5b6").move("a6c5");
   game.move("b6b7").move("c5e6");
+
+  // Verify this with all the input types:
   asserts.assertThrows(
     () => game.move("b7b8"),
+    ChessNeedsPromotion,
+    "Promotion piece",
+  );
+  asserts.assertThrows(
+    () => game.move("b8"),
+    ChessNeedsPromotion,
+    "Promotion piece",
+  );
+  asserts.assertThrows(
+    () => game.move({ from: "b7", dest: "b8" }),
     ChessNeedsPromotion,
     "Promotion piece",
   );
@@ -252,6 +264,32 @@ Deno.test("ChessGame Public API > Promote to Queen after capture in SAN", functi
   game.move("b7").move("Ne6");
   game.move("bxa8=Q");
   asserts.assertEquals(game.history().reverse()[0].san, "bxa8=Q");
+});
+
+Deno.test("ChessGame Public API > Can move with move objects", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move({ from: "e2", dest: "e4" });
+  game.move({ from: "e7", dest: "e5" });
+  game.move({ from: "g1", dest: "f3" });
+  game.move({ from: "b8", dest: "c6" });
+  game.move({ from: "d2", dest: "d4" });
+  game.move({ from: "e5", dest: "d4" });
+  game.move({ from: "f3", dest: "d4" });
+  game.move({ from: "f8", dest: "c5" });
+  game.move({ from: "c2", dest: "c3" });
+  game.move({ from: "d8", dest: "f6" });
+  game.move({ from: "d4", dest: "c6" });
+  game.move({ from: "f6", dest: "f2" }); // # 0-1
+  asserts.assertObjectMatch(game.getStatus(), {
+    state: "checkmate",
+    winner: "black"
+  });
+});
+
+Deno.test("ChessGame Public API > Can promote with move objects", function () {
+  const game = ChessGame.NewFromFEN("1nbqkbnr/2Pppppp/2r5/8/8/8/P1PPPPPP/RNBQKBNR w KQk - 0 1");
+  game.move({ from: "c7", dest: "b8", promotion: "Q" });
+  asserts.assertEquals(game.history().reverse()[0].san, "cxb8=Q");
 });
 
 Deno.test("ChessGame Public API > Rejects moves after game over", function () {
