@@ -70,7 +70,7 @@
           userAction = null;
 
           try {
-            game.move(move.from + move.dest + (move.promotion || ""));
+            game.move(move);
           
           } catch (ex) {
             console.error(ex.message);
