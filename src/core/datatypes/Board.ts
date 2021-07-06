@@ -59,6 +59,7 @@ export class Board {
     current.castles = 0;
     current.moveCache[COLOR_WHITE] = null;
     current.moveCache[COLOR_BLACK] = null;
+    current.pieceList = [];
   }
 
   /**
