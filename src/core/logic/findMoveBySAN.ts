@@ -1,4 +1,4 @@
-import { ChessBadMove } from "../datatypes/ChessError.ts";
+import { ChessBadMove, ChessNeedsPromotion } from "../datatypes/ChessError.ts";
 import { coordFromAN } from "../datatypes/Coord.ts";
 import { Move } from "../datatypes/Move.ts";
 import { PieceType, PIECETYPE_KING } from "../datatypes/PieceType.ts";
@@ -97,7 +97,7 @@ function _selectMoveByInvariant(
       if (found) {
         // Special case: Forgetting the promotion param:
         if (found.promote && move.promote) {
-          throw new ChessBadMove(`${san} needs a promotion type`);
+          throw new ChessNeedsPromotion();
         }
         throw new ChessBadMove(`${san} is ambiguous`);
       }
