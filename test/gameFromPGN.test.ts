@@ -3,6 +3,7 @@ import {
   GAMESTATUS_CHECKMATE,
   GAMESTATUS_DRAW,
   GAMESTATUS_DRAW_FIFTYMOVES,
+  GAMESTATUS_DRAW_REPETITION,
   GAMESTATUS_DRAW_STALEMATE,
   GAMESTATUS_RESIGNED,
 } from "../src/core/datatypes/GameStatus.ts";
@@ -520,6 +521,71 @@ Deno.test("Game From PGN > Parser > Game of the Century", function () {
       " 3 |    b  n                | 3",
       " 2 |       r           P    | 2",
       " 1 |       K                | 1",
+      "   +------------------------+  ",
+      "     a  b  c  d  e  f  g  h    ",
+    ],
+  );
+});
+
+Deno.test("Game From PGN > Parser > Diemer v Trommsdorf '73", function () {
+  // A super wild game that I saw on GothamChess (YouTube) and I was all "wow, I really need to make sure this engine
+  // supports castling underneath a knight like that..."
+  const result = gameFromPGN(`
+  [Event "Bagneaux"]
+  [Site "Bagneux FRA"]
+  [Date "1973.07.??"]
+  [EventDate "?"]
+  [Round "?"]
+  [Result "1/2-1/2"]
+  [White "Emil Joseph Diemer"]
+  [Black "Fro Trommsdorf"]
+  [ECO "B07"]
+  [WhiteElo "?"]
+  [BlackElo "?"]
+  [PlyCount "94"]
+  
+  1.d4 Nf6 2.Nc3 g6 3.e4 d6 4.Be2 c6 5.g4 b5 6.g5 Nfd7 7.h4 b4
+  8.Nb1 d5 9.e5 e6 10.h5 c5 11.hxg6 fxg6 12.Bd3 Bg7 13.Rxh7 Rxh7
+  14.Bxg6+ Ke7 15.Bxh7 cxd4 16.f4 Qh8 17.Qh5 Ba6 18.Nf3 Nc6
+  19.Nh4 Nf8 20.g6 Kd7 21.Nd2 Kc7 22.Ndf3 Nd7 23.Bd2 Qf8 24.Ng5
+  Re8 25.Qg4 Ndxe5 26.Qh3 Nc4 27.Nxe6+ Kd7 28.f5 Nxd2 29.O-O-O
+  Qf6 30.Nxg7 Re3 31.Nh5 Qg5 32.Qg4 b3 33.axb3 Nxb3+ 34.Kb1 Rd3
+  35.Qg1 Nd2+ 36.Ka1 Qd8 37.Nf6+ Kc8 38.Rxd2 Qa5+ 39.Kb1 Nb4
+  40.Rxd3 Qa2+ 41.Kc1 Nxd3+ 42.Kd2 Qa5+ 43.Ke2 Ne5+ 44.Kf2 Qd2+
+  45.Kg3 Qg5+ 46.Kf2 Qd2+ 47.Kg3 Qg5+ 1/2-1/2
+  `);
+  asserts.assertObjectMatch(result, {
+    winner: "draw",
+    tags: {
+      "Event": "Bagneaux",
+      "Site": "Bagneux FRA",
+      "Date": "1973.07.??",
+      "EventDate": "?",
+      "Round": "?",
+      "Result": "1/2-1/2",
+      "White": "Emil Joseph Diemer",
+      "Black": "Fro Trommsdorf",
+      "ECO": "B07",
+      "WhiteElo": "?",
+      "BlackElo": "?",
+      "PlyCount": "94",
+    },
+  });
+  asserts.assertEquals(result.board.current.status, GAMESTATUS_DRAW_REPETITION);
+  asserts.assertEquals(result.moves.length, 94);
+  asserts.assertEquals(
+    boardRenderASCII(result.board, false).split("\n"),
+    [
+      "     a  b  c  d  e  f  g  h    ",
+      "   +------------------------+  ",
+      " 8 |       k                | 8",
+      " 7 | p                    B | 7",
+      " 6 | b              N  P    | 6",
+      " 5 |          p  n  P  q    | 5",
+      " 4 |          p           N | 4",
+      " 3 |                   K    | 3",
+      " 2 |    P  P                | 2",
+      " 1 |                   Q    | 1",
       "   +------------------------+  ",
       "     a  b  c  d  e  f  g  h    ",
     ],
