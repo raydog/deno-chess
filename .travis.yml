@@ -1,6 +1,9 @@
 os:
   - linux
-dist: xenial
+
+# Deno 1.18.1 accidentally broke xenial (nested dependency requires a newer glibc...)
+# So for now, target bionic beaver:
+dist: bionic
 
 # Deno not officially supported, so fall back on a generic image, and install ourselves:
 language: minimal
