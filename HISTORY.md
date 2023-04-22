@@ -1,3 +1,8 @@
+## 0.6.0 (2023-04-22)
+
+- Added ability to query board spaces directly.
+- Fixed a bug in the PGN output logic.
+
 ## 0.5.0 (2021-07-05)
 
 - Added ability to perform moves with an object instead of only with a UCI / SAN
