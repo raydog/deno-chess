@@ -195,6 +195,19 @@ Most of the game features are provided by the ChessGame class.
 
   The game was drawn. A reason can be provided.
 
+### Checking on the board
+
+- **`game.getSpace(coord: string)`**
+
+  Will return an object that describes a space on the board. Has these
+  properties:
+  - `coord`: the space's coordinate.
+  - `piece`: an object describing the piece. Only included if a piece is here.
+    Properties:
+    - `color`: the piece's color. (Either `"white"` or `"black"`.)
+    - `pieceType`: the piece's type. (One of: `"P"`, `"B"`, `"N"`, `"R"`, `"Q"`,
+      or `"K"`.)
+
 ### Tags
 
 Keeping tags for your game can be useful when exporting in PGN format. By
