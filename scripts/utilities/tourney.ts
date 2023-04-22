@@ -159,7 +159,7 @@ function competeAIs(fen: string): [number, number] {
 
   console.log(
     "- Checkmate (%s win) in %d ms",
-    (status.turn === "white" ? "black" : "white"),
+    status.turn === "white" ? "black" : "white",
     Date.now() - start,
   );
 

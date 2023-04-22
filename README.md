@@ -289,7 +289,7 @@ Some things that I plan on getting to:
 
 - [ ] Slightly better AI.
 - [ ] Openings database. (Probably available as a separate module, to keep the
-  main module size small.)
+      main module size small.)
 - [ ] Ability to connect with UCI-compatible engines.
 
 ## License

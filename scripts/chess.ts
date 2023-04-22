@@ -93,8 +93,10 @@ function printGame(game: ChessGame) {
     const turn = history[line];
     if (turn) {
       const numStr = turn.num + ".";
-      turnStr = `${numStr.padEnd(4)} ${turn.white.padEnd(7)} ${turn.black ||
-        "..."}`;
+      turnStr = `${numStr.padEnd(4)} ${turn.white.padEnd(7)} ${
+        turn.black ||
+        "..."
+      }`;
     }
     console.log(board[line], " ", turnStr);
   }
