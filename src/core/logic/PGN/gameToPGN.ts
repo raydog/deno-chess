@@ -14,6 +14,11 @@ type GameData = {
 
 const MAX_LINE = 80;
 
+/**
+ * Write the given game state to a PGN string.
+ *
+ * Spec: https://ia802908.us.archive.org/26/items/pgn-standard-1994-03-12/PGN_standard_1994-03-12.txt
+ */
 export function gameToPGN({ winner, moves, tags }: GameData): string {
   const pgnWinner = _pgnWinner(winner);
   tags = {
@@ -32,32 +37,26 @@ export function gameToPGN({ winner, moves, tags }: GameData): string {
   for (const key of Object.keys(tags)) {
     out += _tag(key, tags[key]) + "\n";
   }
-  out += "\n";
 
-  let lineLen = 0;
-  for (let idx = 0; idx < moves.length; idx++) {
-    const move = moves[idx];
-
-    let wip = "";
-    if (!idx || move.side === "white") {
-      wip += move.num;
-      wip += (move.side === "white") ? ". " : "... ";
-    }
-    wip += move.san;
-
-    lineLen += wip.length;
-    if (lineLen > MAX_LINE) {
-      out += "\n";
-      lineLen = wip.length;
-    }
-
-    out += wip;
-    if (lineLen < MAX_LINE) {
-      out += " ";
-      lineLen++;
+  let lineLen = 1000;
+  function pushStr(str: string) {
+    if (lineLen + str.length + 1 > MAX_LINE) {
+      lineLen = str.length;
+      out += "\n" + str;
+    } else {
+      lineLen += str.length + 1;
+      out += " " + str;
     }
   }
-  out += pgnWinner;
+
+  for (let idx = 0; idx < moves.length; idx++) {
+    const move = moves[idx];
+    if (!idx || move.side === "white") {
+      pushStr(`${move.num}${(move.side === "white") ? "." : "..."}`);
+    }
+    pushStr(move.san);
+  }
+  pushStr(pgnWinner);
   return out;
 }
 
