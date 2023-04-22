@@ -1,4 +1,4 @@
-# Deno-Chess [![Build Status](https://travis-ci.com/raydog/deno-chess.svg?branch=main)](https://travis-ci.com/raydog/deno-chess)
+# Deno-Chess [![Build Status](https://github.com/raydog/deno-chess/actions/workflows/deno.yml/badge.svg?branch=main)](https://github.com/raydog/deno-chess/actions)
 
 ![Deno dressed as a king](./data/king-deno.png)
 
