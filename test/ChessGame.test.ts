@@ -551,6 +551,51 @@ Deno.test("ChessGame Public API > PGN Input > Game of the Century", function () 
   });
 });
 
+Deno.test("ChessGame Public API > PGN Output > Starting position", function () {
+  const game = ChessGame.NewStandardGame();
+  game.setTag("Date", "2023.01.02");
+  const pgn = game.toString("pgn");
+  asserts.assertEquals(
+    pgn,
+    [
+      '[Event "?"]',
+      '[Site "?"]',
+      '[Date "2023.01.02"]',
+      '[Round "?"]',
+      '[White "?"]',
+      '[Black "?"]',
+      '[Result "*"]',
+      "",
+      "*",
+    ].join("\n"),
+  );
+});
+
+Deno.test("ChessGame Public API > PGN Output > Fix space before result (Issue #8)", function () {
+  const game = ChessGame.NewStandardGame();
+  game.setTag("Date", "2023.01.02");
+  "e4 e5 f3 Bb4 c3 Ba5 b4 Bb6 d4 exd4 cxd4 Nf6 e5 Nd5 f4 f6".split(" ").forEach(
+    (san) => game.move(san),
+  );
+  // This moveset puts the movelist _RIGHT_ at the 80 char line boundary.
+  const pgn = game.toString("pgn");
+  asserts.assertEquals(
+    pgn,
+    [
+      '[Event "?"]',
+      '[Site "?"]',
+      '[Date "2023.01.02"]',
+      '[Round "?"]',
+      '[White "?"]',
+      '[Black "?"]',
+      '[Result "*"]',
+      "",
+      "1. e4 e5 2. f3 Bb4 3. c3 Ba5 4. b4 Bb6 5. d4 exd4 6. cxd4 Nf6 7. e5 Nd5 8. f4 f6",
+      "*",
+    ].join("\n"),
+  );
+});
+
 Deno.test("ChessGame Public API > PGN Output > Produces a parsable result", function () {
   const game = ChessGame.NewStandardGame();
   game.move("e2e4").move("e7e5");
