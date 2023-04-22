@@ -14,9 +14,46 @@
     
     <!-- TODO: Better mod name. It's 1:40am... -->
     <script src="js/devserver.min.js"></script>
+    <style>
+      .panel {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: flex-start;
+      }
+      .panel>.block {
+        display: inline-block;
+        margin: 10px;
+      }
+      #board {
+        width: 600px;
+      }
+      #pgn-text {
+        width: 650px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+      #fen-text {
+        width: 650px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+      }
+    </style>
   </head>
   <body>
-  <div id="board" style="width: 600px"></div>
+  <div class="panel">
+    <div id="board" class="block"></div>
+    <div class="block">
+      <pre id="pgn-text"></pre>
+      <pre id="fen-text"></pre>
+      <div>
+        <button id="btn-undo">Undo</button>
+      </div>
+    </div>
+  </div>
   <script>
     $(function() {
 
@@ -25,7 +62,7 @@
       var game = Lib.DenoChess.ChessGame.NewStandardGame();
 
       var white_ai = null; //Lib.DenoChessAI.BeginnerAI.NewForGame(game, "white");
-      var black_ai = Lib.DenoChessAI.BeginnerAI.NewForGame(game, "black");
+      var black_ai = null; //Lib.DenoChessAI.BeginnerAI.NewForGame(game, "black");
       var userAction = null;
 
       var status, moves;
@@ -42,6 +79,7 @@
         onDrop: onDrop,
         onSnapEnd: onSnapEnd
       });
+      $('#btn-undo').click(onUndo);
 
       _doTurn();
 
@@ -133,9 +171,18 @@
         // board.position(game.toString("fen"))
       }
 
+      function onUndo() {
+        game.undoMove();
+        board.position(game.toString("fen"));
+        refreshState();
+      }
+
       function refreshState() {
         status = game.getStatus();
         moves = game.allMoves();
+        $("#pgn-text").text(game.toString('pgn'));
+        $("#fen-text").text(game.toString('fen'));
+        $('#btn-undo').prop('disabled', game.history().length === 0);
       }
 
       function highlight(squares) {
