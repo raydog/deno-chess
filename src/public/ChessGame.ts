@@ -22,7 +22,11 @@ import {
   GAMESTATUS_DRAW_STALEMATE,
   GAMESTATUS_RESIGNED,
 } from "../core/datatypes/GameStatus.ts";
-import { SPACE_EMPTY, spaceGetColor } from "../core/datatypes/Space.ts";
+import {
+  SPACE_EMPTY,
+  spaceGetColor,
+  spaceGetType,
+} from "../core/datatypes/Space.ts";
 import { boardFromFEN } from "../core/logic/FEN/boardFromFEN.ts";
 import { doGameMove } from "./doGameMove.ts";
 import { GameMove, GameMoveInternal } from "./GameMove.ts";
@@ -87,6 +91,31 @@ interface MoveDetails {
    * If this move is a promotion, this parameter will be included to indicate what the pawn is promoting to.
    */
   promotion?: "B" | "N" | "R" | "Q";
+}
+
+/**
+ * Details for a space on the board.
+ */
+interface SpaceDetails {
+  /**
+   * The space's coordinate.
+   */
+  coord: string;
+
+  /**
+   * Details on the piece located on this space. Omitted if no piece is located here.
+   */
+  piece?: {
+    /**
+     * The piece's color.
+     */
+    color: "white" | "black";
+
+    /**
+     * The piece's type.
+     */
+    pieceType: "P" | "B" | "N" | "R" | "Q" | "K";
+  };
 }
 
 /**
@@ -178,6 +207,30 @@ export class ChessGame {
       game.#gameWinner = data.winner;
     }
     return game;
+  }
+
+  /**
+   * Get info about a specific board coordinate. The coordinate must be in algebraic notation.
+   *
+   * @param coord The space's coordinate. (eg: "f3")
+   */
+  getSpace(coord: string): SpaceDetails {
+    const idx = coordFromAN(coord);
+    const sp = this.#board.get(idx);
+    const details: SpaceDetails = { coord };
+    if (sp !== SPACE_EMPTY) {
+      details.piece = {
+        color: spaceGetColor(sp) === COLOR_WHITE ? "white" : "black",
+        pieceType: pieceTypeLetter(spaceGetType(sp)) as
+          | "P"
+          | "B"
+          | "N"
+          | "R"
+          | "Q"
+          | "K",
+      };
+    }
+    return details;
   }
 
   /**

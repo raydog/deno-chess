@@ -9,7 +9,6 @@ export const MATE = 10;
  * |-----------|-----------------|--------------------|-----|------------------|-----------------|
  * | Logically | -M1 .... -M1000 | -2^32 ... -1       |  0  | 1 ... 2^32       | +M1000 ... +M1  |
  *
- *
  * Basically, there is a line (currently drawn at +/- 2**32) that separates standard move scores and checkmate scores.
  * Also note that checkmates are reversed, since we prefer a mate in 3 moves over a mate in 20.
  */
