@@ -160,6 +160,26 @@ Deno.test("ChessGame Public API > List a promotion", function () {
   ]);
 });
 
+Deno.test("ChessGame Public API > Can query the board", function () {
+  const game = ChessGame.NewStandardGame();
+  game.move("e2e4");
+  asserts.assertEquals(game.getSpace("e2"), { coord: "e2" });
+  asserts.assertEquals(game.getSpace("e4"), {
+    coord: "e4",
+    piece: {
+      color: "white",
+      pieceType: "P",
+    },
+  });
+  asserts.assertEquals(game.getSpace("h8"), {
+    coord: "h8",
+    piece: {
+      color: "black",
+      pieceType: "R",
+    },
+  });
+});
+
 Deno.test("ChessGame Public API > Can move", function () {
   const game = ChessGame.NewStandardGame();
   game.move("e2e4");
@@ -350,7 +370,7 @@ Deno.test("ChessGame Public API > Draws after 50 moves", function () {
       game.move((i % 2 === 1) ? "d8d7" : "d7d8");
     }
     for (let i = 5; i > 2; i--) {
-      game.move(coordToAN((i * 0x10)) + coordToAN((i * 0x10 - 0x10)));
+      game.move(coordToAN(i * 0x10) + coordToAN(i * 0x10 - 0x10));
       game.move((i % 2 === 0) ? "d8d7" : "d7d8");
     }
     // Avoid repetition fails:
